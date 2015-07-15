@@ -1,20 +1,30 @@
 #include <Servo.h> 
 
+#define MIN_SIGNAL 700 // Default 544us (Typical ESC-range: 700us-2000us)
+#define MAX_SIGNAL 2000  // Default 2400us
+#define MOTOR_PIN 3
+
 Servo myservo;
 int curSpeed;
 int offset = 0;
 
-void setSpeed(int angle){
-  myservo.write(angle);    
-}
 
 void setup()
 {
   Serial.begin(9600);
-  myservo.attach(3);
+  myservo.attach(MOTOR_PIN, MIN_SIGNAL, MAX_SIGNAL); // Attach pin, set min and max pwm range
   Serial.println("Motor attached");
-  Serial.println("Speed set to -1");
+  String a = "PWM range is set to ";
+  a += MIN_SIGNAL;
+  a += "uS - ";
+  a += MAX_SIGNAL;
+  a += "uS";
+  Serial.println(a);
   curSpeed = -1;
+}
+
+void setSpeed(int angle){
+  myservo.write(angle);    
 }
 
 
