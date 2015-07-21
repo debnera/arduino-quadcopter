@@ -120,6 +120,7 @@ void parseThrottle(String input)
   }
   Serial.print("Changing throttle to ");
   Serial.println(value);
+  speed = value;
 }
 
 void parseCommands(String input)
@@ -191,6 +192,10 @@ void loop()
     if (isMaybeNumber(command) == 1)
     {
       parseThrottle(command);
+      for (unsigned int i = 0; i < 4; i++)
+      {
+        setSpeed(motors[i], speed);
+      }
     }
     else
     {
