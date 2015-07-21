@@ -122,6 +122,61 @@ void parseThrottle(String input)
   Serial.println(value);
 }
 
+void parseCommands(String input)
+{
+  // Attach
+  if (input[0] == 'a')
+  {
+    int count = 0;
+    for (unsigned int i = 1; i < input.length(); i++)
+    {
+      unsigned int index = input[i] - '0';
+      index -= 1; // We want the indexes to be in range 0-3 instead of 1-4.
+      if (index < 4)
+      {
+        Motor motor = motors[index]; 
+        attachMotor(motor); 
+        count++;
+      }
+    }
+    Serial.print(count);
+    Serial.println(" motors attached");
+  }
+
+  // Detach
+  else if (input[0] == 'd')
+  {
+    int count = 0;
+    for (unsigned int i = 1; i < input.length(); i++)
+    {
+      unsigned int index = input[i] - '0';
+      index -= 1; // We want the indexes to be in range 0-3 instead of 1-4.
+      if (index < 4)
+      {
+        Motor motor = motors[index]; 
+        detachMotor(motor); 
+        count++;
+      }
+    }
+    Serial.print(count);
+    Serial.println(" motors detached");
+  }
+  else
+  {
+    Serial.println("Invalid command. Attach motors with 'a' and detach with 'd'");
+    Serial.println("Example: 'a24' - attaches motors 2 and 4");
+  }
+}
+
+int isMaybeNumber(String input)
+{
+  if (input[0] < '0' || input[0] > '9')
+  {
+    return 0;
+  }
+  return 1;
+}
+
 void loop()
 {
   // If there is incoming value
@@ -130,10 +185,20 @@ void loop()
     String command = readSerial(); // Using String instead of char[] for added functionality (less memory effective)
     command.toLowerCase();
     command.trim();
-    Serial.print("received:");
+    Serial.print("received: ");
     Serial.print(command);
     Serial.print('\n');
-    parseThrottle(command);
+    if (isMaybeNumber(command) == 1)
+    {
+      parseThrottle(command);
+    }
+    else
+    {
+      Serial.println("Attempting to parse a command...");
+      parseCommands(command);
+    }
+    
+    
   }
 }
 
