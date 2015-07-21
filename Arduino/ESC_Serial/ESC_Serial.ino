@@ -90,15 +90,35 @@ String readSerial()
     delayMicroseconds(minDelay); // Wait for all the data to be received.
     timeDelayed += minDelay;
   }
-  Serial.print("Delay: ");
-  Serial.println(timeDelayed);
   
+  //Serial.print("Delay: ");
+  //Serial.println(timeDelayed);
   return input;
 }
 
 void parseThrottle(String input)
 {
+  
+  if (input.length() > 3)
+  {
+    Serial.println("INPUT ERROR: Maximum of 3 digits allowed (0-180)");
+    return;
+  }
+  for(int i = 0; i < input.length(); i++)
+  {
+    if (input[i] < '0' || input[i] > '9')
+    {
+      Serial.println("INPUT ERROR: Not a valid number");
+      return;
+    }
+  }
   int value = input.toInt();
+  if (value < 0 || value > 180)
+  {
+    Serial.println("INPUT ERROR: Value is not in range 0-180");
+    return;
+  }
+  Serial.print("Changing throttle to ");
   Serial.println(value);
 }
 
@@ -107,7 +127,7 @@ void loop()
   // If there is incoming value
   if (Serial.available() > 0)
   {
-    String command = readSerial();
+    String command = readSerial(); // Using String instead of char[] for added functionality (less memory effective)
     command.toLowerCase();
     command.trim();
     Serial.print("received:");
@@ -116,3 +136,7 @@ void loop()
     parseThrottle(command);
   }
 }
+
+
+
+
