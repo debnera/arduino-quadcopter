@@ -38,8 +38,7 @@ void setSpeed(Motor motor, int angle)
   if (motor.servo.attached() == true)
   {
     motor.servo.write(angle);
-  }
-    
+  } 
 }
 
 void attachMotor(Motor motor)
@@ -55,7 +54,7 @@ void attachMotor(Motor motor)
 
 void detachMotor(Motor motor)
 {
-  if (motor.servo.attached() == false)
+  if (motor.servo.attached() == true)
   {
     motor.servo.detach();
     Serial.print(motor.description);
@@ -65,11 +64,17 @@ void detachMotor(Motor motor)
 
 String readSerial()
 {
-  unsigned int maxDelay = 50000; // 50ms
-  unsigned int minDelay = 100; // 0.5ms
+  // Reads the incoming string from the serial. Because software serial is relatively slow, this function
+  // attempts to wait (delay) until the entire message is received, ending in end of line ('\n').
+
+  // This function stops reading when it either receives '\n' or the maxDelay is exceeded.
+  // Delays are in microseconds   (1000uS = 1ms;    1 000 000uS = 1s)
+  unsigned int maxDelay = 50000; // 50ms 
+  unsigned int minDelay = 100; // 0.1ms
   unsigned int timeDelayed = 0;
   String input;
   char c = 0;
+  
   // Incase we have multiple commands in buffer (separated with '\n'), return the first command found.
   while (timeDelayed < maxDelay)
   {
@@ -103,9 +108,11 @@ void loop()
   if (Serial.available() > 0)
   {
     String command = readSerial();
-    Serial.println("received:");
+    command.toLowerCase();
+    command.trim();
+    Serial.print("received:");
     Serial.print(command);
     Serial.print('\n');
-    //parseThrottle(command);
+    parseThrottle(command);
   }
 }
