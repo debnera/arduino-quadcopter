@@ -7,7 +7,7 @@
 #define MOTOR2_PIN 5
 #define MOTOR3_PIN 6
 #define MOTOR4_PIN 9
-
+#define BAUDRATE 9600
 
 
 Motor motor1 = {MOTOR1_PIN, "Motor 1"};
@@ -19,9 +19,10 @@ Motor motors[4] = {motor1, motor2, motor3, motor4};
 int speed = 0;
 
 
+
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(BAUDRATE);
   speed = 0; // Set default speed
   Serial.println("Starting speed set to 0");
   String a = "PWM range is set to ";
