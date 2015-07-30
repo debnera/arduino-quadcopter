@@ -1,3 +1,7 @@
+/* Author: Anton Debner
+ * My first quadcopter project 2015
+ */
+
 #include <Servo.h>
 #include "Motor.h"
 
