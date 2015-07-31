@@ -1,5 +1,5 @@
 #include <SoftwareSerial.h>
-#define BDRATE 9600
+#define BDRATE 38400
 #define DELAY 1000 //ms
 SoftwareSerial softSerial(10,11); // RX, TX
 
@@ -17,12 +17,14 @@ void setup() {
 void doublePrint(String str)
 {
   Serial.print(str);
+  delay(100); // Delay to avoid interference
   softSerial.print(str);
 }
 
 void doubleNL()
 {
   Serial.print('\n');
+  delay(100); // Delay to avoid interference
   softSerial.print('\n');
 }
 
