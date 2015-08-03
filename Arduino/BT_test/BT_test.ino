@@ -1,10 +1,11 @@
 #include <SoftwareSerial.h>
 #define BDRATE 38400
-#define DELAY 1000 //ms
+#define DELAY 100 //ms
 SoftwareSerial softSerial(10,11); // RX, TX
 
 String incoming;
 char c;
+unsigned long prev_time;
 
 void setup() {
   // put your setup code here, to run once:
@@ -12,6 +13,7 @@ void setup() {
   softSerial.begin(BDRATE);
   doublePrint("Hello");
   doubleNL();
+  prev_time = millis();
 }
 
 void doublePrint(String str)
@@ -34,7 +36,7 @@ void loop() {
   if (softSerial.available())
   {
     doubleNL();
-    doublePrint("SW Received: ");
+    doublePrint("(sw)Quad says: ");
     delay(DELAY);
     while(softSerial.available())
     {
@@ -48,7 +50,7 @@ void loop() {
   if (Serial.available())
   {
     doubleNL();
-    doublePrint("HW Received: ");
+    doublePrint("(hw)Quad says: ");
     delay(DELAY);
     while(Serial.available())
     {
@@ -57,5 +59,9 @@ void loop() {
     }
     doublePrint(incoming);
   }
-    
+  if ((millis() - prev_time) > 1000)
+  {
+    softSerial.write("PING\n");
+    prev_time = millis();
+  }
 }
