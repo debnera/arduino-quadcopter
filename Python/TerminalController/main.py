@@ -14,8 +14,8 @@ class ListeningThread(Thread):
         Thread.__init__(self)
         self.stopRequested = False
         self.ser = ser
-        self.ConnectionQuery = "PING" # This is the message Quad sends when it wants to check connection status.
-        self.ConnectionAnswer = "PingOK" # This is the message we send back to Quad
+        self.ConnectionQuery = "ping" # This is the message Quad sends when it wants to check connection status.
+        self.ConnectionAnswer = "pingok" # This is the message we send back to Quad
         
     def run(self):
         print("Starting to listen")
@@ -55,12 +55,11 @@ class ListeningThread(Thread):
 
 def openConnection():
     ser = serial.Serial(
-    port='\\.\COM3',
+    port='\\.\COM6',
     baudrate=38400,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS
-    )
+    bytesize=serial.EIGHTBITS)
     return ser
 
 try:
@@ -70,11 +69,13 @@ except:
 else:
     listener = ListeningThread(ser)
     listener.start()
-    time.sleep(1)
-    ser.write("Hello Quad!\n".encode())
-    time.sleep(2)
-    ser.write("\nPING\n".encode())
-    time.sleep(5)
+    message = ''
+    print("You can now send commands")
+    while(message.strip().lower() != "exit"):
+        message = input()
+        message += '\n'
+        ser.write(message.encode())
+    print("Exiting now")
     listener.requestStop()
 
 if __name__ == '__main__':
