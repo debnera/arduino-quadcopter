@@ -28,7 +28,10 @@ class ListeningThread(Thread):
                 # We assume that every incoming message ends in newline ('\n').
                 while(incoming == '' or incoming[-1] != '\n'):
                     if (self.ser.inWaiting() > 0):
-                        incoming += self.ser.read(1).decode()
+                        try:
+                            incoming += self.ser.read(1).decode()
+                        except UnicodeDecodeError:
+                            print("UnicodeDecodeError: Received bad data")
                     elif (maxDelay > delay):
                         # Lets sleep for a moment in case there is still incoming data
                         time.sleep(minDelay)
@@ -44,10 +47,12 @@ class ListeningThread(Thread):
     def parseCommand(self, command):
         stripped = command.strip().lower()
         if stripped == self.ConnectionQuery.lower():
-            self.ser.write(self.ConnectionAnswer.encode())
-            print(stripped + " -> " + self.ConnectionAnswer + "\n")
+            self.echoPing()
         else:
             print(command)
+            
+    def echoPing(self):
+        self.ser.write(self.ConnectionAnswer.encode())
     
     def requestStop(self):
         self.stopRequested = True
