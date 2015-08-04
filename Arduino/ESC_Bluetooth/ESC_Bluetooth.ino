@@ -26,22 +26,33 @@ class Timer
 {
   private:
     unsigned long prevTime = 0;
+    unsigned long interval = 0;
   public:
     unsigned long getDifference()
     {
       return millis() - prevTime;
     }
+    unsigned long getInterval()
+    {
+      return millis() - interval;
+    }
     void updateTime()
     {
       prevTime = millis();
+      interval = millis();
+    }
+    void updateInterval()
+    {
+      interval = millis();
     }
 };
 
 SoftwareSerial softSerial(10,11); // RX, TX
 int speed = 0;
+boolean printPing = false; // True to print confirmation of successfull pinging
 boolean conOK = false; // Are we still connected to the controller?
 unsigned int conTimeout = 5000; // Time(ms) after the connection is assumed to be lost.
-unsigned int conTestInterval = 1000; // Interval(ms) in which the connection is checked.
+unsigned int conInterval = 1000; // Interval(ms) in which the connection is checked.
 String conQueryMessage = "ping"; // The message which the controller regocnizes and answers to
 String conOkMessage = "pingok"; // The controllers expected response to conQuery
 
@@ -161,9 +172,16 @@ void parseCommands(String input)
   {
     conTimer.updateTime(); // Connection is ok, reset the timeout timer
     conOK = true;
+    if (printPing == true) softSerial.println("Ping received - connection OK");
+  }
+  else if (input == "p")
+  {
+    printPing = !printPing;
+    softSerial.print("PrintPing == ");
+    softSerial.println(printPing);
   }
   // Attach
-  if (input[0] == 'a')
+  else if (input[0] == 'a')
   {
     int count = 0;
     for (unsigned int i = 1; i < input.length(); i++)
@@ -217,7 +235,7 @@ int isMaybeNumber(String input)
   return 1;
 }
 
-void sendPing()
+void sendPingQuery()
 {
   // Sends the connection query message. The receival of
   softSerial.print(conQueryMessage);
@@ -236,6 +254,11 @@ void sendPing()
 void loop()
 {
   // If there is incoming value
+  if (conTimer.getInterval() > conInterval)
+  {
+    conTimer.updateInterval();
+    sendPingQuery();
+  }
   if (softSerial.available() > 0)
   {
     String command = readsoftSerial(); // Using String instead of char[] for added functionality (less memory effective)
