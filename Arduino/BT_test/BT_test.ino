@@ -5,7 +5,6 @@ SoftwareSerial softSerial(10,11); // RX, TX
 
 String incoming;
 char c;
-unsigned long prev_time;
 
 void setup() {
   // put your setup code here, to run once:
@@ -13,7 +12,6 @@ void setup() {
   softSerial.begin(BDRATE);
   doublePrint("Hello");
   doubleNL();
-  prev_time = millis();
 }
 
 void doublePrint(String str)
@@ -58,10 +56,5 @@ void loop() {
       incoming += c;
     }
     doublePrint(incoming);
-  }
-  if ((millis() - prev_time) > 1000)
-  {
-    softSerial.write("PING\n");
-    prev_time = millis();
   }
 }
