@@ -15,7 +15,7 @@ class ListeningThread(Thread):
         self.stopRequested = False
         self.ser = ser
         self.ConnectionQuery = "ping" # This is the message Quad sends when it wants to check connection status.
-        self.ConnectionAnswer = "pingok" # This is the message we send back to Quad
+        self.ConnectionAnswer = "pingok\n" # This is the message we send back to Quad
         
     def run(self):
         print("Starting to listen")
@@ -49,6 +49,7 @@ class ListeningThread(Thread):
         if stripped == self.ConnectionQuery.lower():
             self.echoPing()
         else:
+            print("Quad: ")
             print(command)
             
     def echoPing(self):

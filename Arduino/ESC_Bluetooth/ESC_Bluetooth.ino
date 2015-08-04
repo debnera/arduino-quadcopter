@@ -168,13 +168,13 @@ void parseThrottle(String input)
 void parseCommands(String input)
 {
   // Track connection status
-  if (input == "pingok")
+  if (input.equals("pingok"))
   {
     conTimer.updateTime(); // Connection is ok, reset the timeout timer
     conOK = true;
     if (printPing == true) softSerial.println("Ping received - connection OK");
   }
-  else if (input == "p")
+  else if (input.equals("p"))
   {
     printPing = !printPing;
     softSerial.print("PrintPing == ");
@@ -219,29 +219,31 @@ void parseCommands(String input)
   }
   else
   {
+    softSerial.println(input);
     softSerial.println("Invalid command. Attach motors with 'a' and detach with 'd'");
     softSerial.println("Example: 'a24' - attaches motors 2 and 4");
   }
 }
 
-int isMaybeNumber(String input)
+boolean isMaybeNumber(String input)
 {
   // Checks if the first symbol in given string is a number.
   // Doesn't guarantee that the entire string is a number.
   if (input[0] < '0' || input[0] > '9')
   {
-    return 0;
+    return false;
   }
-  return 1;
+  return true;
 }
 
 void sendPingQuery()
 {
   // Sends the connection query message. The receival of
-  softSerial.print(conQueryMessage);
+  softSerial.println(conQueryMessage);
   if (conTimer.getDifference() > conTimeout)
   {
     // We have now lost connection to the controller
+    softSerial.println("Connection lost");
     conOK = false;
     for (unsigned int i = 0; i < 4; i++)
     {
@@ -253,18 +255,18 @@ void sendPingQuery()
 
 void loop()
 {
-  // If there is incoming value
   if (conTimer.getInterval() > conInterval)
   {
     conTimer.updateInterval();
     sendPingQuery();
   }
+  // If there is incoming value
   if (softSerial.available() > 0)
   {
     String command = readsoftSerial(); // Using String instead of char[] for added functionality (less memory effective)
     command.toLowerCase();
     command.trim();
-    if (isMaybeNumber(command) == 1) // No commands begin with a number, maybe it's a throttle input?
+    if (isMaybeNumber(command) == true) // No commands begin with a number, maybe it's a throttle input?
     {
       parseThrottle(command);
       for (unsigned int i = 0; i < 4; i++)
