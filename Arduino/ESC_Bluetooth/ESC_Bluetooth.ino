@@ -159,7 +159,7 @@ void parseCommands(String input)
   // Track connection status
   if (input == "pingok")
   {
-    conTimer.updateTime() // Connection is ok, reset the timeout timer
+    conTimer.updateTime(); // Connection is ok, reset the timeout timer
     conOK = true;
   }
   // Attach
