@@ -27,7 +27,7 @@ class Timer
   private:
     unsigned long prevTime = 0;
   public:
-    unsigned long getPassedTime()
+    unsigned long getDifference()
     {
       return millis() - prevTime;
     }
@@ -42,14 +42,17 @@ int speed = 0;
 boolean conOK = false; // Are we still connected to the controller?
 unsigned int conTimeout = 5000; // Time(ms) after the connection is assumed to be lost.
 unsigned int conTestInterval = 1000; // Interval(ms) in which the connection is checked.
-unsigned int lastOK = 0; // How long(ms) is it since we received a response from controller?
 String conQueryMessage = "ping"; // The message which the controller regocnizes and answers to
 String conOkMessage = "pingok"; // The controllers expected response to conQuery
+
+Timer conTimer; // Timer for tracking connection timeout
+Timer receiveTimer; // Timer for delayed reading of incoming messages
 
 
 
 void setup()
 {
+  conTimer.updateTime();
   softSerial.begin(BAUDRATE);
   speed = 0; // Set default speed
   softSerial.println("Starting ESC_Bluetooth sketch");
@@ -101,12 +104,12 @@ String readsoftSerial()
   // Delays are in microseconds   (1000uS = 1ms;    1 000 000uS = 1s)
   unsigned int maxDelay = 50000; // 50ms 
   unsigned int minDelay = 100; // 0.1ms
-  unsigned int timeDelayed = 0;
+  receiveTimer.updateTime();
   String input;
   char c = 0;
   
   // Incase we have multiple commands in buffer (separated with '\n'), return the first command found.
-  while (timeDelayed < maxDelay)
+  while (receiveTimer.getDifference() < maxDelay)
   {
     while (softSerial.available() > 0)
     {
@@ -118,7 +121,6 @@ String readsoftSerial()
       break;
     }
     delayMicroseconds(minDelay); // Wait for all the data to be received.
-    timeDelayed += minDelay;
   }
   
   //softSerial.print("Delay: ");
@@ -128,7 +130,6 @@ String readsoftSerial()
 
 void parseThrottle(String input)
 {
-  
   if (input.length() > 3)
   {
     softSerial.println("INPUT ERROR: Maximum of 3 digits allowed (0-180)");
@@ -155,6 +156,12 @@ void parseThrottle(String input)
 
 void parseCommands(String input)
 {
+  // Track connection status
+  if (input == "pingok")
+  {
+    conTimer.updateTime() // Connection is ok, reset the timeout timer
+    conOK = true;
+  }
   // Attach
   if (input[0] == 'a')
   {
@@ -214,8 +221,7 @@ void sendPing()
 {
   // Sends the connection query message. The receival of
   softSerial.print(conQueryMessage);
-  lastOK += conTestInterval;
-  if (lastOK > conTimeout)
+  if (conTimer.getDifference() > conTimeout)
   {
     // We have now lost connection to the controller
     conOK = false;
