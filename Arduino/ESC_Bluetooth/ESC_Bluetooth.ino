@@ -7,14 +7,14 @@
 #include "Motor.h"
 
 
-#define MIN_SIGNAL 700 // Default 544us (Typical ESC-range: 700us-2000us)
-#define MAX_SIGNAL 2000  // Default 2400us
+#define MIN_SIGNAL 1200 // Default 544us (Typical ESC-range: 700us-2000us)
+#define MAX_SIGNAL 2500  // Default 2400us
 #define MOTOR1_PIN 3
 #define MOTOR2_PIN 5
 #define MOTOR3_PIN 6
 #define MOTOR4_PIN 9
 #define BAUDRATE 38400
-
+SoftwareSerial softSerial(7,8); // RX, TX
 
 Motor motor1 = {MOTOR1_PIN, "Motor 1"};
 Motor motor2 = {MOTOR2_PIN, "Motor 2"};
@@ -47,8 +47,9 @@ class Timer
     }
 };
 
-SoftwareSerial softSerial(10,11); // RX, TX
+
 int speed = 0;
+boolean useAngles = false; // False to use servo.writeMicroseconds(time) instead of servo.write(angle). Write seems to ignore manually set pwm range.
 boolean printPing = false; // True to print confirmation of successfull pinging
 boolean conOK = false; // Are we still connected to the controller?
 unsigned int conTimeout = 5000; // Time(ms) after the connection is assumed to be lost.
@@ -81,7 +82,15 @@ void setSpeed(Motor motor, int angle)
 {
   if (motor.servo.attached() == true)
   {
-    motor.servo.write(angle);
+    if (useAngles == true)
+    {
+      motor.servo.write(angle);
+    }
+    else
+    {
+      int speedms = map(angle, 0, 180, MIN_SIGNAL, MAX_SIGNAL);
+      motor.servo.writeMicroseconds(speedms);
+    } 
   } 
 }
 
@@ -180,6 +189,13 @@ void parseCommands(String input)
     softSerial.print("PrintPing == ");
     softSerial.println(printPing);
   }
+  // Change speed writing mode
+  else if (input[0] == 'q')
+  {
+    useAngles = !useAngles;
+    softSerial.print("Use angles == ");
+    softSerial.println(useAngles);
+  }
   // Attach
   else if (input[0] == 'a')
   {
@@ -192,13 +208,9 @@ void parseCommands(String input)
       {
         Motor motor = motors[index]; 
         attachMotor(motor); 
-        count++;
       }
     }
-    softSerial.print(count);
-    softSerial.println(" motors attached");
   }
-
   // Detach
   else if (input[0] == 'd')
   {
@@ -210,12 +222,9 @@ void parseCommands(String input)
       if (index < 4)
       {
         Motor motor = motors[index]; 
-        detachMotor(motor); 
-        count++;
+        detachMotor(motor);
       }
     }
-    softSerial.print(count);
-    softSerial.println(" motors detached");
   }
   else
   {
