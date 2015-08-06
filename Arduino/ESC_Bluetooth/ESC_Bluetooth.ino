@@ -7,8 +7,8 @@
 #include "Motor.h"
 
 
-#define MIN_SIGNAL 1200 // Default 544us (Typical ESC-range: 700us-2000us)
-#define MAX_SIGNAL 2500  // Default 2400us
+#define MIN_SIGNAL 750 // Default 544us (Typical ESC-range: 700us-2000us)
+#define MAX_SIGNAL 2750  // Default 2400us
 #define MOTOR1_PIN 3
 #define MOTOR2_PIN 5
 #define MOTOR3_PIN 6
