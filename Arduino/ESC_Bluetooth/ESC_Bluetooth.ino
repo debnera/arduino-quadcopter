@@ -94,6 +94,14 @@ void setSpeed(Motor motor, int angle)
   } 
 }
 
+void setMicroseconds(Motor motor, int value)
+{
+  if (motor.servo.attached() == true)
+  {
+      motor.servo.writeMicroseconds(value);
+  } 
+}
+
 void attachMotor(Motor motor)
 {
   if (motor.servo.attached() == false)
@@ -190,7 +198,7 @@ void parseCommands(String input)
     softSerial.println(printPing);
   }
   // Change speed writing mode
-  else if (input[0] == 'q')
+  else if (input.equals("q"))
   {
     useAngles = !useAngles;
     softSerial.print("Use angles == ");
@@ -225,6 +233,22 @@ void parseCommands(String input)
         detachMotor(motor);
       }
     }
+  }
+  // Set speed in microseconds
+  else if (input[0] == 'm')
+  {
+    input[0] = '0'; // Let's make the String in to a int
+    int value = input.toInt();
+    if (value >= 0 && value <= 5000)
+    {
+      softSerial.print("Setting motor speed in microseconds to ");
+      softSerial.println(value);
+      for (unsigned int i = 0; i < 4; i++)
+      {
+        setMicroseconds(motors[i], value);
+      }
+    }
+    else softSerial.println("Invalid microsecond value (0-5000)");
   }
   else
   {
