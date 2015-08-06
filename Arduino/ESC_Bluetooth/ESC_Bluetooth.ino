@@ -96,6 +96,7 @@ void setSpeed(Motor motor, int angle)
 
 void setMicroseconds(Motor motor, int value)
 {
+  // Set speed in microseconds.
   if (motor.servo.attached() == true)
   {
       motor.servo.writeMicroseconds(value);
@@ -234,10 +235,11 @@ void parseCommands(String input)
       }
     }
   }
-  // Set speed in microseconds
+  // Set speed in microseconds. This can be used to find out the limits of the ESC
+  // before manually editing the pwm signal ranges in this sketch.
   else if (input[0] == 'm')
   {
-    input[0] = '0'; // Let's make the String in to a int
+    input[0] = '0'; // Let's make the String in to an int.
     int value = input.toInt();
     if (value >= 0 && value <= 5000)
     {
