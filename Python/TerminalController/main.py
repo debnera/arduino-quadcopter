@@ -7,6 +7,7 @@ Created on 3.8.2015
 import time
 import serial
 from threading import Thread
+from serial.serialutil import writeTimeoutError
 
 class ListeningThread(Thread):
     
@@ -49,7 +50,7 @@ class ListeningThread(Thread):
         if stripped == self.ConnectionQuery.lower():
             self.echoPing()
         else:
-            print("Quad: ")
+            print("Quad: ", end='') # We want to print without newline for cleaner output.
             print(command)
             
     def echoPing(self):
@@ -65,7 +66,8 @@ def openConnection():
     baudrate=38400,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
-    bytesize=serial.EIGHTBITS)
+    bytesize=serial.EIGHTBITS,
+    writeTimeout=2) # Wait maximum 2 seconds on write
     return ser
 
 try:
@@ -80,9 +82,14 @@ else:
     while(message.strip().lower() != "exit"):
         message = input()
         message += '\n'
-        ser.write(message.encode())
+        try:
+            ser.write(message.encode())
+        except serial.serialutil.SerialTimeoutException:
+            print("WARNING: Write timeout exceeded!")
     print("Exiting now")
     listener.requestStop()
+    time.sleep(1) # Wait for listener to stop before we close the serial.
+    ser.close()
 
 if __name__ == '__main__':
     pass
