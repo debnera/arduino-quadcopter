@@ -10,9 +10,9 @@
 #define MIN_SIGNAL 750 // Default 544us (Typical ESC-range: 700us-2000us)
 #define MAX_SIGNAL 2750  // Default 2400us
 #define MOTOR1_PIN 3
-#define MOTOR2_PIN 5
-#define MOTOR3_PIN 6
-#define MOTOR4_PIN 9
+#define MOTOR2_PIN 9
+#define MOTOR3_PIN 10
+#define MOTOR4_PIN 11
 #define BAUDRATE 38400
 SoftwareSerial softSerial(7,8); // RX, TX
 
