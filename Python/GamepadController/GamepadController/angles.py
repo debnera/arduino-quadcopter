@@ -1,6 +1,8 @@
 ﻿class Angles(object):
     """Used to store the angles of yaw, pitch and roll axes.
     This is sometimes also used to store the angular rates of those axes.
+
+    Methods toString() and parseString() can be used to transfer the angles to another device as a string.
     """
     MaxDecimals = 3
     
@@ -31,7 +33,7 @@
         except ValueError: 
             return False
         # Let's check if the letters are not in correct order or there is no room for atleast one number in between.
-        if not (y_ind == 0 and y_ind+1 < p_ind and p_ind+1 < r_ind and len(str) > r_ind): # Notice the negation
+        if not (y_ind == 0 and y_ind+1 < p_ind and p_ind+1 < r_ind and len(str)-1 > r_ind): # Notice the negation
            return False 
         # Finally we attempt to parse the numbers. ValueError is raised (and False returned) if the numbers contain any invalid characters.
         try:
