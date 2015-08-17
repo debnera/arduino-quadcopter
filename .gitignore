@@ -1,0 +1,11 @@
+# Visual Studio #
+#################
+.vs
+*.pyproj
+*.sln
+
+# Eclipse #
+###########
+.metadata
+.project
+.pydevproject
