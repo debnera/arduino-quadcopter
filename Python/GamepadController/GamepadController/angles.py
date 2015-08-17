@@ -20,7 +20,7 @@
         roll = round(self.roll,Angles.MaxDecimals)
         return "y" + str(yaw) + "p" + str(pitch) + "r" + str(roll)
 
-    def parseString(self, str):
+    def fromString(self, str):
         '''This method attempts to parse a string in to yaw, pitch and roll.
         If successful, returns True and changes the instance angles. Otherwise returns False.
         '''
