@@ -9,3 +9,7 @@
 .metadata
 .project
 .pydevproject
+
+# Other #
+#########
+*.~*
