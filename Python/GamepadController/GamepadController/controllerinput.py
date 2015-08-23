@@ -3,25 +3,26 @@ import pygame # Pygame is the easiest way I could figure out to use joysticks
 class ControllerInput(object):
     """Used for accessing joystick axes and buttons."""
     def __init__(self, id):
-        self.buttonFunctions = dict()
-        pygame.init()
+        self.buttonFunctions = dict() # Dict which connects buttons to functions
+        self.controller = None
+        pygame.init() # Scans system for joysticks, listens to events
         print("Number of joysticks found: " + str(pygame.joystick.get_count()))
         if (pygame.joystick.get_count() > id):
-            self.joy = pygame.joystick.Joystick(id)
-            print("Connected to " + self.joy.get_name())
-            print("Number of axes: " + str(self.joy.get_numaxes())
-                  + ". Number of buttons: " + str(self.joy.get_numbuttons()))
+            self.controller = pygame.joystick.Joystick(id)
+            print("Connected to " + self.controller.get_name())
+            print("Number of axes: " + str(self.controller.get_numaxes())
+                  + ". Number of buttons: " + str(self.controller.get_numbuttons()))
         else:
             print("Given joystick id not found.")
 
     def getAxis(self, number):
         """Returns the current value of given axis"""
-        if (not self.joy):
+        if (not self.controller):
             return
-        if (self.joy.get_numaxes() <= number):
+        if (self.controller.get_numaxes() <= number):
             print("Warning: ControllerInput: Joystick axis " + number + " not found.")
             return 0
-        return self.joy.get_axis(number)
+        return self.controller.get_axis(number)
 
     def connectButton(self, number, function):
         """Connects a joystick button to given function.
@@ -29,9 +30,9 @@ class ControllerInput(object):
         NOTE: The connected functions will only be called if checkPressedButtons
         is called. Therefore you have to periodically call checkPressedButtons.
         """
-        if (not self.joy):
+        if (not self.controller):
             return
-        if (self.joy.get_numbuttons() < number):
+        if (self.controller.get_numbuttons() < number):
             print("Warning: ControllerInput: Attempted to connect to invalid button.")
         if (number in self.buttonFunctions.keys):
             print("Warning: ControllerInput: Overriding previously connected function.")
@@ -47,7 +48,8 @@ class ControllerInput(object):
                 if (event.button in self.buttonFunctions.keys):
                     self.buttonFunctions[event.button]()
 
-
+    def close(self):
+        pygame.quit()
             
 
 if __name__ == "__main__":
@@ -55,6 +57,8 @@ if __name__ == "__main__":
     controller = ControllerInput(0)
     def test(): print(controller.getAxis(0))
     controller.connectButton(0, test)
-    while(1):
-        controller.checkPressedButtons()
-    pygame.quit()
+    try:
+        while(1):
+            controller.checkPressedButtons()
+    except KeyboardInterrupt:
+        pygame.quit()
