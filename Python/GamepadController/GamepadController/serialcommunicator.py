@@ -1,6 +1,6 @@
 ﻿""" Created by Anton Debner in 2015 """
 
-import serial
+import serial # PySerial https://pypi.python.org/pypi/pyserial
 
 class SerialCommunicator(object):
     """Handles the communication over serial port. """
