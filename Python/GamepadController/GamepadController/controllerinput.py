@@ -1,5 +1,5 @@
 ﻿""" Created by Anton Debner in 2015 """
-import pygame
+import pygame # Pygame is the easiest way I could figure out to use joysticks
 class ControllerInput(object):
     """Used for accessing joystick axes and buttons."""
     def __init__(self, id):
@@ -16,6 +16,8 @@ class ControllerInput(object):
 
     def getAxis(self, number):
         """Returns the current value of given axis"""
+        if (not self.joy):
+            return
         if (self.joy.get_numaxes() <= number):
             print("Warning: ControllerInput: Joystick axis " + number + " not found.")
             return 0
@@ -27,6 +29,8 @@ class ControllerInput(object):
         NOTE: The connected functions will only be called if checkPressedButtons
         is called. Therefore you have to periodically call checkPressedButtons.
         """
+        if (not self.joy):
+            return
         if (self.joy.get_numbuttons() < number):
             print("Warning: ControllerInput: Attempted to connect to invalid button.")
         if (number in self.buttonFunctions.keys):
@@ -49,4 +53,8 @@ class ControllerInput(object):
 if __name__ == "__main__":
     """For quick debugging"""
     controller = ControllerInput(0)
+    def test(): print(controller.getAxis(0))
+    controller.connectButton(0, test)
+    while(1):
+        controller.checkPressedButtons()
     pygame.quit()
