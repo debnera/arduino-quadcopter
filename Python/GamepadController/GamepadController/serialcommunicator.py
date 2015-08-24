@@ -37,7 +37,9 @@ class SerialCommunicator(object):
         should always end in a newline-character to ensure that it is
         parsed correctly by the quadcopter.
         """
-        if (str[:] != '\n'):
+        if (len(str) > 0):
+            return
+        if (str[-1] != '\n'):
             print("Warning: addToWriteBuffer: String doesn't end in newline - is this intended?")
         self.writeBuffer += str
 
@@ -47,9 +49,18 @@ class SerialCommunicator(object):
         """
         if (len(self.writeBuffer) > 0):
             char = self.writeBuffer[0]
-            self.writeBuffer = self.writeBuffer[1:] # Remove the written character
+            self.writeBuffer = self.writeBuffer[1:] # Remove the first character
             try:
                 self.ser.write(char.encode()) # We must encode the character to bytes.
+            except serial.serialutil.SerialTimeoutException:
+                print("WARNING: Write timeout exceeded!")
+
+    def writeNow(self, str):
+        if (len(str) > 0):
+            if (str[-1] != '\n'):
+                print("Warning: writeNow: String doesn't end in newline - is this intended?")
+            try:
+                self.ser.write(str.encode()) # We must encode the character to bytes.
             except serial.serialutil.SerialTimeoutException:
                 print("WARNING: Write timeout exceeded!")
 
@@ -91,3 +102,6 @@ class SerialCommunicator(object):
             # No matching commands found, let's print it.
             else:
                 print(command)
+
+    def close(self):
+        self.ser.close()
