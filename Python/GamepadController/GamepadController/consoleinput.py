@@ -7,13 +7,14 @@ class ConsoleInput(Thread):
     thread while waiting for input.
     """
 
-    def __init__(self, writeFunction, exitFunction):
-        """As the names suggest, writeFunction and exitFunction must be
-        callable functions.
+    def __init__(self, writeFunction, exitFunction, restartFunction):
+        """As the names suggest, writeFunction, exitFunction and restartFunction
+        must be callable functions.
         """
         Thread.__init__(self)
         self.writeFunction = writeFunction
         self.exitFunction = exitFunction
+        self.restartFunction = restartFunction
 
     def run(self):
         """Sends any console input to given writeFunction.
@@ -29,14 +30,13 @@ class ConsoleInput(Thread):
             s = input(">> ") + "\n"
             if (s.casefold().strip() == "exit"):
                 self.running = False
-                try:
+                if (self.exitFunction != None):
                     self.exitFunction()
-                except:
-                    print("ERROR: Invalid exitFunction.")
+            elif (s.casefold().strip() == "restart"):
+                if (self.restartFunction != None):
+                    self.restartFunction()
             elif (len(s) > 1):
-                try:
+                if (self.writeFunction != None):
                     self.writeFunction(s)
-                except:
-                    print("ERROR: Invalid writeFunction.")
 
 
