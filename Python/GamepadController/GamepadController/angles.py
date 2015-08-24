@@ -2,7 +2,7 @@
     """Used to store the angles of yaw, pitch and roll axes.
     This is sometimes also used to store the angular rates of those axes.
 
-    Methods toString() and parseString() can be used to transfer the angles to another device as a string.
+    Methods toString() and fromString() can be used to transfer the angles to another device as a string.
     """
     MaxDecimals = 3
     
