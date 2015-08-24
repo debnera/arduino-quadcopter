@@ -26,11 +26,13 @@ class SerialCommunicator(object):
                 bytesize = serial.EIGHTBITS,
                 writeTimeout = 2 # Wait maximum 2 seconds on write
                 )
+            print("Opened port to " + self.ser.name())
         except ValueError:
             print("ERROR: SerialCommunicator: Serial port values out of range")
         except serial.SerialException:
             print("ERROR: SerialCommunicator: Could not open serial port")
-        print("Opened port to " + self.ser.name())
+
+        
 
     def addToWriteBuffer(self, str):
         """Adds given string to writeBuffer. In this project the strings
@@ -56,7 +58,7 @@ class SerialCommunicator(object):
                 print("WARNING: Write timeout exceeded!")
 
     def writeNow(self, str):
-        if (len(str) > 0):
+        if (len(str) > 0 and self.ser != None and self.ser.closed == False):
             if (str[-1] != '\n'):
                 print("Warning: writeNow: String doesn't end in newline - is this intended?")
             try:
@@ -104,4 +106,5 @@ class SerialCommunicator(object):
                 print(command)
 
     def close(self):
-        self.ser.close()
+        if (self.ser != None and self.ser.closed() == False):
+            self.ser.close()
