@@ -3,6 +3,10 @@
 .vs
 *.pyproj
 *.sln
+*.sdf
+*.vcxproj
+*.vcxproj.filters
+
 
 # Eclipse #
 ###########
@@ -13,3 +17,6 @@
 # Other #
 #########
 *.~*
+__pycache__
+.opensdf
+Visual Micro
