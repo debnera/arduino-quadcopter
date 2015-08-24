@@ -28,7 +28,6 @@ class ConsoleInput(Thread):
         while(self.running == True):
             s = input(">> ") + "\n"
             if (s.casefold().strip() == "exit"):
-                
                 self.running = False
                 try:
                     self.exitFunction()
