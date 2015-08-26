@@ -13,28 +13,26 @@ Author:	Anton
 	#include "WProgram.h"
 #endif
 
-#include <SoftwareSerial\SoftwareSerial.h>
+#include <SoftwareSerial.h>
 
 class SerialCommunicator
 {
 private:
-	SoftwareSerial softSerial;
-	String writeBuffer;
-	String readBuffer;
+	SoftwareSerial soft_serial = SoftwareSerial(soft_serial); // Silly workaround?
+	String read_buffer;
+	// Buffer size needs to be restricted to avoid overflowing memory.
+	// Read/writebuffers should never get large anyway, otherwise the
+	// information would be processed with a delay.
+	const int kMaxBufferSize = 100; 
 
 public:
-	SerialCommunicator(int baudrate);
-	void addToWriteBuffer(String str);
-	void addToWriteBuffer(float value) { addToWriteBuffer(String(value)); }
-	void addToWriteBuffer(int value) { addToWriteBuffer(String(value)); }
-	void writeNow(String str);
-	void writeNow(float value) { writeNow(String(value)); }
-	void writeNow(int value) { writeNow(String(value)); }
+	SerialCommunicator(int pin_rx, int pin_tx, long baudrate);
+	void write(String message);
+	void write(float value) { write(String(value)); }
+	void write(int value) { write(String(value)); }
 	void readFromSerial();
-	unsigned int getIncomingBufferSize() { return readBuffer.length(); }
-	unsigned int getWriteBufferSize() { return writeBuffer.length(); }
-	String getReceivedString();
-
+	unsigned int getReceivedBufferSize() { return read_buffer.length(); }
+	String getCompleteString();
 };
 
 #endif
