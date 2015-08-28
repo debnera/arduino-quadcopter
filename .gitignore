@@ -4,8 +4,7 @@
 *.pyproj
 *.sln
 *.sdf
-*.vcxproj
-*.vcxproj.filters
+*.vcxproj*
 
 
 # Eclipse #
@@ -16,7 +15,8 @@
 
 # Other #
 #########
+Debug
 *.~*
 __pycache__
-.opensdf
+*.opensdf
 Visual Micro
