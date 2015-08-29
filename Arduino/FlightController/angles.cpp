@@ -1,6 +1,7 @@
-// 
-// 
-// 
+/*
+Created:	8/26/2015
+Author:		Anton
+*/
 
 #include "angles.h"
 
