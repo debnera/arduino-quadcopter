@@ -1,4 +1,7 @@
-// angles.h
+/*
+Created:	8/26/2015
+Author:		Anton
+*/
 
 #ifndef _ANGLES_h
 #define _ANGLES_h
