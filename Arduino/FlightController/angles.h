@@ -18,7 +18,7 @@ public:
 	float pitch;
 	float roll;
 
-	Angles(float yaw, float pitch, float roll);
+	Angles(float yaw = 0, float pitch = 0, float roll = 0);
 	String toString();
 	bool fromString(String str);
 	float stringToFloat(String str, int from, int to);
