@@ -3,8 +3,8 @@ Created:	8/29/2015
 Author:		Anton
 */
 
-#ifndef _ANGLES_h
-#define _ANGLES_h
+#ifndef _MOTOR_h
+#define _MOTOR_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
 	#include "arduino.h"
