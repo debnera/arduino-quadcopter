@@ -23,16 +23,17 @@ private:
 	// Buffer size needs to be restricted to avoid overflowing memory.
 	// Read/writebuffers should never get large anyway, otherwise the
 	// information would be processed with a delay.
-	const int kMaxBufferSize = 100; 
+	const unsigned int kMaxBufferSize = 100; 
 
 public:
 	SerialCommunicator(int pin_rx, int pin_tx, long baudrate);
-	void write(String message);
+	~SerialCommunicator();
+	void write(String message); // Sends the given string to the connected device
 	void write(float value) { write(String(value)); }
 	void write(int value) { write(String(value)); }
-	void readFromSerial();
+	void readFromSerial(); // Reads all available data from serialbuffer.
 	unsigned int getReceivedBufferSize() { return read_buffer.length(); }
-	String getCompleteString();
+	String getCompletedCommand(); // Returns a newline-terminated command, if one has been received.
 };
 
 #endif
