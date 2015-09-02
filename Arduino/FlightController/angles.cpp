@@ -4,6 +4,7 @@ Author:		Anton
 */
 
 #include "angles.h"
+#include <math.h>
 
 Angles::Angles(float yaw, float pitch, float roll)
 {
@@ -20,6 +21,7 @@ String Angles::toString()
 	String str = "y" + String(yaw, kMaxDecimals) + 
 				 "p" + String(pitch, kMaxDecimals) +
 				 "r" + String(roll, kMaxDecimals);
+	return str;
 }
 
 bool Angles::fromString(String str)
@@ -33,14 +35,14 @@ bool Angles::fromString(String str)
 	// Let's make bools to avoid a monstrously large if statement.
 	bool ypr_exist = (y_ind != -1 && p_ind != -1 && r_ind != -1);
 	bool ypr_correct_order = (y_ind == 0 && y_ind + 1 < p_ind && p_ind + 1 < r_ind);
-	bool ypr_last_number = (str.length() - 1 > r_ind); // Room for a number after r?
+	bool ypr_last_number = (int(str.length()) - 1 > r_ind); // Room for a number after r?
 	if (ypr_exist && ypr_correct_order && ypr_last_number)
 	{
 		float y_value = stringToFloat(str, y_ind, p_ind);
 		float p_value = stringToFloat(str, p_ind, r_ind);
 		float r_value = stringToFloat(str, r_ind, str.length());
 		// Angles are in range -180 to 180. Anything else is treated as an error.
-		if (-180 <= y_value <= 180 && -180 <= p_value <= 180 && -180 <= r_value <= 180)
+		if (fabs(y_value) <= 180 && fabs(p_value) <= 180 && fabs(r_value) <= 180)
 		{
 			yaw = y_value;
 			pitch = p_value;
@@ -79,4 +81,5 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 		else
 			return kInvalidNumber;
 	}
+	return value;
 }
