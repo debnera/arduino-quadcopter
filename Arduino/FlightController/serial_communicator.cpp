@@ -15,6 +15,11 @@ SerialCommunicator::SerialCommunicator(int pin_rx, int pin_tx, long baudrate)
 	soft_serial.begin(baudrate);
 }
 
+SerialCommunicator::~SerialCommunicator()
+{
+	soft_serial.end();
+}
+
 void SerialCommunicator::write(String message)
 {
 	// Sends the message to the connected device over software serial.
@@ -49,7 +54,20 @@ void SerialCommunicator::readFromSerial()
 	}
 }
 
-String SerialCommunicator::getCompleteString()
+String SerialCommunicator::getCompletedCommand()
 {
-	int end = read_buffer.indexOf('\n');
+	// Checks if read_buffer has any complete commands which end in newline(\n)
+	// and returns the first such command. Also removes that command from read_buffer.
+	String command;
+	int end = read_buffer.indexOf('\n'); // returns -1 if not found
+	if (end >= 0)
+	{
+		for (int i = 0; i < end + 1; i++)
+		{
+			command += read_buffer[i];
+		}
+		read_buffer.remove(0, end + 1);
+	}
+	command.trim();
+	return command;
 }
