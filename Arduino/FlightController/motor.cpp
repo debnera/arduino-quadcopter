@@ -57,7 +57,7 @@ void Motor::setPower(int value)
 	int microseconds = min_pwm_width + value;
 	if (value < 0) microseconds = 0;
 	else if (microseconds > max_pwm_width) microseconds = max_pwm_width;
-	cur_power = microseconds; // Store the value for detach/reattach.
+	cur_power = value; // Store the value for detach/reattach.
 	servo.writeMicroseconds(microseconds);
 }
 
