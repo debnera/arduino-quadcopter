@@ -11,13 +11,14 @@ through the software serial interface (e.g. with bluetooth).
 
 SerialCommunicator::SerialCommunicator(int pin_rx, int pin_tx, long baudrate)
 {
-	soft_serial = SoftwareSerial(pin_rx, pin_tx, false); // false for non-inverted logic
-	soft_serial.begin(baudrate);
+	soft_serial = new SoftwareSerial(pin_rx, pin_tx, false); // false for non-inverted logic
+	soft_serial->begin(baudrate);
 }
 
 SerialCommunicator::~SerialCommunicator()
 {
-	soft_serial.end();
+	soft_serial->end();
+	delete soft_serial;
 }
 
 void SerialCommunicator::write(String message)
@@ -34,7 +35,7 @@ void SerialCommunicator::write(String message)
 		// incorrectly by the receiving device.
 		message += '\n';
 	}
-	soft_serial.print(message);
+	soft_serial->print(message);
 }
 
 void SerialCommunicator::readFromSerial()
@@ -43,9 +44,9 @@ void SerialCommunicator::readFromSerial()
 	// Because the serial connection is relatively slow, we cannot expect
 	// to receive the whole message at once. Therefore we will gather the 
 	// received data in read_buffer, and parse it from there.
-	while (soft_serial.available() && read_buffer.length() < kMaxBufferSize)
+	while (soft_serial->available() && read_buffer.length() < kMaxBufferSize)
 	{
-		read_buffer += soft_serial.read();
+		read_buffer += soft_serial->read();
 	}
 	if (read_buffer.length() >= kMaxBufferSize)
 	{
