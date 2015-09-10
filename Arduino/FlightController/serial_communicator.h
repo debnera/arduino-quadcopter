@@ -18,7 +18,7 @@ Author:	Anton
 class SerialCommunicator
 {
 private:
-	SoftwareSerial soft_serial = SoftwareSerial(soft_serial); // Silly workaround?
+	SoftwareSerial *soft_serial;
 	String read_buffer;
 	// Buffer size needs to be restricted to avoid overflowing memory.
 	// Read/writebuffers should never get large anyway, otherwise the
