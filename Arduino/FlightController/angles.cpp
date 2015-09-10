@@ -13,6 +13,13 @@ Angles::Angles(float yaw, float pitch, float roll)
 	this->roll = roll;
 }
 
+void Angles::setValues(float yaw, float pitch, float roll)
+{
+	this->yaw = yaw;
+	this->pitch = pitch;
+	this->roll = roll;
+}
+
 String Angles::toString()
 {
 	// Makes a String form the current values.
@@ -79,7 +86,7 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 		else if ((c == '.' || c == ',') && decimal == false)
 			decimal = true;
 		else
-			return kInvalidNumber;
+			return float(kInvalidNumber);
 	}
 	return value;
 }
