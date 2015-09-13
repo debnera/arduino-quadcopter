@@ -15,11 +15,11 @@ SerialCommunicator::SerialCommunicator(int pin_rx, int pin_tx, long baudrate)
 	soft_serial->begin(baudrate);
 }
 
-SerialCommunicator::~SerialCommunicator()
+/*SerialCommunicator::~SerialCommunicator()
 {
 	soft_serial->end();
 	delete soft_serial;
-}
+}*/
 
 void SerialCommunicator::write(String message)
 {

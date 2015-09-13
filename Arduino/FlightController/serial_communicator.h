@@ -27,7 +27,7 @@ private:
 
 public:
 	SerialCommunicator(int pin_rx, int pin_tx, long baudrate);
-	~SerialCommunicator();
+	//~SerialCommunicator();
 	void write(String message); // Sends the given string to the connected device
 	void write(float value) { write(String(value)); }
 	void write(int value) { write(String(value)); }

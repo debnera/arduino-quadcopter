@@ -5,6 +5,16 @@ Author:		Anton
 
 #include "angles.h"
 #include <math.h>
+const int Angles::kMaxDecimals = 3;
+const int Angles::kInvalidNumber = -999;
+
+
+Angles::Angles()
+{
+	yaw = 0.0;
+	pitch = 0.0;
+	roll = 0.0;
+}
 
 Angles::Angles(float yaw, float pitch, float roll)
 {
@@ -90,3 +100,4 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 	}
 	return value;
 }
+
