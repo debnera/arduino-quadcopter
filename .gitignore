@@ -2,7 +2,6 @@
 #################
 .vs
 *.pyproj
-*.sln
 *.sdf
 *.vcxproj*
 
@@ -20,3 +19,4 @@ Debug
 __pycache__
 *.opensdf
 Visual Micro
+__vm

@@ -4,9 +4,9 @@
 #define _STABILIZER_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
+#include "arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include "angles.h"
@@ -26,7 +26,7 @@ private:
 public:
 	Stabilizer(int max_motor_power);
 	Angles calculateRates(Angles target_angles, Angles cur_angles);
-	Vector4 calculatePowers(Angles target_rates, Angles cur_rates); 
+	Vector4 calculatePowers(Angles target_rates, Angles cur_rates);
 };
 
 #endif

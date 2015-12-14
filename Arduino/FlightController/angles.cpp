@@ -35,9 +35,9 @@ String Angles::toString()
 	// Makes a String form the current values.
 	// This String can then be send and parsed in an external device.
 
-	String str = "y" + String(yaw, kMaxDecimals) + 
-				 "p" + String(pitch, kMaxDecimals) +
-				 "r" + String(roll, kMaxDecimals);
+	String str = "y" + String(yaw, kMaxDecimals) +
+		"p" + String(pitch, kMaxDecimals) +
+		"r" + String(roll, kMaxDecimals);
 	return str;
 }
 

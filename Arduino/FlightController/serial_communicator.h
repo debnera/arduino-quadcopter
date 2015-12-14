@@ -8,9 +8,9 @@ Author:	Anton
 #define _SERIAL_COMMUNICATOR_h
 
 #if defined(ARDUINO) && ARDUINO >= 100
-	#include "arduino.h"
+#include "arduino.h"
 #else
-	#include "WProgram.h"
+#include "WProgram.h"
 #endif
 
 #include <SoftwareSerial.h>
@@ -23,7 +23,7 @@ private:
 	// Buffer size needs to be restricted to avoid overflowing memory.
 	// Read/writebuffers should never get large anyway, otherwise the
 	// information would be processed with a delay.
-	const unsigned int kMaxBufferSize = 100; 
+	const unsigned int kMaxBufferSize = 100;
 
 public:
 	SerialCommunicator(int pin_rx, int pin_tx, long baudrate);

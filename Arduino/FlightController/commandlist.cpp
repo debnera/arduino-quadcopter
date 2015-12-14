@@ -22,7 +22,7 @@ void CommandList::addCommand(String command, FunctionPointer function)
 	length++;
 	String *new_commands = new String[length];
 	FunctionPointer *new_functions = new FunctionPointer[length];
-	for (int i = 0; i < length-1; i++)
+	for (int i = 0; i < length - 1; i++)
 	{
 		new_commands[i] = commands[i];
 		new_functions[i] = functions[i];

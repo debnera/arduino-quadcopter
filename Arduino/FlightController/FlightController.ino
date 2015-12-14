@@ -1,10 +1,11 @@
 /*
- Name:		FlightController.ino
- Created:	8/24/2015 1:37:29 PM
- Author:	Anton
+Name:		FlightController.ino
+Created:	8/24/2015 1:37:29 PM
+Author:	Anton
 */
 
 // the setup function runs once when you press reset or power the board
+#include "commandlist.h"
 #include <Wire.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
@@ -63,9 +64,9 @@ void setup() {
 	ping_timer = new Timer(1000); // time in ms
 	connection_timeout_timer = new Timer(3000); // time in ms
 	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right", min_pwm, max_pwm),
-							Motor(motor_pin2, "M2: Bottom-left", min_pwm, max_pwm),
-							Motor(motor_pin3, "M3: Top-left", min_pwm, max_pwm),
-							Motor(motor_pin4, "M4: Bottom-right", min_pwm, max_pwm) };
+		Motor(motor_pin2, "M2: Bottom-left", min_pwm, max_pwm),
+		Motor(motor_pin3, "M3: Top-left", min_pwm, max_pwm),
+		Motor(motor_pin4, "M4: Bottom-right", min_pwm, max_pwm) };
 	motors = new_motors;
 	throttle = 0;
 
