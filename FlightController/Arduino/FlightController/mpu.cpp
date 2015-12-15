@@ -10,6 +10,11 @@ MPU::MPU(SerialCommunicator *serial_communicator)
   serCom = serial_communicator;
 }
 
+bool MPU::init()
+{
+  
+}
+
 Angles MPU::getAngles()
 {
 	// TODO - Implement this function.

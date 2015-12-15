@@ -96,7 +96,9 @@ void loop() {
 	Angles mpu_rates = mpu->getAngularRates();
 	cur_rates.setValues(mpu_rates.yaw, mpu_rates.pitch, mpu_rates.roll);
 
+/*
 	// Calculate values from stabilizer
+ 
 	if (throttle >= kMinThrottleToStabilize)
 	{
 		target_rates = stabilizer->calculateRates(target_angles, cur_angles);
@@ -107,8 +109,8 @@ void loop() {
 		motor_powers = Vector4(throttle, throttle, throttle, throttle);
 	}
 
-	// TODO - set motor power
 	setMotorPowers(motor_powers);
+ */
 
 }
 
