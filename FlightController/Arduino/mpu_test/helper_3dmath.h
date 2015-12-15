@@ -71,7 +71,7 @@ class Quaternion {
         }
         
         float getMagnitude() {
-//            return sqrt(w*w + x*x + y*y + z*z);
+            return sqrt(w*w + x*x + y*y + z*z);
         }
         
         void normalize() {
@@ -108,7 +108,7 @@ class VectorInt16 {
         }
 
         float getMagnitude() {
-//            return sqrt(x*x + y*y + z*z);
+            return sqrt(x*x + y*y + z*z);
         }
 
         void normalize() {
@@ -175,7 +175,7 @@ class VectorFloat {
         }
 
         float getMagnitude() {
-            //return sqrt(x*x + y*y + z*z);
+            return sqrt(x*x + y*y + z*z);
         }
 
         void normalize() {
