@@ -4,15 +4,12 @@ Created:	8/24/2015 1:37:29 PM
 Author:	Anton
 */
 
-// the setup function runs once when you press reset or power the board
 #include "vector4.h"
-#include "timer.h"
 #include "stabilizer.h"
 #include "serial_communicator.h"
 #include "pid.h"
 #include "mpu.h"
 #include "motor.h"
-#include "commandlist.h"
 #include <Wire.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
@@ -50,8 +47,8 @@ MPU *mpu;
 // Bluetooth management variables and constants
 const String kPingRequest = "ping";
 const String kPingResponse = "pingok";
-Timer *ping_timer;
-Timer *connection_timeout_timer;
+int ping_timer;
+int connection_timeout_timer;
 bool isBluetoothConnected;
 
 void setup() {
@@ -59,8 +56,8 @@ void setup() {
 
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
-	ping_timer = new Timer(1000); // time in ms
-	connection_timeout_timer = new Timer(3000); // time in ms
+	ping_timer = 0;
+	connection_timeout_timer = 0; // time in ms
 	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right", min_pwm, max_pwm),
 							Motor(motor_pin2, "M2: Bottom-left", min_pwm, max_pwm),
 							Motor(motor_pin3, "M3: Top-left", min_pwm, max_pwm),
@@ -86,7 +83,6 @@ void loop() {
 	}
 
 	// Check connection status
-	handlePingTimers();
 	if (isBluetoothConnected == false)
 	{
 		// We lost connection - let's make sure the propellers don't spin.
@@ -116,16 +112,12 @@ void loop() {
 
 }
 
-
 void parseCommand(String command)
 {
 	// TODO plan:	1. Potential angles/throttle -> parse angles -> parse throttle
 	//				2. Other commands
 	bool isAngles = target_angles.fromString(command);
-	if (!isAngles)
-	{
-		if (command.equals(kPingResponse)) pingReceived();
-	}
+
 }
 
 void setMotorPowers(Vector4 powers)
@@ -136,26 +128,4 @@ void setMotorPowers(Vector4 powers)
 	motors[3].setPower(powers.val4);
 }
 
-
-void handlePingTimers()
-{
-	// Checks ping_timer and connection_timeout_timer and handles them if necessary.
-	if (ping_timer->isItTimeYet() == true)
-	{
-		ping_timer->resetTimer();
-		bluetooth->write(kPingRequest);
-	}
-	if (connection_timeout_timer->isItTimeYet() == true)
-	{
-		isBluetoothConnected = false;
-	}
-}
-
-void pingReceived()
-{
-	// This function is called, when the controller (pc) responds to ping
-	// request.
-	isBluetoothConnected = true;
-	connection_timeout_timer->resetTimer();
-}
 
