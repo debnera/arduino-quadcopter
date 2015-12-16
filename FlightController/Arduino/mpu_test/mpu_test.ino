@@ -1,4 +1,5 @@
 #include "mpu.h"
+#include "angles.h"
 
 MPU mpu;
 
@@ -16,5 +17,15 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
-	mpu.getAngles();
+  if (mpu.dataAvailable())
+  {
+    Angles ypr = mpu.getAngles();
+    Serial.print("ypr\t");
+    Serial.print(ypr.yaw);
+    Serial.print("\t");
+    Serial.print(ypr.pitch);
+    Serial.print("\t");
+    Serial.println(ypr.roll);
+  }
+	
 }
