@@ -5,14 +5,11 @@ Author:		Anton
 
 #include "mpu.h"
 
-MPU::MPU(SerialCommunicator *serial_communicator)
+MPU::MPU(/*SerialCommunicator *serial_communicator*/)
 {
-  serCom = serial_communicator;
+  //serCom = serial_communicator;
 }
 
-void MPU::dmpDataReady() {
-    mpuInterrupt = true;
-}
 
 bool MPU::init()
 {
@@ -56,7 +53,19 @@ bool MPU::init()
         // enable Arduino interrupt detection
         Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
 		mpuInterrupt = false;
-        attachInterrupt(0, dmpDataReady, RISING);
+		
+		/*
+		NOTE:   INTERRUPT MUST BE ATTACHED IN THE MAIN .ino FILE
+		This is a hackish way around the limitation of not being able to attachInterrupt
+		to a class member.
+		
+		void dmpDataReady() {
+		_INSTANCE_OF_THIS_CLASS_.mpuInterrupt = true;
+		}
+		
+		attachInterrupt(0, dmpDataReady, RISING);
+		*/
+		
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
