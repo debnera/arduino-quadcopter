@@ -89,7 +89,8 @@ bool MPU::init()
 
 Angles MPU::getAngles()
 {
-	if (!mpuInterrupt && fifoCount < packetSize) return Angles(0, 0, 0);
+	Angles orientation = Angles(0,0,0);
+	if (!mpuInterrupt && fifoCount < packetSize) return orientation;
 	mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
 
@@ -119,16 +120,19 @@ Angles MPU::getAngles()
 		mpu.dmpGetQuaternion(&q, fifoBuffer);
 		mpu.dmpGetGravity(&gravity, &q);
 		mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
+		/*
 		Serial.print("ypr\t");
 		Serial.print(ypr[0] * 180/M_PI);
 		Serial.print("\t");
 		Serial.print(ypr[1] * 180/M_PI);
 		Serial.print("\t");
 		Serial.println(ypr[2] * 180/M_PI);
+		*/
+		orientation = Angles(ypr[0] * 180/M_PI, ypr[1] * 180/M_PI, ypr[2] * 180/M_PI);
 		
 	}
 
-	return Angles(0, 0, 0);
+	return orientation;
 	
 }
 
