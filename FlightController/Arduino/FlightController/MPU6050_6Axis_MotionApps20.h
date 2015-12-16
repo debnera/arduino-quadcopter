@@ -86,5 +86,67 @@ THE SOFTWARE.
     #endif
 #endif
 
+/* Source is from the InvenSense MotionApps v2 demo code. Original source is
+ * unavailable, unless you happen to be amazing as decompiling binary by
+ * hand (in which case, please contact me, and I'm totally serious).
+ *
+ * Also, I'd like to offer many, many thanks to Noah Zerkin for all of the
+ * DMP reverse-engineering he did to help make this bit of wizardry
+ * possible.
+ */
+
+// NOTE! Enabling DEBUG adds about 3.3kB to the flash program size.
+// Debug output is now working even on ATMega328P MCUs (e.g. Arduino Uno)
+// after moving string constants to flash memory storage using the F()
+// compiler macro (Arduino IDE 1.0+ required).
+
+//#define DEBUG
+#ifdef DEBUG
+    #define DEBUG_PRINT(x) Serial.print(x)
+    #define DEBUG_PRINTF(x, y) Serial.print(x, y)
+    #define DEBUG_PRINTLN(x) Serial.println(x)
+    #define DEBUG_PRINTLNF(x, y) Serial.println(x, y)
+#else
+    #define DEBUG_PRINT(x)
+    #define DEBUG_PRINTF(x, y)
+    #define DEBUG_PRINTLN(x)
+    #define DEBUG_PRINTLNF(x, y)
+#endif
+
+#define MPU6050_DMP_CODE_SIZE       1929    // dmpMemory[]
+#define MPU6050_DMP_CONFIG_SIZE     192     // dmpConfig[]
+#define MPU6050_DMP_UPDATES_SIZE    47      // dmpUpdates[]
+
+class MPU6050_6Axis_MotionApps20 : public MPU6050_Base {
+public:
+    uint8_t dmpInitialize();
+    bool dmpPacketAvailable();
+    uint8_t dmpGetAccel(int32_t *data, const uint8_t* packet);
+    uint8_t dmpGetAccel(int16_t *data, const uint8_t* packet);
+    uint8_t dmpGetAccel(VectorInt16 *v, const uint8_t* packet);
+    uint8_t dmpGetQuaternion(int32_t *data, const uint8_t* packet);
+    uint8_t dmpGetQuaternion(int16_t *data, const uint8_t* packet);
+    uint8_t dmpGetQuaternion(Quaternion *q, const uint8_t* packet);
+    uint8_t dmpGetGyro(int32_t *data, const uint8_t* packet);
+    uint8_t dmpGetGyro(int16_t *data, const uint8_t* packet);
+    uint8_t dmpGetGyro(VectorInt16 *v, const uint8_t* packet);
+    uint8_t dmpGetLinearAccel(VectorInt16 *v, VectorInt16 *vRaw, VectorFloat *gravity);
+    uint8_t dmpGetLinearAccelInWorld(VectorInt16 *v, VectorInt16 *vReal, Quaternion *q);
+    uint8_t dmpGetGravity(VectorFloat *v, Quaternion *q);
+    uint8_t dmpGetEuler(float *data, Quaternion *q);
+    uint8_t dmpGetYawPitchRoll(float *data, Quaternion *q, VectorFloat *gravity);
+    uint8_t dmpProcessFIFOPacket(const unsigned char *dmpData);
+    uint8_t dmpReadAndProcessFIFOPacket(uint8_t numPackets, uint8_t *processed);
+    uint16_t dmpGetFIFOPacketSize();
+};
+
+
+typedef MPU6050_6Axis_MotionApps20 MPU6050_6Axis;
+
+#ifndef HAVE_MPU6050_TYPEDEF
+#define HAVE_MPU6050_TYPEDEF
+typedef MPU6050_6Axis_MotionApps20 MPU6050;
+#endif
+
 
 #endif /* _MPU6050_6AXIS_MOTIONAPPS20_H_ */
