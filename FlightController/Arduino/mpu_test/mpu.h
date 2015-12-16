@@ -49,7 +49,7 @@ public:
 	bool init();
 	Angles getAngles();
 	Angles getAngularRates();
-	int getBufferSize();
+	bool dataAvailable();
 	volatile bool mpuInterrupt;
 };
 

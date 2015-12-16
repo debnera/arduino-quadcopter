@@ -142,8 +142,8 @@ Angles MPU::getAngularRates()
 	if (!mpuInterrupt && fifoCount < packetSize) return Angles(0, 0, 0);
 }
 
-int MPU::getBufferSize()
+bool MPU::dataAvailable()
 {
-	// TODO - Implement this function.
-	return 0;
+	// Returns true if there is any data to be received
+	return !(!mpuInterrupt && fifoCount < packetSize);
 }
