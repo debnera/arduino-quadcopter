@@ -52,8 +52,8 @@ int connection_timeout_timer;
 bool isBluetoothConnected;
 
 void setup() {
-	mpu = new MPU(bluetooth);
-
+	mpu = new MPU();
+  mpu.init();
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
 	ping_timer = 0;
@@ -93,8 +93,8 @@ void loop() {
 	// Get values from MPU
 	Angles mpu_angles = mpu->getAngles();
 	cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
-	Angles mpu_rates = mpu->getAngularRates();
-	cur_rates.setValues(mpu_rates.yaw, mpu_rates.pitch, mpu_rates.roll);
+	//Angles mpu_rates = mpu->getAngularRates();
+	//cur_rates.setValues(mpu_rates.yaw, mpu_rates.pitch, mpu_rates.roll);
 
 /*
 	// Calculate values from stabilizer
