@@ -42,7 +42,7 @@ Angles cur_rates;
 Vector4 motor_powers;
 int throttle;
 Stabilizer *stabilizer;
-MPU *mpu;
+MPU mpu;
 
 // Bluetooth management variables and constants
 const String kPingRequest = "ping";
@@ -51,9 +51,19 @@ int ping_timer;
 int connection_timeout_timer;
 bool isBluetoothConnected;
 
+void dmpDataReady() {
+    mpu.mpuInterrupt = true;
+}
+
 void setup() {
-	mpu = new MPU();
-  mpu->init();
+  Serial.begin(115200);
+	mpu = MPU();
+  bool success = mpu.init();
+  if(success)
+  {
+    Serial.println(F("DMP ready! Waiting for first interrupt..."));
+    attachInterrupt(0, dmpDataReady, RISING);
+  }
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
 	ping_timer = 0;
@@ -70,7 +80,7 @@ void setup() {
 // the loop function runs over and over again until power down or reset
 void loop() {
 
-	// Get and parse commands from controller.
+	/*// Get and parse commands from controller.
 	bluetooth->readFromSerial();
 	String command = bluetooth->getCompletedCommand();
 	if (command.length() > 0)
@@ -89,10 +99,33 @@ void loop() {
 		target_angles.setValues(0, 0, 0);
 		throttle = 0;
 	}
-
+  */
 	// Get values from MPU
-	Angles mpu_angles = mpu->getAngles();
-	cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
+  if (mpu.dataAvailable())
+  {
+    if (mpu.fifoOverflow())
+    {
+      Serial.println("---------------FIFO OVERFLOW!!!!-----------");
+      bluetooth->write("---------------FIFO OVERFLOW!!!!-----------");
+    }
+    Angles temp = cur_angles;
+    cur_angles = mpu.getAngles();
+    cur_rates = cur_angles - temp;
+    Serial.print("ypr\t");
+    Serial.print(cur_angles.yaw);
+    Serial.print("\t");
+    Serial.print(cur_angles.pitch);
+    Serial.print("\t");
+    Serial.println(cur_angles.roll);
+    Serial.print("rates\t");
+    Serial.print(cur_rates.yaw);
+    Serial.print("\t");
+    Serial.print(cur_rates.pitch);
+    Serial.print("\t");
+    Serial.println(cur_rates.roll);
+  }
+	//Angles mpu_angles = mpu->getAngles();
+	//cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
 	//Angles mpu_rates = mpu->getAngularRates();
 	//cur_rates.setValues(mpu_rates.yaw, mpu_rates.pitch, mpu_rates.roll);
 
