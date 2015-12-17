@@ -9,10 +9,18 @@ void dmpDataReady() {
 
 void setup() {
   // put your setup code here, to run once:
-	Serial.begin(115200);
-	mpu = MPU();
-	bool success = mpu.init();
-	if(success) attachInterrupt(0, dmpDataReady, RISING);
+  Serial.begin(115200);
+  mpu = MPU();
+  bool success = mpu.init();
+  if(success)
+  {
+    Serial.println(F("DMP ready! Waiting for first interrupt..."));
+    attachInterrupt(0, dmpDataReady, RISING);
+  }
+  else
+  {
+    Serial.println(F("DMP Initialization failed"));
+  }
 }
 
 void loop() {
