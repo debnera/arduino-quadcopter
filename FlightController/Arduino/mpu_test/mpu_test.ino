@@ -27,6 +27,10 @@ void loop() {
   // put your main code here, to run repeatedly:
   if (mpu.dataAvailable())
   {
+    if (mpu.fifoOverflow())
+    {
+      Serial.print("FIFO OVERFLOW!!");
+    }
     Angles ypr = mpu.getAngles();
     Serial.print("ypr\t");
     Serial.print(ypr.yaw);
