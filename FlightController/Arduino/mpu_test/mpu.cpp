@@ -27,12 +27,15 @@ bool MPU::init()
     // verify connection
     // Serial.println(F("Testing device connections..."));
     // Serial.println(mpu.testConnection() ? F("MPU6050 connection successful") : F("MPU6050 connection failed"));
-
+	if (mpu.testConnection() == false)
+	{
+		return false;
+	}
     // wait for ready
     // Serial.println(F("\nSend any character to begin DMP programming and demo: "));
     while (Serial.available() && Serial.read()); // empty buffer
-    while (!Serial.available());                 // wait for data
-    while (Serial.available() && Serial.read()); // empty buffer again
+    // while (!Serial.available());                 // wait for data
+    // while (Serial.available() && Serial.read()); // empty buffer again
 
     // load and configure the DMP
     // Serial.println(F("Initializing DMP..."));
@@ -90,11 +93,11 @@ bool MPU::init()
 Angles MPU::getAngles()
 {
 	Angles orientation = Angles(0,0,0);
-	if ((!mpuInterrupt && fifoCount < packetSize) || !dmpReady) return orientation;
+	if (!dmpReady) return orientation;
+	
+	// get current FIFO count
 	mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
-
-    // get current FIFO count
     fifoCount = mpu.getFIFOCount();
 
     // check for overflow (this should never happen unless our code is too inefficient)
@@ -137,5 +140,6 @@ Angles MPU::getAngularRates()
 bool MPU::dataAvailable()
 {
 	// Returns true if there is any data to be received
-	return (mpuInterrupt && fifoCount >= packetSize && dmpReady);
+	return (dmpReady && (mpuInterrupt || fifoCount >= packetSize));
+
 }
