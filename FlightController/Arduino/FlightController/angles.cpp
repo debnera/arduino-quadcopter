@@ -30,6 +30,22 @@ void Angles::setValues(float yaw, float pitch, float roll)
 	this->roll = roll;
 }
 
+Angles Angles::operator+(const Angles &other_angles)
+{
+	float yaw = this->yaw + other_angles.yaw;
+	float pitch = this->pitch + other_angles.pitch;
+	float roll = this->roll + other_angles.roll;
+	return Angles(yaw, pitch, roll);
+}
+
+Angles Angles::operator-(const Angles &other_angles)
+{
+	float yaw = this->yaw - other_angles.yaw;
+	float pitch = this->pitch - other_angles.pitch;
+	float roll = this->roll - other_angles.roll;
+	return Angles(yaw, pitch, roll);
+}
+
 String Angles::toString()
 {
 	// Makes a String form the current values.
@@ -100,4 +116,3 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 	}
 	return value;
 }
-

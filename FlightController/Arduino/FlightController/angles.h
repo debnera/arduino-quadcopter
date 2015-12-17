@@ -30,8 +30,9 @@ public:
 	String toString();
 	bool fromString(String str);
 	float stringToFloat(String str, int from_ind, int to_ind);
+  Angles operator+(const Angles &other_angles);
+  Angles operator-(const Angles &other_angles);
 };
 
 
 #endif
-
