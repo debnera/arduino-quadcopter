@@ -90,7 +90,7 @@ bool MPU::init()
 Angles MPU::getAngles()
 {
 	Angles orientation = Angles(0,0,0);
-	if (!mpuInterrupt && fifoCount < packetSize) return orientation;
+	if ((!mpuInterrupt && fifoCount < packetSize) || !dmpReady) return orientation;
 	mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
 
@@ -131,7 +131,7 @@ Angles MPU::getAngles()
 Angles MPU::getAngularRates()
 {
 	// TODO - Implement this function.
-	if (!mpuInterrupt && fifoCount < packetSize) return Angles(0, 0, 0);
+	return Angles(0, 0, 0);
 }
 
 bool MPU::dataAvailable()
