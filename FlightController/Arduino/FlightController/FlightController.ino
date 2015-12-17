@@ -53,7 +53,7 @@ bool isBluetoothConnected;
 
 void setup() {
 	mpu = new MPU();
-  mpu.init();
+  mpu->init();
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
 	ping_timer = 0;
