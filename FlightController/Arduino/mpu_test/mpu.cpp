@@ -137,9 +137,14 @@ Angles MPU::getAngularRates()
 	return Angles(0, 0, 0);
 }
 
+bool MPU::fifoOverflow()
+{
+	// Returns true if fifo has overflown. False if everything is ok.
+	return (mpu.getFIFOCount() == 1024);
+}
+
 bool MPU::dataAvailable()
 {
 	// Returns true if there is any data to be received
 	return (dmpReady && (mpuInterrupt || fifoCount >= packetSize));
-
 }

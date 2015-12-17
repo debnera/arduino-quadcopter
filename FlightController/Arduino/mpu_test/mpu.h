@@ -50,6 +50,7 @@ public:
 	Angles getAngles();
 	Angles getAngularRates();
 	bool dataAvailable();
+	bool fifoOverflow();
 	volatile bool mpuInterrupt;
 };
 
