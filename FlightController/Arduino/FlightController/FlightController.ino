@@ -28,7 +28,7 @@ Author:	Anton
 #define motor_pin4 11
 
 // Bluetooth
-#define bluetooth_rx_pin 7 
+#define bluetooth_rx_pin 7
 #define bluetooth_tx_pin 8
 #define bluetooth_baudrate 38400
 
@@ -41,7 +41,7 @@ Angles target_rates;
 Angles cur_rates;
 Vector4 motor_powers;
 int throttle;
-Stabilizer *stabilizer;
+Stabilizer stabilizer;
 MPU mpu;
 
 // Bluetooth management variables and constants
@@ -50,6 +50,7 @@ const String kPingResponse = "pingok";
 int ping_timer;
 int connection_timeout_timer;
 bool isBluetoothConnected;
+int print_counter = 0;
 
 void dmpDataReady() {
     mpu.mpuInterrupt = true;
@@ -74,7 +75,6 @@ void setup() {
 							Motor(motor_pin4, "M4: Bottom-right", min_pwm, max_pwm) };
 	motors = new_motors;
 	throttle = 0;
-
 }
 
 // the loop function runs over and over again until power down or reset
@@ -111,18 +111,29 @@ void loop() {
     Angles temp = cur_angles;
     cur_angles = mpu.getAngles();
     cur_rates = cur_angles - temp;
-    Serial.print("ypr\t");
-    Serial.print(cur_angles.yaw);
-    Serial.print("\t");
-    Serial.print(cur_angles.pitch);
-    Serial.print("\t");
-    Serial.println(cur_angles.roll);
+    target_rates.setValues(0,10,0);
+
+    motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+    print_counter++;
+    if ( print_counter % 10 == 0)
+    {
+      Serial.print("Powers\t");
+      Serial.print(motor_powers.x1);
+      Serial.print("\t");
+      Serial.print(motor_powers.x2);
+      Serial.print("\t");
+      Serial.print(motor_powers.x3);
+      Serial.print("\t");
+      Serial.println(motor_powers.x4);
+    }
+
+    /*
     Serial.print("rates\t");
     Serial.print(cur_rates.yaw);
     Serial.print("\t");
     Serial.print(cur_rates.pitch);
     Serial.print("\t");
-    Serial.println(cur_rates.roll);
+    Serial.println(cur_rates.roll);*/
   }
 	//Angles mpu_angles = mpu->getAngles();
 	//cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
@@ -131,7 +142,7 @@ void loop() {
 
 /*
 	// Calculate values from stabilizer
- 
+
 	if (throttle >= kMinThrottleToStabilize)
 	{
 		target_rates = stabilizer->calculateRates(target_angles, cur_angles);
@@ -157,10 +168,8 @@ void parseCommand(String command)
 
 void setMotorPowers(Vector4 powers)
 {
-	motors[0].setPower(powers.val1);
-	motors[1].setPower(powers.val2);
-	motors[2].setPower(powers.val3);
-	motors[3].setPower(powers.val4);
+	motors[0].setPower(powers.x1);
+	motors[1].setPower(powers.x2);
+	motors[2].setPower(powers.x3);
+	motors[3].setPower(powers.x4);
 }
-
-
