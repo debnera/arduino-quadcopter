@@ -49,9 +49,9 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 
 	Vector4 motor_powers = Vector4(0, 0, 0, 0);
 	// TODO Calculate yaw
-	motor_powers.x1 = - differences.roll - differences.pitch;
-	motor_powers.x2 = - differences.roll + differences.pitch;
-	motor_powers.x3 = + differences.roll - differences.pitch;
-	motor_powers.x4 = + differences.roll + differences.pitch;
+	motor_powers.x1 = + differences.roll - differences.pitch; // Front right
+	motor_powers.x2 = - differences.roll + differences.pitch; // Back left
+	motor_powers.x3 = - differences.roll - differences.pitch; // Front left
+	motor_powers.x4 = + differences.roll + differences.pitch; // Back right
 	return motor_powers;
 }
