@@ -5,7 +5,7 @@
 #include "stabilizer.h"
 
 
-Stabilizer::Stabilizer(int max_motor_power)
+Stabilizer::Stabilizer()
 {
 	pid_yaw_rate.p = 2.5;
 	//pid_yaw_rate.i = 1;

@@ -16,7 +16,6 @@
 class Stabilizer
 {
 private:
-	int max_power;
 	PID pid_yaw_rate;
 	PID pid_pitch_rate;
 	PID pid_roll_rate;
@@ -24,10 +23,9 @@ private:
 	PID pid_pitch_stab;
 	PID pid_roll_stab;
 public:
-	Stabilizer(int max_motor_power);
+	Stabilizer();
 	Angles calculateRates(Angles target_angles, Angles cur_angles);
 	Vector4 calculatePowers(Angles target_rates, Angles cur_rates);
 };
 
 #endif
-
