@@ -11,20 +11,19 @@ class Vector4
 {
 
 public:
-	int val1;
-	int val2;
-	int val3;
-	int val4;
+	int x1;
+	int x2;
+	int x3;
+	int x4;
 
 	Vector4(int value1 = 0, int value2 = 0, int value3 = 0, int value4 = 0)
 	{
-		val1 = value1;
-		val2 = value2;
-		val3 = value3;
-		val4 = value4;
+		x1 = value1;
+		x2 = value2;
+		x3 = value3;
+		x4 = value4;
 	}
 };
 
 
 #endif
-
