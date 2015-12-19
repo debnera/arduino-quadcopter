@@ -110,8 +110,9 @@ void loop() {
     }
     Angles temp = cur_angles;
     cur_angles = mpu.getAngles();
-    cur_rates = cur_angles - temp;
-    target_rates.setValues(0,10,0);
+    //cur_rates = cur_angles - temp;
+    cur_rates = mpu.getAngularRates();
+    target_rates.setValues(0,50,0);
 
     motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
     print_counter++;
@@ -125,15 +126,17 @@ void loop() {
       Serial.print(motor_powers.x3);
       Serial.print("\t");
       Serial.println(motor_powers.x4);
+      Serial.print("rates\t");
+      Serial.print(cur_rates.yaw);
+      Serial.print("\t");
+      Serial.print(cur_rates.pitch);
+      Serial.print("\t");
+      Serial.println(cur_rates.roll);
+      Serial.println();
     }
 
-    /*
-    Serial.print("rates\t");
-    Serial.print(cur_rates.yaw);
-    Serial.print("\t");
-    Serial.print(cur_rates.pitch);
-    Serial.print("\t");
-    Serial.println(cur_rates.roll);*/
+
+
   }
 	//Angles mpu_angles = mpu->getAngles();
 	//cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
