@@ -17,11 +17,10 @@ Author:	Anton
 
 // Motors
 // Throttle is in range [0, max_pwm - min_pwm].
-#define kMinThrottleToStabilize 100 // To prevent the stabilizer from affecting propeller speeds at low throttle.
-#define kMaxThrottleBeforeStabilize 1100 // Stabilizer needs some room to work even at max throttle.
-#define kAbsoluteMaxThrottle 2000 // This can be used to limit the maximum throttle after stabilizer.
-#define min_pwm 750 // Minimum pwm signal width - depends on ESC
-#define max_pwm 2750 // Maximum pwm signal width - depends on ESC
+#define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
+#define kMaxThrottleBeforeStabilize 500 // Stabilizer needs some room to work even at max throttle.
+#define kMinPwm 750 // Minimum pwm signal width - depends on ESC
+#define kMaxPwm 1750 // Maximum pwm signal width - depends on ESC
 #define motor_pin1 3
 #define motor_pin2 9
 #define motor_pin3 10
@@ -189,10 +188,17 @@ void parseCommand(String command)
 
 }
 
+int powerToPwm(int power)
+{
+  if (power < 0) return kMinPwm;
+  else if (power + kMinPwm > kMaxPwm) return kMaxPwm;
+  return power + kMinPwm;
+}
+
 void setMotorPowers(Vector4 powers)
 {
-	motors[0].setPower(powers.x1);
-	motors[1].setPower(powers.x2);
-	motors[2].setPower(powers.x3);
-	motors[3].setPower(powers.x4);
+	motors[0].setPower(powerToPwm(powers.x1));
+	motors[1].setPower(powerToPwm(powers.x2));
+	motors[2].setPower(powerToPwm(powers.x3));
+	motors[3].setPower(powerToPwm(powers.x4));
 }
