@@ -51,6 +51,7 @@ int ping_timer;
 int connection_timeout_timer;
 bool isBluetoothConnected;
 int print_counter = 0;
+int gyro_scale = 2000; // +-2000 degrees/s is default (250, 500, 1000 or 2000)
 
 void dmpDataReady() {
     mpu.mpuInterrupt = true;
@@ -75,6 +76,7 @@ void setup() {
 							Motor(motor_pin4, "M4: Bottom-right", min_pwm, max_pwm) };
 	motors = new_motors;
 	throttle = 0;
+  mpu.setGyroScale(gyro_scale);
 }
 
 // the loop function runs over and over again until power down or reset
@@ -116,9 +118,9 @@ void loop() {
 
     motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
     print_counter++;
-    if ( print_counter % 10 == 0)
+    if ( print_counter % 20 == 0)
     {
-      Serial.print("Powers\t");
+      /*Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
       Serial.print(motor_powers.x2);
@@ -126,14 +128,28 @@ void loop() {
       Serial.print(motor_powers.x3);
       Serial.print("\t");
       Serial.println(motor_powers.x4);
+      Serial.print("ypr\t");
+      Serial.print(cur_angles.yaw);
+      Serial.print("\t");
+      Serial.print(cur_angles.pitch);
+      Serial.print("\t");
+      Serial.println(cur_angles.roll);*/
       Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
       Serial.print(cur_rates.pitch);
       Serial.print("\t");
       Serial.println(cur_rates.roll);
-      Serial.println();
+      //Serial.println();
     }
+    /*if ( print_counter % 2000 == 0)
+    {
+      mpu.setGyroScale(gyro_scale);
+      Serial.print("Setting new gyro scale: ");
+      Serial.println(gyro_scale);
+      gyro_scale++;
+      if (gyro_scale > 3) gyro_scale = 0;
+    }*/
 
 
 
