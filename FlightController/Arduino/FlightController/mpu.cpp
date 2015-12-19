@@ -43,7 +43,9 @@ bool MPU::init()
     // load and configure the DMP
     Serial.println(F("Initializing DMP..."));
     devStatus = mpu.dmpInitialize();
-
+		gyro_sensitivity = mpu.getFullScaleGyroRange(); // Default should be 2000
+		Serial.print(F("Gyro sensitivity set to "));
+		Serial.println(gyro_sensitivity);
     // supply your own gyro offsets here, scaled for min sensitivity
     mpu.setXGyroOffset(220);
     mpu.setYGyroOffset(76);
@@ -136,10 +138,12 @@ Angles MPU::getAngles()
 
 Angles MPU::getAngularRates()
 {
-	// TODO - Implement this function.
 	//http://www.i2cdevlib.com/forums/topic/106-get-angular-velocity-from-mpu-6050/
 	mpu.dmpGetGyro(&gyro, fifoBuffer);
-	return Angles(gyro.x, gyro.y, gyro.z); // is this radians or degrees?
+	int16_t max_size = pow(2,15);
+	Angles rates = Angles(gyro.x, gyro.y, gyro.z) * gyro_sensitivity;
+	rates = rates / max_size;
+	return rates;
 }
 
 bool MPU::fifoOverflow()
@@ -154,25 +158,28 @@ bool MPU::dataAvailable()
 	return (dmpReady && (mpuInterrupt || fifoCount >= packetSize));
 }
 
-void MPU::setGyroScale(int option)
+void MPU::setGyroScale(int sensitivity)
 {
-	if (option == 0)
+	if (sensitivity == 250)
 	{
+
 		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_250);
 	}
-	else if (option == 1)
+	else if (sensitivity == 500)
 	{
 		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_500);
 	}
-	else if (option == 2)
+	else if (sensitivity == 1000)
 	{
 		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
 	}
-	else if (option == 3)
+	else if (sensitivity == 2000)
 	{
 		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
 	}
 	else{
 		Serial.println("Invalid gyro range");
+		return; // Don't change gyro_sensitivity variable
 	}
+	gyro_sensitivity = sensitivity;
 }

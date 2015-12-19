@@ -28,6 +28,7 @@ private:
 	uint16_t packetSize;    // expected DMP packet size (default is 42 bytes)
 	uint16_t fifoCount;     // count of all bytes currently in FIFO
 	uint8_t fifoBuffer[64]; // FIFO storage buffer
+	int gyro_sensitivity;
 
 
 	// orientation/motion vars
@@ -48,7 +49,7 @@ private:
 public:
 	MPU(/*SerialCommunicator *serial_communicator*/);
 	bool init();
-	void setGyroScale(int option);
+	void setGyroScale(int sensitivity);
 	Angles getAngles();
 	Angles getAngularRates();
 	bool dataAvailable();
