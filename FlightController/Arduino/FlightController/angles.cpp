@@ -46,6 +46,22 @@ Angles Angles::operator-(const Angles &other_angles)
 	return Angles(yaw, pitch, roll);
 }
 
+Angles Angles::operator/(float divider)
+{
+	float yaw = this->yaw / divider;
+	float pitch = this->pitch / divider;
+	float roll = this->roll / divider;
+	return Angles(yaw, pitch, roll);
+}
+
+Angles Angles::operator*(float multiplier)
+{
+	float yaw = this->yaw * multiplier;
+	float pitch = this->pitch * multiplier;
+	float roll = this->roll * multiplier;
+	return Angles(yaw, pitch, roll);
+}
+
 String Angles::toString()
 {
 	// Makes a String form the current values.

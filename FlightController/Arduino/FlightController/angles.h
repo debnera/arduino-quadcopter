@@ -32,6 +32,8 @@ public:
 	float stringToFloat(String str, int from_ind, int to_ind);
   Angles operator+(const Angles &other_angles);
   Angles operator-(const Angles &other_angles);
+	Angles operator/(float divider);
+	Angles operator*(float multiplier);
 };
 
 
