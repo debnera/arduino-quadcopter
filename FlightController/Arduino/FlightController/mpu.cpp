@@ -2,6 +2,9 @@
 Created:	9/07/2015
 Author:		Anton
 */
+/*
+This is mostly adapted from the mpu6050 example from http://www.i2cdevlib.com/
+*/
 
 #include "mpu.h"
 
@@ -19,7 +22,7 @@ bool MPU::init()
 	#elif I2CDEV_IMPLEMENTATION == I2CDEV_BUILTIN_FASTWIRE
 		Fastwire::setup(400, true);
 	#endif
-	
+
 	// initialize device
     Serial.println(F("Initializing I2C devices..."));
     mpu.initialize();
@@ -56,19 +59,19 @@ bool MPU::init()
         // enable Arduino interrupt detection
         Serial.println(F("Enabling interrupt detection (Arduino external interrupt 0)..."));
 		mpuInterrupt = false;
-		
+
 		/*
 		NOTE:   INTERRUPT MUST BE ATTACHED IN THE MAIN .ino FILE
 		This is a hackish way around the limitation of not being able to attachInterrupt
 		to a class member.
-		
+
 		void dmpDataReady() {
 		_INSTANCE_OF_THIS_CLASS_.mpuInterrupt = true;
 		}
-		
+
 		attachInterrupt(0, dmpDataReady, RISING);
 		*/
-		
+
         mpuIntStatus = mpu.getIntStatus();
 
         // set our DMP Ready flag so the main loop() function knows it's okay to use it
@@ -94,7 +97,7 @@ Angles MPU::getAngles()
 {
 	Angles orientation = Angles(0,0,0);
 	if (!dmpReady) return orientation;
-	
+
 	// get current FIFO count
 	mpuInterrupt = false;
     mpuIntStatus = mpu.getIntStatus();
@@ -107,34 +110,36 @@ Angles MPU::getAngles()
         Serial.println(F("FIFO overflow!"));
 
     // otherwise, check for DMP data ready interrupt (this should happen frequently)
-    } 
+    }
 	else if (mpuIntStatus & 0x02) {
         // wait for correct available data length, should be a VERY short wait
         while (fifoCount < packetSize) fifoCount = mpu.getFIFOCount();
 
         // read a packet from FIFO
         mpu.getFIFOBytes(fifoBuffer, packetSize);
-        
+
         // track FIFO count here in case there is > 1 packet available
         // (this lets us immediately read more without waiting for an interrupt)
         fifoCount -= packetSize;
 
-		
+
 		mpu.dmpGetQuaternion(&q, fifoBuffer);
 		mpu.dmpGetGravity(&gravity, &q);
 		mpu.dmpGetYawPitchRoll(ypr, &q, &gravity);
 		orientation = Angles(ypr[0] * 180/M_PI, ypr[1] * 180/M_PI, ypr[2] * 180/M_PI);
-		
+
 	}
 
 	return orientation;
-	
+
 }
 
 Angles MPU::getAngularRates()
 {
 	// TODO - Implement this function.
-	return Angles(0, 0, 0);
+	//http://www.i2cdevlib.com/forums/topic/106-get-angular-velocity-from-mpu-6050/
+	mpu.dmpGetGyro(gyro, fifoBuffer);
+	return Angles(gyro[0], gyro[1], gyro[2]); // is this radians or degrees?
 }
 
 bool MPU::fifoOverflow()
