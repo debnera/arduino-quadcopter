@@ -140,7 +140,7 @@ Angles MPU::getAngularRates()
 {
 	//http://www.i2cdevlib.com/forums/topic/106-get-angular-velocity-from-mpu-6050/
 	mpu.dmpGetGyro(&gyro, fifoBuffer);
-	int16_t max_size = pow(2,15);
+	int16_t max_size = 32767; //pow(2,15) is too large for 16 bit int
 	Angles rates = Angles(gyro.x, gyro.y, gyro.z) * gyro_sensitivity;
 	rates = rates / max_size;
 	return rates;
