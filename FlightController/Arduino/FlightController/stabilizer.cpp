@@ -37,12 +37,13 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 {
 	Angles differences = Angles();
 	// TODO Add i and d terms.
-	differences.yaw = (target_rates.yaw - cur_rates.yaw) * pid_yaw_rate.p;
-	differences.pitch = (target_rates.pitch - cur_rates.pitch) * pid_pitch_rate.p;
-	differences.roll = (target_rates.roll - cur_rates.roll) * pid_roll_rate.p;
+	float min = -500;
+	float max = 500;
+	differences.yaw = constrain((target_rates.yaw - cur_rates.yaw) * pid_yaw_rate.p, min, max);
+	differences.pitch = constrain((target_rates.pitch - cur_rates.pitch) * pid_pitch_rate.p, min, max);
+	differences.roll = constrain((target_rates.roll - cur_rates.roll) * pid_roll_rate.p, min, max);
 
 	Vector4 motor_powers = Vector4(0, 0, 0, 0);
-	// TODO Calculate yaw
 	motor_powers.x1 = + differences.roll - differences.pitch + differences.yaw; // Front right
 	motor_powers.x2 = - differences.roll + differences.pitch + differences.yaw; // Back left
 	motor_powers.x3 = - differences.roll - differences.pitch - differences.yaw; // Front left
@@ -54,8 +55,26 @@ Angles Stabilizer::calculateRates(Angles target_angles, Angles cur_angles)
 {
 	Angles differences = Angles();
 	// TODO Add i and d terms.
-	differences.yaw = (target_angles.yaw - cur_angles.yaw) * pid_yaw_stab.p;
-	differences.pitch = (target_angles.pitch - cur_angles.pitch) * pid_pitch_stab.p;
-	differences.roll = (target_angles.roll - cur_angles.roll) * pid_roll_stab.p;
+	float min = -250;
+	float max = 250;
+	differences.yaw = constrain((target_angles.yaw - cur_angles.yaw) * pid_yaw_stab.p, min, max);
+	differences.pitch = constrain((target_angles.pitch - cur_angles.pitch) * pid_pitch_stab.p, min, max);
+	differences.roll = constrain((target_angles.roll - cur_angles.roll) * pid_roll_stab.p, min, max);
 	return differences;
 }
+
+/*
+float Stabilizer::constrain(float val, float min, float max)
+{
+	if (val < min) return min;
+	else if (val > max) return max;
+	return val;
+}
+
+int Stabilizer::constrain(int val, int min, int max)
+{
+	if (val < min) return min;
+	else if (val > max) return max;
+	return val;
+}
+*/
