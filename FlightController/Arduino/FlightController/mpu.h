@@ -48,6 +48,7 @@ private:
 public:
 	MPU(/*SerialCommunicator *serial_communicator*/);
 	bool init();
+	void setGyroScale(int option);
 	Angles getAngles();
 	Angles getAngularRates();
 	bool dataAvailable();

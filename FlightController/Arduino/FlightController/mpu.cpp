@@ -153,3 +153,26 @@ bool MPU::dataAvailable()
 	// Returns true if there is any data to be received
 	return (dmpReady && (mpuInterrupt || fifoCount >= packetSize));
 }
+
+void MPU::setGyroScale(int option)
+{
+	if (option == 0)
+	{
+		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_250);
+	}
+	else if (option == 1)
+	{
+		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_500);
+	}
+	else if (option == 2)
+	{
+		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_1000);
+	}
+	else if (option == 3)
+	{
+		mpu.setFullScaleGyroRange(MPU6050_GYRO_FS_2000);
+	}
+	else{
+		Serial.println("Invalid gyro range");
+	}
+}
