@@ -44,10 +44,10 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 	differences.roll = constrain((target_rates.roll - cur_rates.roll) * pid_roll_rate.p, min, max);
 
 	Vector4 motor_powers = Vector4(0, 0, 0, 0);
-	motor_powers.x1 = + differences.roll - differences.pitch + differences.yaw; // Front right
-	motor_powers.x2 = - differences.roll + differences.pitch + differences.yaw; // Back left
-	motor_powers.x3 = - differences.roll - differences.pitch - differences.yaw; // Front left
-	motor_powers.x4 = + differences.roll + differences.pitch - differences.yaw; // Back right
+	motor_powers.x3 = + differences.roll + differences.pitch - differences.yaw; // Front left
+	motor_powers.x2 = + differences.roll - differences.pitch + differences.yaw; // Back left
+	motor_powers.x1 = - differences.roll + differences.pitch + differences.yaw; // Front right
+	motor_powers.x4 = - differences.roll - differences.pitch - differences.yaw; // Back right
 	return motor_powers;
 }
 
