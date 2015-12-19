@@ -54,8 +54,8 @@ Angles Stabilizer::calculateRates(Angles target_angles, Angles cur_angles)
 {
 	Angles differences = Angles();
 	// TODO Add i and d terms.
-	differences.yaw = (cur_rates.yaw - target_rates.yaw) * pid_yaw_rate.p;
-	differences.pitch = (cur_rates.pitch - target_rates.pitch) * pid_pitch_rate.p;
-	differences.roll = (cur_rates.roll - target_rates.roll) * pid_roll_rate.p;
-	return Angles(0, 0, 0);
+	differences.yaw = (target_angles.yaw - cur_angles.yaw) * pid_yaw_stab.p;
+	differences.pitch = (target_angles.pitch - cur_angles.pitch) * pid_pitch_stab.p;
+	differences.roll = (target_angles.roll - cur_angles.roll) * pid_roll_stab.p;
+	return differences;
 }
