@@ -37,6 +37,7 @@ Motor *motors;
 SerialCommunicator *bluetooth;
 Angles target_angles;
 Angles cur_angles;
+Angles offset_angles;
 Angles target_rates;
 Angles cur_rates;
 Vector4 motor_powers;
@@ -111,45 +112,48 @@ void loop() {
       bluetooth->write("---------------FIFO OVERFLOW!!!!-----------");
     }
     Angles temp = cur_angles;
-    cur_angles = mpu.getAngles();
+    cur_angles = mpu.getAngles() - offset_angles;
     //cur_rates = cur_angles - temp;
     cur_rates = mpu.getAngularRates();
-    target_rates.setValues(0,50,0);
 
+    target_angles.setValues(0, 0, 0);
+    target_rates = stabilizer.calculateRates(target_angles, cur_angles);
     motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
     print_counter++;
     if ( print_counter % 20 == 0)
     {
-      /*Serial.print("Powers\t");
+      Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
       Serial.print(motor_powers.x2);
       Serial.print("\t");
       Serial.print(motor_powers.x3);
       Serial.print("\t");
-      Serial.println(motor_powers.x4);
+      Serial.print(motor_powers.x4);
+      Serial.print("\t");
       Serial.print("ypr\t");
       Serial.print(cur_angles.yaw);
       Serial.print("\t");
       Serial.print(cur_angles.pitch);
       Serial.print("\t");
-      Serial.println(cur_angles.roll);*/
-      Serial.print("rates\t");
+      Serial.println(cur_angles.roll);
+      /*Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
       Serial.print(cur_rates.pitch);
       Serial.print("\t");
-      Serial.println(cur_rates.roll);
+      Serial.println(cur_rates.roll);*/
       //Serial.println();
     }
-    /*if ( print_counter % 2000 == 0)
+    if ( print_counter == 5000)
     {
-      mpu.setGyroScale(gyro_scale);
+      offset_angles.yaw = cur_angles.yaw;
+      /*mpu.setGyroScale(gyro_scale);
       Serial.print("Setting new gyro scale: ");
       Serial.println(gyro_scale);
       gyro_scale++;
-      if (gyro_scale > 3) gyro_scale = 0;
-    }*/
+      if (gyro_scale > 3) gyro_scale = 0;*/
+    }
 
 
 
