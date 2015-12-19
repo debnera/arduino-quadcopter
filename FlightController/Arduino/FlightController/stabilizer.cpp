@@ -37,9 +37,9 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 {
 	Angles differences = Angles();
 	// TODO Add i and d terms.
-	differences.yaw = (cur_rates.yaw - target_rates.yaw) * pid_yaw_rate.p;
-	differences.pitch = (cur_rates.pitch - target_rates.pitch) * pid_pitch_rate.p;
-	differences.roll = (cur_rates.roll - target_rates.roll) * pid_roll_rate.p;
+	differences.yaw = (target_rates.yaw - cur_rates.yaw) * pid_yaw_rate.p;
+	differences.pitch = (target_rates.pitch - cur_rates.pitch) * pid_pitch_rate.p;
+	differences.roll = (target_rates.roll - cur_rates.roll) * pid_roll_rate.p;
 
 	Vector4 motor_powers = Vector4(0, 0, 0, 0);
 	// TODO Calculate yaw
@@ -52,6 +52,10 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 
 Angles Stabilizer::calculateRates(Angles target_angles, Angles cur_angles)
 {
-	// TODO - implement me
+	Angles differences = Angles();
+	// TODO Add i and d terms.
+	differences.yaw = (cur_rates.yaw - target_rates.yaw) * pid_yaw_rate.p;
+	differences.pitch = (cur_rates.pitch - target_rates.pitch) * pid_pitch_rate.p;
+	differences.roll = (cur_rates.roll - target_rates.roll) * pid_roll_rate.p;
 	return Angles(0, 0, 0);
 }
