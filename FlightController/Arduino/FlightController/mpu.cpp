@@ -138,8 +138,8 @@ Angles MPU::getAngularRates()
 {
 	// TODO - Implement this function.
 	//http://www.i2cdevlib.com/forums/topic/106-get-angular-velocity-from-mpu-6050/
-	mpu.dmpGetGyro(gyro, fifoBuffer);
-	return Angles(gyro[0], gyro[1], gyro[2]); // is this radians or degrees?
+	mpu.dmpGetGyro(&gyro, fifoBuffer);
+	return Angles(gyro.x, gyro.y, gyro.z); // is this radians or degrees?
 }
 
 bool MPU::fifoOverflow()
