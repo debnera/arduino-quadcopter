@@ -16,7 +16,7 @@ Author:	Anton
 
 
 // Motors
-// Throttle is in range [0, max_pwm - min_pwm].
+// Throttle is in range [0, kMaxPwm - kMinPwm].
 #define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
 #define kMaxThrottleBeforeStabilize 500 // Stabilizer needs some room to work even at max throttle.
 #define kMinPwm 750 // Minimum pwm signal width - depends on ESC
@@ -70,10 +70,10 @@ void setup() {
 	isBluetoothConnected = false;
 	ping_timer = 0;
 	connection_timeout_timer = 0; // time in ms
-	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right", min_pwm, max_pwm),
-							Motor(motor_pin2, "M2: Bottom-left", min_pwm, max_pwm),
-							Motor(motor_pin3, "M3: Top-left", min_pwm, max_pwm),
-							Motor(motor_pin4, "M4: Bottom-right", min_pwm, max_pwm) };
+	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right", kMinPwm, kMaxPwm),
+							Motor(motor_pin2, "M2: Bottom-left", kMinPwm, kMaxPwm),
+							Motor(motor_pin3, "M3: Top-left", kMinPwm, kMaxPwm),
+							Motor(motor_pin4, "M4: Bottom-right", kMinPwm, kMaxPwm) };
 	motors = new_motors;
 	throttle = 0;
   mpu.setGyroScale(gyro_scale);
