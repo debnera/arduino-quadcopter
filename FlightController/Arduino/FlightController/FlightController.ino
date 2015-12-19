@@ -144,7 +144,7 @@ void loop() {
       Serial.println(cur_rates.roll);*/
       //Serial.println();
     }
-    if ( print_counter == 5000)
+    if ( print_counter == 2000)
     {
       offset_angles.yaw = cur_angles.yaw;
       /*mpu.setGyroScale(gyro_scale);
