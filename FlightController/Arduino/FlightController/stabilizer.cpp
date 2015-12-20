@@ -36,12 +36,11 @@ Stabilizer::Stabilizer()
 Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 {
 	Angles differences = Angles();
-	// TODO Add i and d terms.
 	float min = -500;
 	float max = 500;
-	differences.yaw = constrain((target_rates.yaw - cur_rates.yaw) * pid_yaw_rate.p, min, max);
-	differences.pitch = constrain((target_rates.pitch - cur_rates.pitch) * pid_pitch_rate.p, min, max);
-	differences.roll = constrain((target_rates.roll - cur_rates.roll) * pid_roll_rate.p, min, max);
+	differences.yaw = constrain(pid_yaw_rate.calculate(target_rates.yaw - cur_rates.yaw), min, max);
+	differences.pitch = constrain(pid_pitch_rate.calculate(target_rates.pitch - cur_rates.pitch), min, max);
+	differences.roll = constrain(pid_roll_rate.calculate(target_rates.roll - cur_rates.roll), min, max);
 
 	Vector4 motor_powers = Vector4(0, 0, 0, 0);
 	motor_powers.x3 = + differences.roll + differences.pitch - differences.yaw; // Front left
@@ -54,12 +53,11 @@ Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 Angles Stabilizer::calculateRates(Angles target_angles, Angles cur_angles)
 {
 	Angles differences = Angles();
-	// TODO Add i and d terms.
 	float min = -250;
 	float max = 250;
-	differences.yaw = constrain((target_angles.yaw - cur_angles.yaw) * pid_yaw_stab.p, min, max);
-	differences.pitch = constrain((target_angles.pitch - cur_angles.pitch) * pid_pitch_stab.p, min, max);
-	differences.roll = constrain((target_angles.roll - cur_angles.roll) * pid_roll_stab.p, min, max);
+	differences.yaw = constrain(pid_yaw_stab.calculate(target_angles.yaw - cur_angles.yaw), min, max);
+	differences.pitch = constrain(pid_pitch_stab.calculate(target_angles.pitch - cur_angles.pitch), min, max);
+	differences.roll = constrain(pid_roll_stab.calculate(target_angles.roll - cur_angles.roll), min, max);
 	return differences;
 }
 
