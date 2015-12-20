@@ -14,7 +14,7 @@ Author:	Anton
 #include <Servo.h>
 #include <SoftwareSerial.h>
 
-
+#define MPU_DEBUG
 // Motors
 // Throttle is in range [0, kMaxPwm - kMinPwm].
 #define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
@@ -63,7 +63,7 @@ void setup() {
   bool success = mpu.init();
   if(success)
   {
-    Serial.println(F("DMP ready! Waiting for first interrupt..."));
+    //Serial.println(F("DMP ready! Waiting for first interrupt..."));
     attachInterrupt(0, dmpDataReady, RISING);
   }
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
@@ -121,6 +121,8 @@ void loop() {
     print_counter++;
     if ( print_counter % 20 == 0)
     {
+      Serial.println(motor_powers.x1);
+      /*
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -135,7 +137,7 @@ void loop() {
       Serial.print("\t");
       Serial.print(cur_angles.pitch);
       Serial.print("\t");
-      Serial.println(cur_angles.roll);
+      Serial.println(cur_angles.roll);*/
       /*Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
