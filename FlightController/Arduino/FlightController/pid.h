@@ -9,7 +9,7 @@ class PID
 {
 private:
 	float i_sum;
-	float last_error;
+	float last_difference;
 	float d_speed; // Current derivative; or the speed at which error changes
 
 
@@ -27,7 +27,9 @@ public:
 		this->i = i;
 		this->d = d;
 		this->imax = imax;
-		sample_time = 20 / 1000; // in seconds
+		this->last_difference = 0;
+		this->i_sum = 0;
+		this->sample_time = 20.0 / 1000.0; // in seconds
 	};
 
 	float calculate(float difference)
@@ -37,7 +39,7 @@ public:
 		{
 			i_sum = imax;
 		}
-		d_speed = (difference - last_error) / sample_time;
+		d_speed = (difference - last_difference) / sample_time;
 		return difference * p + i_sum * i + d_speed * d;
 	};
 };
