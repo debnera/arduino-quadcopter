@@ -69,10 +69,10 @@ void setup() {
 	isBluetoothConnected = false;
 	ping_timer = 0;
 	connection_timeout_timer = 0; // time in ms
-	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right", kMinPwm, kMaxPwm),
-							Motor(motor_pin2, "M2: Bottom-left", kMinPwm, kMaxPwm),
-							Motor(motor_pin3, "M3: Top-left", kMinPwm, kMaxPwm),
-							Motor(motor_pin4, "M4: Bottom-right", kMinPwm, kMaxPwm) };
+	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right"),
+            							Motor(motor_pin2, "M2: Bottom-left"),
+            							Motor(motor_pin3, "M3: Top-left"),
+            							Motor(motor_pin4, "M4: Bottom-right") };
 	motors = new_motors;
 	throttle = 70;
   mpu.setGyroScale(gyro_scale);
