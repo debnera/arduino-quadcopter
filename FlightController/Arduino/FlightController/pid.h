@@ -33,9 +33,13 @@ public:
 	float calculate(float difference)
 	{
 		i_sum += difference;
+		if (i_sum > imax)
+		{
+			i_sum = imax;
+		}
 		d_speed = difference - last_error;
 		return difference * p + i_sum * i + d_speed * d;
-	}
+	};
 };
 
 #endif
