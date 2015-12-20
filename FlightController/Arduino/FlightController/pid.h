@@ -24,21 +24,21 @@ public:
 	PID(float p = 0, float i = 0, float d = 0, float imax = 0)
 	{
 		this->p = p;
-		this->i = i * sample_time/1000;
-		this->d = d / sample_time/1000;
+		this->i = i;
+		this->d = d;
 		this->imax = imax;
-		sample_time = 20; // in milliseconds
+		sample_time = 20 / 1000; // in seconds
 	};
 
 	float calculate(float difference)
 	{
-		i_sum += difference * i;
+		i_sum += difference * sample_time;
 		if (i_sum > imax)
 		{
 			i_sum = imax;
 		}
-		d_speed = difference - last_error;
-		return difference * p + i_sum  + d_speed * d;
+		d_speed = (difference - last_error) / sample_time;
+		return difference * p + i_sum * i + d_speed * d;
 	};
 };
 
