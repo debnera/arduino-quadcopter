@@ -14,7 +14,7 @@ Author:	Anton
 #include <Servo.h>
 #include <SoftwareSerial.h>
 
-#define MPU_DEBUG
+//#define MPU_DEBUG
 // Motors
 // Throttle is in range [0, kMaxPwm - kMinPwm].
 #define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
@@ -103,6 +103,7 @@ void loop() {
 	}
   */
 	// Get values from MPU
+  
   if (mpu.dataAvailable())
   {
     if (mpu.fifoOverflow())
@@ -110,6 +111,7 @@ void loop() {
       Serial.println("---------------FIFO OVERFLOW!!!!-----------");
       bluetooth->write("---------------FIFO OVERFLOW!!!!-----------");
     }
+
     Angles temp = cur_angles;
     cur_angles = mpu.getAngles() - offset_angles;
     //cur_rates = cur_angles - temp;
@@ -121,7 +123,7 @@ void loop() {
     print_counter++;
     if ( print_counter % 20 == 0)
     {
-      Serial.println(motor_powers.x1);
+      //Serial.println(motor_powers.x1);
       /*
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
