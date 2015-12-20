@@ -16,9 +16,8 @@ Author:	Anton
 
 //#define MPU_DEBUG
 // Motors
-// Throttle is in range [0, kMaxPwm - kMinPwm].
 #define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
-#define kMaxThrottleBeforeStabilize 500 // Stabilizer needs some room to work even at max throttle.
+#define kMaxThrottle 500 // Stabilizer is added on top of this.
 #define kMinPwm 750 // Minimum pwm signal width - depends on ESC
 #define kMaxPwm 1750 // Maximum pwm signal width - depends on ESC
 #define motor_pin1 3
@@ -75,7 +74,7 @@ void setup() {
 							Motor(motor_pin3, "M3: Top-left", kMinPwm, kMaxPwm),
 							Motor(motor_pin4, "M4: Bottom-right", kMinPwm, kMaxPwm) };
 	motors = new_motors;
-	throttle = 0;
+	throttle = 70;
   mpu.setGyroScale(gyro_scale);
 }
 
@@ -88,10 +87,6 @@ void loop() {
 	if (command.length() > 0)
 	{
 		parseCommand(command);
-	}
-	if (throttle > kMaxThrottleBeforeStabilize)
-	{
-		throttle = kMaxThrottleBeforeStabilize;
 	}
 
 	// Check connection status
@@ -112,13 +107,19 @@ void loop() {
       bluetooth->write("---------------FIFO OVERFLOW!!!!-----------");
     }
 
-    Angles temp = cur_angles;
     cur_angles = mpu.getAngles() - offset_angles;
     cur_rates = mpu.getAngularRates();
 
     target_angles.setValues(0, 0, 0);
-    target_rates = stabilizer.calculateRates(target_angles, cur_angles);
-    motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+
+    motor_powers.setValues(0, 0, 0, 0);
+    if (throttle > kMinThrottleToStabilize)
+    {
+      target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+      motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+    }
+    motor_powers = motor_powers + throttle;
+
     print_counter++;
     if ( print_counter % 20 == 0)
     {
@@ -149,38 +150,10 @@ void loop() {
     }
     if ( print_counter == 2000)
     {
-      offset_angles.yaw = cur_angles.yaw;
-      /*mpu.setGyroScale(gyro_scale);
-      Serial.print("Setting new gyro scale: ");
-      Serial.println(gyro_scale);
-      gyro_scale++;
-      if (gyro_scale > 3) gyro_scale = 0;*/
+      throttle = 100;
+      offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
     }
-
-
-
   }
-	//Angles mpu_angles = mpu->getAngles();
-	//cur_angles.setValues(mpu_angles.yaw, mpu_angles.pitch, mpu_angles.roll);
-	//Angles mpu_rates = mpu->getAngularRates();
-	//cur_rates.setValues(mpu_rates.yaw, mpu_rates.pitch, mpu_rates.roll);
-
-/*
-	// Calculate values from stabilizer
-
-	if (throttle >= kMinThrottleToStabilize)
-	{
-		target_rates = stabilizer->calculateRates(target_angles, cur_angles);
-		motor_powers = stabilizer->calculatePowers(target_rates, cur_rates);
-	}
-	else
-	{
-		motor_powers = Vector4(throttle, throttle, throttle, throttle);
-	}
-
-	setMotorPowers(motor_powers);
- */
-
 }
 
 void parseCommand(String command)
@@ -188,20 +161,20 @@ void parseCommand(String command)
 	// TODO plan:	1. Potential angles/throttle -> parse angles -> parse throttle
 	//				2. Other commands
 	bool isAngles = target_angles.fromString(command);
-
 }
 
-int powerToPwm(int power)
+void stopMotors()
 {
-  if (power < 0) return kMinPwm;
-  else if (power + kMinPwm > kMaxPwm) return kMaxPwm;
-  return power + kMinPwm;
+  motors[0].setPower(-1);
+  motors[1].setPower(-1);
+  motors[2].setPower(-1);
+  motors[3].setPower(-1);
 }
 
 void setMotorPowers(Vector4 powers)
 {
-	motors[0].setPower(powerToPwm(powers.x1));
-	motors[1].setPower(powerToPwm(powers.x2));
-	motors[2].setPower(powerToPwm(powers.x3));
-	motors[3].setPower(powerToPwm(powers.x4));
+	motors[0].setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
+	motors[1].setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
+	motors[2].setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
+	motors[3].setPower(constrain((powers.x4 + kMinPwm), kMinPwm, kMaxPwm));
 }
