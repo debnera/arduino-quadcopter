@@ -47,10 +47,12 @@ bool MPU::init()
 		DEBUG_PRINT(F("Gyro sensitivity set to "));
 		DEBUG_PRINTLN(gyro_sensitivity);
     // supply your own gyro offsets here, scaled for min sensitivity
-    mpu.setXGyroOffset(220);
-    mpu.setYGyroOffset(76);
-    mpu.setZGyroOffset(-85);
-    mpu.setZAccelOffset(1788); // 1688 factory default for my test chip
+    mpu.setXGyroOffset(80);
+    mpu.setYGyroOffset(-50);
+    mpu.setZGyroOffset(50);
+		mpu.setXAccelOffset(-3075);
+		mpu.setYAccelOffset(-920);
+    mpu.setZAccelOffset(2095); // 1688 factory default for my test chip
 
     // make sure it worked (returns 0 if so)
     if (devStatus == 0) {
