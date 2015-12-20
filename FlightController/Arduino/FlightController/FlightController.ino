@@ -103,7 +103,7 @@ void loop() {
 	}
   */
 	// Get values from MPU
-  
+
   if (mpu.dataAvailable())
   {
     if (mpu.fifoOverflow())
@@ -114,7 +114,6 @@ void loop() {
 
     Angles temp = cur_angles;
     cur_angles = mpu.getAngles() - offset_angles;
-    //cur_rates = cur_angles - temp;
     cur_rates = mpu.getAngularRates();
 
     target_angles.setValues(0, 0, 0);
@@ -124,7 +123,7 @@ void loop() {
     if ( print_counter % 20 == 0)
     {
       //Serial.println(motor_powers.x1);
-      /*
+
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -139,7 +138,7 @@ void loop() {
       Serial.print("\t");
       Serial.print(cur_angles.pitch);
       Serial.print("\t");
-      Serial.println(cur_angles.roll);*/
+      Serial.println(cur_angles.roll);
       /*Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
