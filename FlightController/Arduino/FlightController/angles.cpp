@@ -32,34 +32,34 @@ void Angles::setValues(float yaw, float pitch, float roll)
 
 Angles Angles::operator+(const Angles &other_angles)
 {
-	float yaw = this->yaw + other_angles.yaw;
-	float pitch = this->pitch + other_angles.pitch;
-	float roll = this->roll + other_angles.roll;
-	return Angles(yaw, pitch, roll);
+	float y = this->yaw + other_angles.yaw;
+	float p = this->pitch + other_angles.pitch;
+	float r = this->roll + other_angles.roll;
+	return Angles(y, p, r);
 }
 
 Angles Angles::operator-(const Angles &other_angles)
 {
-	float yaw = this->yaw - other_angles.yaw;
-	float pitch = this->pitch - other_angles.pitch;
-	float roll = this->roll - other_angles.roll;
-	return Angles(yaw, pitch, roll);
+	float y = this->yaw - other_angles.yaw;
+	float p = this->pitch - other_angles.pitch;
+	float r = this->roll - other_angles.roll;
+	return Angles(y, p, r);
 }
 
 Angles Angles::operator/(float divider)
 {
-	float yaw = this->yaw / divider;
-	float pitch = this->pitch / divider;
-	float roll = this->roll / divider;
-	return Angles(yaw, pitch, roll);
+	float y = this->yaw / divider;
+	float p = this->pitch / divider;
+	float r = this->roll / divider;
+	return Angles(y, p, r);
 }
 
 Angles Angles::operator*(float multiplier)
 {
-	float yaw = this->yaw * multiplier;
-	float pitch = this->pitch * multiplier;
-	float roll = this->roll * multiplier;
-	return Angles(yaw, pitch, roll);
+	float y = this->yaw * multiplier;
+	float p = this->pitch * multiplier;
+	float r = this->roll * multiplier;
+	return Angles(y, p, r);
 }
 
 String Angles::toString()
