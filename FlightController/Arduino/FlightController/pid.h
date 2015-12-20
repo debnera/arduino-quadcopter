@@ -39,7 +39,7 @@ public:
 		{
 			i_sum = imax;
 		}
-		if (i_sum < imax)
+		if (i_sum < -imax)
 		{
 			i_sum = -imax;
 		}
