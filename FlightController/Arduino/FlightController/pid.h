@@ -39,6 +39,10 @@ public:
 		{
 			i_sum = imax;
 		}
+		if (i_sum < imax)
+		{
+			i_sum = -imax;
+		}
 		d_speed = (difference - last_difference) / sample_time;
 		return difference * p + i_sum * i + d_speed * d;
 	};
