@@ -13,6 +13,7 @@ Author:	Anton
 #include <Wire.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
+#include <avr/wdt.h> // Watchdog timer
 
 //#define MPU_DEBUG
 // Motors
@@ -57,13 +58,19 @@ void dmpDataReady() {
 }
 
 void setup() {
+  wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
 	mpu = MPU();
+  Serial.println(F("Starting dmp..."));
   bool success = mpu.init();
   if(success)
   {
-    //Serial.println(F("DMP ready! Waiting for first interrupt..."));
+    Serial.println(F("DMP ready! Waiting for first interrupt..."));
     attachInterrupt(0, dmpDataReady, RISING);
+  }
+  else
+  {
+    Serial.println(F("-----DMP failed to start!-----"));
   }
 	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
@@ -98,7 +105,7 @@ void loop() {
 	}
   */
 	// Get values from MPU
-
+  wdt_reset(); // Reset watchdog timer
   if (mpu.dataAvailable())
   {
     if (mpu.fifoOverflow())
