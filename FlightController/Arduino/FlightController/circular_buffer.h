@@ -4,8 +4,8 @@
 class CircularBuffer
 {
 private:
-  int size = 100;
-	char buffer[100];
+  int size = 50;
+	char buffer[50];
   int read_index = 0;
   int write_index = 0;
 
@@ -27,21 +27,27 @@ public:
   {
     /*
     Writes one character to the buffer. This will always succeed.
-    In case of buffer overflow, the buffer will be effectively cleared and
-    false is returned. Returns true otherwise.
+    Returns true in case of overflow, false otherwise. In case of overflow,
+    any unread data will be overwritten.
     */
-    bool no_overflow = true;
+    bool overflow = false;
     if (length() == size - 1)
     {
       // Buffer has overflown and previous data will be overwritten.
-      no_overflow = false;
+      overflow = true;
       write_index = read_index;
     }
     buffer[write_index] = c;
     write_index = increment(write_index);
-    return no_overflow;
+    return overflow;
   }
 
+  void reset()
+  {
+    read_index = 0;
+    write_index = 0;
+  }
+  
   int length()
   {
     int r = read_index;
