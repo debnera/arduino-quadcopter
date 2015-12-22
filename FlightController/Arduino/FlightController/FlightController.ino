@@ -175,13 +175,14 @@ void loop() {
   }
 }
 
-void readBluetooth()
+bool readBluetooth()
 {
   if (bluetooth.overflow())
   {
     // Bluetooth is flooded. This should not happen unless our code is really
     // slow, or the pc is sending way too much data.
     bluetooth.println("Bluetooth overflow!! Too much data or too slow code.");
+    bluetooth.println("Clearing bluetooth.");
     while (bluetooth.available()) bluetooth.read(); // Clear buffer
   }
   else
@@ -189,16 +190,25 @@ void readBluetooth()
     while (bluetooth.available())
   	{
       char c = bluetooth.read();
-      if (c == )
+      if (c == (char)STX)
+      {
+        // Start of new command - ignore all possible gibberish before it.
+        bluetooth_read_cb.reset();
+      }
       bool cb_overflow = bluetooth_read_cb.write();
       if (cb_overflow)
       {
+        // Buffer overflown before ETX was received.
         bluetooth.println("Command buffer overflow!! - no ETX received.");
+      }
+      if (c == (char)ETX)
+      {
+        // End of command received. Command is ready to be parsed.
+        return true;
       }
   	}
   }
-
-
+  return false; // No full command received
 }
 
 void parseCommand(String command)
