@@ -9,6 +9,7 @@ Author:	Anton
 #include "pid.h"
 #include "mpu.h"
 #include "motor.h"
+#include "circular_buffer.h"
 #include <Wire.h>
 #include <Servo.h>
 #include <SoftwareSerial.h>
@@ -30,6 +31,15 @@ Author:	Anton
 #define bluetooth_tx_pin 8
 #define bluetooth_baudrate 38400
 
+// Special characters
+#define STX 2 // Start of text (Starts command)
+#define ETX 3 // End of text (Ends command)
+#define ENQ 5 // Enquiry (for pinging bluetooth)
+#define ACK 6 // Acknowledge
+
+#define DC1 17 // Start device
+#define DC4 20 // Stop device
+
 
 Motor *motors;
 SoftwareSerial bluetooth = SoftwareSerial(bluetooth_rx_pin, bluetooth_tx_pin, false); // false for non-inverted logic
@@ -42,6 +52,9 @@ Vector4 motor_powers;
 int throttle;
 Stabilizer stabilizer;
 MPU mpu;
+
+// Buffers
+CircularBuffer bluetooth_read_cb;
 
 // Bluetooth management variables and constants
 const String kPingRequest = "ping";
@@ -164,17 +177,28 @@ void loop() {
 
 void readBluetooth()
 {
-  /*
-  while (bluetooth.available() && read_buffer.length() < kMaxBufferSize)
-	{
-		read_buffer += soft_serial->read();
-	}
+  if (bluetooth.overflow())
+  {
+    // Bluetooth is flooded. This should not happen unless our code is really
+    // slow, or the pc is sending way too much data.
+    bluetooth.println("Bluetooth overflow!! Too much data or too slow code.");
+    while (bluetooth.available()) bluetooth.read(); // Clear buffer
+  }
+  else
+  {
+    while (bluetooth.available())
+  	{
+      char c = bluetooth.read();
+      if (c == )
+      bool cb_overflow = bluetooth_read_cb.write();
+      if (cb_overflow)
+      {
+        bluetooth.println("Command buffer overflow!! - no ETX received.");
+      }
+  	}
+  }
 
-	if (read_buffer.length() >= kMaxBufferSize)
-	{
-		// We are receiving data faster than we can process.
-		bluetooth.println("WARNING: Read buffer overflow");
-	}*/
+
 }
 
 void parseCommand(String command)
