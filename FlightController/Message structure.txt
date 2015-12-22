@@ -1,0 +1,11 @@
+Message structure: STX + data + ETX (2, 3)
+
+Commands:
+ping(quad2pc): 2*ENQ (5)
+ping(pc2quad): 2*ACK (6)
+
+Start: DC1 (17) (Engine start sequence)
+Stop: DC4 (20) (Stop all engines)
+
+Angles: STX + y + yaw + p + pitch + r + roll + ETX
+Throttle: STX + t + value + ETX
