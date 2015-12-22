@@ -6,7 +6,6 @@ Author:	Anton
 
 #include "vector4.h"
 #include "stabilizer.h"
-#include "serial_communicator.h"
 #include "pid.h"
 #include "mpu.h"
 #include "motor.h"
@@ -33,7 +32,7 @@ Author:	Anton
 
 
 Motor *motors;
-SerialCommunicator *bluetooth;
+SoftwareSerial bluetooth = SoftwareSerial(bluetooth_rx_pin, bluetooth_tx_pin, false); // false for non-inverted logic
 Angles target_angles;
 Angles cur_angles;
 Angles offset_angles;
@@ -60,6 +59,7 @@ void dmpDataReady() {
 void setup() {
   wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
+  bluetooth.begin(bluetooth_baudrate);
 	mpu = MPU();
   Serial.println(F("Starting dmp..."));
   bool success = mpu.init();
@@ -72,7 +72,6 @@ void setup() {
   {
     Serial.println(F("-----DMP failed to start!-----"));
   }
-	bluetooth = new SerialCommunicator(bluetooth_rx_pin, bluetooth_tx_pin, bluetooth_baudrate);
 	isBluetoothConnected = false;
 	ping_timer = 0;
 	connection_timeout_timer = 0; // time in ms
@@ -111,7 +110,7 @@ void loop() {
     if (mpu.fifoOverflow())
     {
       Serial.println("---------------FIFO OVERFLOW!!!!-----------");
-      bluetooth->write("---------------FIFO OVERFLOW!!!!-----------");
+      bluetooth.print("---------------FIFO OVERFLOW!!!!-----------");
     }
 
     cur_angles = mpu.getAngles() - offset_angles;
@@ -161,6 +160,21 @@ void loop() {
       offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
     }
   }
+}
+
+void readBluetooth()
+{
+  /*
+  while (bluetooth.available() && read_buffer.length() < kMaxBufferSize)
+	{
+		read_buffer += soft_serial->read();
+	}
+
+	if (read_buffer.length() >= kMaxBufferSize)
+	{
+		// We are receiving data faster than we can process.
+		bluetooth.println("WARNING: Read buffer overflow");
+	}*/
 }
 
 void parseCommand(String command)
