@@ -73,11 +73,20 @@ String Angles::toString()
 	return str;
 }
 
+bool Angles::fromArray(char *str, int length)
+{
+	String string;
+	for (int i = 0; i < length; i++)
+	{
+		string += str[i];
+	}
+	return fromString(string);
+}
+
 bool Angles::fromString(String str)
 {
 	// Attempts to parse angle values from given String.
 	// Returns true if parsing was successfull, false otherwise.
-
 	int y_ind = str.indexOf('y');
 	int p_ind = str.indexOf('p');
 	int r_ind = str.indexOf('r');
@@ -87,9 +96,9 @@ bool Angles::fromString(String str)
 	bool ypr_last_number = (int(str.length()) - 1 > r_ind); // Room for a number after r?
 	if (ypr_exist && ypr_correct_order && ypr_last_number)
 	{
-		float y_value = stringToFloat(str, y_ind, p_ind);
-		float p_value = stringToFloat(str, p_ind, r_ind);
-		float r_value = stringToFloat(str, r_ind, str.length());
+		float y_value = stringToFloat(str, y_ind+1, p_ind);
+		float p_value = stringToFloat(str, p_ind+1, r_ind);
+		float r_value = stringToFloat(str, r_ind+1, str.length());
 		// Angles are in range -180 to 180. Anything else is treated as an error.
 		if (fabs(y_value) <= 180 && fabs(p_value) <= 180 && fabs(r_value) <= 180)
 		{

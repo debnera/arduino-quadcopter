@@ -29,6 +29,7 @@ public:
 	void setValues(float yaw, float pitch, float roll);
 	String toString();
 	bool fromString(String str);
+	bool fromArray(char *str, int length);
 	float stringToFloat(String str, int from_ind, int to_ind);
   Angles operator+(const Angles &other_angles);
   Angles operator-(const Angles &other_angles);
