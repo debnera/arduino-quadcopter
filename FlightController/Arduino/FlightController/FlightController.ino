@@ -54,7 +54,7 @@ Stabilizer stabilizer;
 MPU mpu;
 
 // Buffers
-CircularBuffer bluetooth_read_cb;
+CircularBuffer *bluetooth_read_cb;
 
 // Bluetooth management variables and constants
 const String kPingRequest = "ping";
@@ -72,6 +72,7 @@ void dmpDataReady() {
 void setup() {
   wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
+  bluetooth_read_cb = new CircularBuffer();
   bluetooth.begin(bluetooth_baudrate);
 	mpu = MPU();
   Serial.println(F("Starting dmp..."));
@@ -206,10 +207,10 @@ bool readBluetooth()
       if (c == (char)STX)
       {
         // Start of new command - ignore all possible gibberish before it.
-        bluetooth_read_cb.reset();
+        bluetooth_read_cb->reset();
         Serial.println("STX received");
       }
-      bool cb_overflow = bluetooth_read_cb.write(c);
+      bool cb_overflow = bluetooth_read_cb->write(c);
       if (cb_overflow)
       {
         // Buffer overflown before ETX was received.
@@ -226,18 +227,16 @@ bool readBluetooth()
   return false; // No full command received
 }
 
-void parseCommand(CircularBuffer buffer)
+void parseCommand(CircularBuffer *buffer)
 {
-  int len = buffer.length();
+  int len = buffer->length();
 	if (len > 0)
   {
-    Serial.print("Length: ");
-    Serial.println(len);
     Serial.print("Received: ");
     char *command = (char*)malloc(len);
     for (int i = 0; i < len; i++)
     {
-      command[i] = buffer.read();
+      command[i] = buffer->read();
       Serial.print(command[i]);
     }
     Serial.println();
