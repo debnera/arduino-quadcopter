@@ -177,6 +177,11 @@ void loop() {
 
 bool readBluetooth()
 {
+  /*
+   Reads pending data from bluetooth. If an ETX is encountered, true is
+   returned without reading the rest of the data. Otherwise all data will
+   be read in to the buffer and false is returned.
+  */
   if (bluetooth.overflow())
   {
     // Bluetooth is flooded. This should not happen unless our code is really
@@ -203,7 +208,7 @@ bool readBluetooth()
       }
       if (c == (char)ETX)
       {
-        // End of command received. Command is ready to be parsed.
+        // End of text received. Command is ready to be parsed.
         return true;
       }
   	}
