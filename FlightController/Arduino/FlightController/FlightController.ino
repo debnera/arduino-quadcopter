@@ -230,18 +230,35 @@ bool readBluetooth()
 void parseCommand(CircularBuffer *buffer)
 {
   int len = buffer->length();
-	if (len > 0)
+  if (len == 0) return;
+  Serial.print("Received: ");
+  char *command = (char*)malloc(len);
+  for (int i = 0; i < len; i++)
   {
-    Serial.print("Received: ");
-    char *command = (char*)malloc(len);
-    for (int i = 0; i < len; i++)
-    {
-      command[i] = buffer->read();
-      Serial.print(command[i]);
-    }
-    Serial.println();
-    free(command);
+    command[i] = buffer->read();
+    Serial.print(command[i]);
   }
+  if (command[0] == (char)STX && len > 1)
+  {
+    switch(command[1])
+    {
+      case (char)DC1:
+        bluetooth.println("Starting engines");
+        break;
+      case (char)DC4:
+        bluetooth.println("Killing engines");
+        stopMotors();
+        break;
+      case 'y':
+        bluetooth.println("Angles received");
+        break;
+      case 't':
+        bluetooth.println("Throttle received");
+        break;
+    }
+  }
+  Serial.println();
+  free(command);
 }
 
 void stopMotors()
