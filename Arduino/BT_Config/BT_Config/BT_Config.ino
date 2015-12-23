@@ -13,13 +13,13 @@
 
 #include <SoftwareSerial.h>
 
-SoftwareSerial mySerial(10, 11); // RX, TX
+SoftwareSerial mySerial(7, 8); // RX, TX
 
 void setup() {
   Serial.begin(9600);
   pinMode(9, OUTPUT); digitalWrite(9, HIGH);
   Serial.println("Send 'AT' now -  The device should respond with 'OK' if connection is ok");
-  mySerial.begin(9600);
+  mySerial.begin(38400);
 }
 
 void loop() {
