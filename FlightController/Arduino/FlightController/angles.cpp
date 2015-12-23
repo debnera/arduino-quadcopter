@@ -120,6 +120,7 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 
 	float value = 0;
 	bool decimal = false;
+	bool negative = false;
 	int decimal_index = 1;
 	for (int i = from_ind; i < to_ind; i++)
 	{
@@ -136,8 +137,10 @@ float Angles::stringToFloat(String str, int from_ind, int to_ind)
 		}
 		else if ((c == '.' || c == ',') && decimal == false)
 			decimal = true;
+		else if (i == from_ind && c == '-') negative = true;
 		else
 			return float(kInvalidNumber);
 	}
+	if (negative) value = -value;
 	return value;
 }
