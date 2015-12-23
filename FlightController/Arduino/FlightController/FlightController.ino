@@ -238,7 +238,7 @@ void parseCommand(CircularBuffer *buffer)
     command[i] = buffer->read();
     Serial.print(command[i]);
   }
-  if (command[0] == (char)STX && len > 1)
+  if (command[0] == STX && len > 1)
   {
     switch(command[1])
     {
@@ -254,6 +254,18 @@ void parseCommand(CircularBuffer *buffer)
         break;
       case 't':
         bluetooth.println("Throttle received");
+        int x = 0;
+        for (int i = 2; i < len - 1; i++)
+        {
+          int cmd = (int)command[i] - (int)'0';
+          if (cmd >= 0 && cmd <= 9)
+          {
+            x = 10*x + cmd;
+          }
+          else return; // Invalid character encountered
+        }
+        throttle = x;
+        bluetooth.println(throttle);
         break;
     }
   }
