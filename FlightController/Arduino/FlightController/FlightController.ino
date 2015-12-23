@@ -254,6 +254,7 @@ void parseCommand(CircularBuffer *buffer)
         break;
       case 't':
         bluetooth.println("Throttle received");
+        if (len < 4) return; // No value given (STX + 't' + ETX)
         int x = 0;
         for (int i = 2; i < len - 1; i++)
         {
@@ -262,8 +263,14 @@ void parseCommand(CircularBuffer *buffer)
           {
             x = 10*x + cmd;
           }
+          else if (i == 2 && command[i] == '-') // Negative value
+          {
+            x = -1;
+            break;
+          }
           else return; // Invalid character encountered
         }
+        if (x > kMaxThrottle) x = kMaxThrottle;
         throttle = x;
         bluetooth.println(throttle);
         break;
