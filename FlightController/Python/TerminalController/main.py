@@ -81,7 +81,7 @@ else:
     print("You can now send commands")
     while(message.strip().lower() != "exit"):
         message = input()
-        message += '\n'
+        message += char(3); #ETX
         try:
             ser.write(message.encode())
         except serial.serialutil.SerialTimeoutException:
