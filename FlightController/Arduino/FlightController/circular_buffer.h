@@ -40,7 +40,7 @@ public:
     {
       // Buffer has overflown and previous data will be overwritten.
       overflow = true;
-      write_index = read_index;
+      reset();
     }
     buffer[write_index] = c;
     write_index = increment(write_index);
