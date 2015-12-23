@@ -94,7 +94,8 @@ void setup() {
             							Motor(motor_pin3, "M3: Top-left"),
             							Motor(motor_pin4, "M4: Bottom-right") };
 	motors = new_motors;
-	throttle = 70;
+	throttle = 0;
+  target_angles.setValues(0, 0, 0);
   mpu.setGyroScale(gyro_scale);
 }
 
@@ -134,7 +135,7 @@ void loop() {
     cur_angles = mpu.getAngles() - offset_angles;
     cur_rates = mpu.getAngularRates();
 
-    target_angles.setValues(0, 0, 0);
+
 
     motor_powers.setValues(0, 0, 0, 0);
     if (throttle > kMinThrottleToStabilize)
@@ -148,7 +149,7 @@ void loop() {
     if ( print_counter % 20 == 0)
     {
       //Serial.println(motor_powers.x1);
-/*
+
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -158,12 +159,19 @@ void loop() {
       Serial.print("\t");
       Serial.print(motor_powers.x4);
       Serial.print("\t");
+
       Serial.print("ypr\t");
       Serial.print(cur_angles.yaw);
       Serial.print("\t");
       Serial.print(cur_angles.pitch);
       Serial.print("\t");
-      Serial.println(cur_angles.roll);
+      Serial.print(cur_angles.roll);
+      Serial.print("\ttarget\t");
+      Serial.print(target_angles.yaw);
+      Serial.print("\t");
+      Serial.print(target_angles.pitch);
+      Serial.print("\t");
+      Serial.println(target_angles.roll);/*
       Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
@@ -174,7 +182,7 @@ void loop() {
     }
     if ( print_counter == 2000)
     {
-      throttle = 100;
+      //throttle = 100;
       offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
     }
   }
