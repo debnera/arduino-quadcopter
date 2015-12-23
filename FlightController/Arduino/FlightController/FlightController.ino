@@ -147,7 +147,7 @@ void loop() {
     if ( print_counter % 20 == 0)
     {
       //Serial.println(motor_powers.x1);
-
+/*
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -163,7 +163,7 @@ void loop() {
       Serial.print(cur_angles.pitch);
       Serial.print("\t");
       Serial.println(cur_angles.roll);
-      /*Serial.print("rates\t");
+      Serial.print("rates\t");
       Serial.print(cur_rates.yaw);
       Serial.print("\t");
       Serial.print(cur_rates.pitch);
@@ -190,6 +190,8 @@ bool readBluetooth()
   {
     // Bluetooth is flooded. This should not happen unless our code is really
     // slow, or the pc is sending way too much data.
+    Serial.println("Bluetooth overflow!! Too much data or too slow code.");
+    Serial.println("Clearing bluetooth.");
     bluetooth.println("Bluetooth overflow!! Too much data or too slow code.");
     bluetooth.println("Clearing bluetooth.");
     while (bluetooth.available()) bluetooth.read(); // Clear buffer
@@ -200,11 +202,12 @@ bool readBluetooth()
   	{
 
       char c = bluetooth.read();
-      Serial.print(c);
+      //Serial.print(c);
       if (c == (char)STX)
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb.reset();
+        Serial.println("STX received");
       }
       bool cb_overflow = bluetooth_read_cb.write(c);
       if (cb_overflow)
@@ -215,6 +218,7 @@ bool readBluetooth()
       if (c == (char)ETX)
       {
         // End of text received. Command is ready to be parsed.
+        Serial.println("ETX received");
         return true;
       }
   	}
@@ -224,16 +228,20 @@ bool readBluetooth()
 
 void parseCommand(CircularBuffer buffer)
 {
-	if (buffer.length() > 0)
+  int len = buffer.length();
+	if (len > 0)
   {
+    Serial.print("Length: ");
+    Serial.println(len);
     Serial.print("Received: ");
-    char *command = (char*)malloc(buffer.length());
-    for (int i = 0; i < buffer.length(); i++)
+    char *command = (char*)malloc(len);
+    for (int i = 0; i < len; i++)
     {
       command[i] = buffer.read();
       Serial.print(command[i]);
     }
     Serial.println();
+    free(command);
   }
 }
 
