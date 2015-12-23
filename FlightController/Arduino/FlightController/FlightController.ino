@@ -32,13 +32,13 @@ Author:	Anton
 #define bluetooth_baudrate 38400
 
 // Special characters
-#define STX 2 // Start of text (Starts command)
-#define ETX 3 // End of text (Ends command)
-#define ENQ 5 // Enquiry (for pinging bluetooth)
-#define ACK 6 // Acknowledge
+const char STX = (char) 2; // Start of text (Starts command)
+const char ETX = (char) 3; // End of text (Ends command)
+const char ENQ = (char) 5; // Enquiry (for pinging bluetooth)
+const char ACK = (char) 6; // Acknowledge
 
-#define DC1 17 // Start device
-#define DC4 20 // Stop device
+const char DC1 = (char) 17; // Start device
+const char DC4 = (char) 20; // Stop device
 
 
 Motor *motors;
@@ -204,7 +204,7 @@ bool readBluetooth()
 
       char c = bluetooth.read();
       //Serial.print(c);
-      if (c == (char)STX)
+      if (c == STX)
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb->reset();
@@ -216,7 +216,7 @@ bool readBluetooth()
         // Buffer overflown before ETX was received.
         bluetooth.println("Command buffer overflow!! - no ETX received.");
       }
-      if (c == (char)ETX)
+      if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
         Serial.println("ETX received");
@@ -242,10 +242,10 @@ void parseCommand(CircularBuffer *buffer)
   {
     switch(command[1])
     {
-      case (char)DC1:
+      case DC1:
         bluetooth.println("Starting engines");
         break;
-      case (char)DC4:
+      case DC4:
         bluetooth.println("Killing engines");
         stopMotors();
         break;
