@@ -118,6 +118,10 @@ void loop() {
   */
 	// Get values from MPU
   wdt_reset(); // Reset watchdog timer
+  while (readBluetooth() == true)
+  {
+    parseCommand(bluetooth_read_cb);
+  }
   if (mpu.dataAvailable())
   {
     if (mpu.fifoOverflow())
@@ -194,13 +198,15 @@ bool readBluetooth()
   {
     while (bluetooth.available())
   	{
+
       char c = bluetooth.read();
+      Serial.print(c);
       if (c == (char)STX)
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb.reset();
       }
-      bool cb_overflow = bluetooth_read_cb.write();
+      bool cb_overflow = bluetooth_read_cb.write(c);
       if (cb_overflow)
       {
         // Buffer overflown before ETX was received.
@@ -216,11 +222,19 @@ bool readBluetooth()
   return false; // No full command received
 }
 
-void parseCommand(String command)
+void parseCommand(CircularBuffer buffer)
 {
-	// TODO plan:	1. Potential angles/throttle -> parse angles -> parse throttle
-	//				2. Other commands
-	bool isAngles = target_angles.fromString(command);
+	if (buffer.length() > 0)
+  {
+    Serial.print("Received: ");
+    char *command = (char*)malloc(buffer.length());
+    for (int i = 0; i < buffer.length(); i++)
+    {
+      command[i] = buffer.read();
+      Serial.print(command[i]);
+    }
+    Serial.println();
+  }
 }
 
 void stopMotors()
