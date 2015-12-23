@@ -251,6 +251,10 @@ void parseCommand(CircularBuffer *buffer)
         break;
       case 'y':
         bluetooth.println("Angles received");
+        if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
+        {
+          //bluetooth.println(target_angles.toString());
+        }
         break;
       case 't':
         bluetooth.println("Throttle received");
@@ -279,6 +283,7 @@ void parseCommand(CircularBuffer *buffer)
   Serial.println();
   free(command);
 }
+
 
 void stopMotors()
 {
