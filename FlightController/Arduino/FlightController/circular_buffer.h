@@ -4,14 +4,19 @@
 class CircularBuffer
 {
 private:
-  int size = 50;
+  int size;
 	char buffer[50];
-  int read_index = 0;
-  int write_index = 0;
+  int read_index;
+  int write_index;
 
 public:
 
-	CircularBuffer();
+	CircularBuffer()
+  {
+    this->size = 50;
+    this->read_index = 0;
+    this->write_index = 0;
+  };
 	char read()
   {
     if (length() > 0)
@@ -20,8 +25,8 @@ public:
       read_index = increment(read_index);
       return c;
     }
-    return NULL;
-  }
+    return '\0';
+  };
 
   bool write(char c)
   {
@@ -40,14 +45,14 @@ public:
     buffer[write_index] = c;
     write_index = increment(write_index);
     return overflow;
-  }
+  };
 
   void reset()
   {
     read_index = 0;
     write_index = 0;
-  }
-  
+  };
+
   int length()
   {
     int r = read_index;
@@ -57,7 +62,7 @@ public:
       w += size;
     }
     return w-r;
-  }
+  };
 
   int increment(int value)
   {
@@ -67,7 +72,7 @@ public:
       value -= size;
     }
     return value;
-  }
+  };
 };
 
 
