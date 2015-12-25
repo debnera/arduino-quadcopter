@@ -25,7 +25,7 @@ class ListeningThread(Thread):
         while(self.stopRequested == False):
             if (self.ser.inWaiting() > 0):
                 try:
-                    print(self.ser.read(1).decode())
+                    print("{:}".format(self.ser.read(1).decode()), end='')
                 except UnicodeDecodeError:
                     print("UnicodeDecodeError: Received bad data")
         print("Stopped listening")
@@ -40,7 +40,7 @@ class ListeningThread(Thread):
 
 def openConnection():
     ser = serial.Serial(
-    port='\\.\COM6',
+    port='\\.\COM3',
     baudrate=38400,
     parity=serial.PARITY_NONE,
     stopbits=serial.STOPBITS_ONE,
@@ -58,8 +58,9 @@ else:
     message = ''
     print("You can now send commands")
     while(message.strip().lower() != "exit"):
-        message = input()
-        message += char(3); #ETX
+        message = chr(2) #STX
+        message += input()
+        message += chr(3) #ETX
         try:
             ser.write(message.encode())
         except serial.serialutil.SerialTimeoutException:
