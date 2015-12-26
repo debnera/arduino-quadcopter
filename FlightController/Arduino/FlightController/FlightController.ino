@@ -289,6 +289,7 @@ void parseCommand(CircularBuffer *buffer)
 
 void stopMotors()
 {
+  throttle = 0;
   motors[0].setPower(-1);
   motors[1].setPower(-1);
   motors[2].setPower(-1);
