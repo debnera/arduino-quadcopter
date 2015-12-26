@@ -66,12 +66,28 @@ class FunctionalGUI(Ui_Form):
         except serial.serialutil.SerialTimeoutException:
             print("WARNING: Write timeout exceeded!")
 
+    def resetAngles(self):
+        self.angles_yaw_spinBox.setValue(0)
+        self.angles_pitch_spinBox.setValue(0)
+        self.angles_roll_spinBox.setValue(0)
+
+    def resetThrottle(self):
+        self.throttle_spinBox.setValue(0)
+
+    def stop(self):
+        self.resetAngles()
+        self.resetThrottle()
+        self.send(chr(20)) #DC4
+
     def setButtons(self):
         self.throttle_send_btn.released.connect(self.sendThrottle)
+        self.angles_send_btn.released.connect(self.sendAngles)
+        self.angles_reset_btn.released.connect(self.resetAngles)
+        self.stop_btn.released.connect(self.stop)
 
     def openConnection(self):
         self.ser = serial.Serial(
-        port='\\.\COM3',
+        port='/dev/rfcomm0',
         baudrate=38400,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
