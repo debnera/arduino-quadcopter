@@ -5,7 +5,7 @@ class CircularBuffer
 {
 private:
   int size;
-	char buffer[50];
+	char buffer[20];
   int read_index;
   int write_index;
 
@@ -13,10 +13,11 @@ public:
 
 	CircularBuffer()
   {
-    this->size = 50;
+    this->size = 20;
     this->read_index = 0;
     this->write_index = 0;
   };
+  
 	char read()
   {
     if (length() > 0)
