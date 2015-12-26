@@ -57,11 +57,10 @@ MPU mpu;
 CircularBuffer *bluetooth_read_cb;
 
 // Bluetooth management variables and constants
-const String kPingRequest = "ping";
-const String kPingResponse = "pingok";
-int ping_timer;
-int connection_timeout_timer;
-bool isBluetoothConnected;
+//const String kPingRequest = "ping";
+//const String kPingResponse = "pingok";
+//int ping_timer;
+//int connection_timeout_timer;
 int print_counter = 0;
 int gyro_scale = 2000; // +-2000 degrees/s is default (250, 500, 1000 or 2000)
 
@@ -79,20 +78,17 @@ void setup() {
   bool success = mpu.init();
   if(success)
   {
-    Serial.println(F("DMP ready! Waiting for first interrupt..."));
+    Serial.println(F("DMP ready!"));
     attachInterrupt(0, dmpDataReady, RISING);
   }
   else
   {
-    Serial.println(F("-----DMP failed to start!-----"));
+    Serial.println(F("DMP failed to start!"));
   }
-	isBluetoothConnected = false;
-	ping_timer = 0;
-	connection_timeout_timer = 0; // time in ms
-	Motor new_motors[4] = { Motor(motor_pin1, "M1: Top-right"),
-            							Motor(motor_pin2, "M2: Bottom-left"),
-            							Motor(motor_pin3, "M3: Top-left"),
-            							Motor(motor_pin4, "M4: Bottom-right") };
+	Motor new_motors[4] = { Motor(motor_pin1, "M1"), // Top-right
+            							Motor(motor_pin2, "M2"), //M2: Bottom-left
+            							Motor(motor_pin3, "M3"), // M3: Top-left
+            							Motor(motor_pin4, "M4") }; // M4: Bottom-right
 	motors = new_motors;
 	throttle = 0;
   target_angles.setValues(0, 0, 0);
@@ -128,8 +124,8 @@ void loop() {
   {
     if (mpu.fifoOverflow())
     {
-      Serial.println("---------------FIFO OVERFLOW!!!!-----------");
-      bluetooth.print("---------------FIFO OVERFLOW!!!!-----------");
+      Serial.println("FIFO OVERFLOW!!!!");
+      bluetooth.print("FIFO OVERFLOW!!!!");
     }
 
     cur_angles = mpu.getAngles() - offset_angles;
@@ -201,8 +197,6 @@ bool readBluetooth()
     // slow, or the pc is sending way too much data.
     Serial.println("Bluetooth overflow!! Too much data or too slow code.");
     Serial.println("Clearing bluetooth.");
-    bluetooth.println("Bluetooth overflow!! Too much data or too slow code.");
-    bluetooth.println("Clearing bluetooth.");
     while (bluetooth.available()) bluetooth.read(); // Clear buffer
   }
   else
@@ -216,7 +210,7 @@ bool readBluetooth()
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb->reset();
-        Serial.println("STX received");
+        //Serial.println("STX received");
       }
       bool cb_overflow = bluetooth_read_cb->write(c);
       if (cb_overflow)
@@ -227,7 +221,7 @@ bool readBluetooth()
       if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
-        Serial.println("ETX received");
+        //Serial.println("ETX received");
         return true;
       }
   	}
@@ -251,21 +245,21 @@ void parseCommand(CircularBuffer *buffer)
     switch(command[1])
     {
       case DC1:
-        bluetooth.println("Starting engines");
+        //bluetooth.println("Starting engines");
         break;
       case DC4:
         stopMotors();
-        bluetooth.println("Killing engines");
+        //bluetooth.println("Killing engines");
         break;
       case 'y':
-        bluetooth.println("Angles received");
+        //bluetooth.println("Angles received");
         if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
         {
           //bluetooth.println(target_angles.toString());
         }
         break;
       case 't':
-        bluetooth.println("Throttle received");
+        //bluetooth.println("Throttle received");
         if (len < 4) return; // No value given (STX + 't' + ETX)
         int x = 0;
         for (int i = 2; i < len - 1; i++)
@@ -284,7 +278,7 @@ void parseCommand(CircularBuffer *buffer)
         }
         if (x > kMaxThrottle) x = kMaxThrottle;
         throttle = x;
-        bluetooth.println(throttle);
+        //bluetooth.println(throttle);
         break;
     }
   }
