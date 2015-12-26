@@ -156,8 +156,8 @@ void loop() {
     wdt_reset();
     if (mpu.fifoOverflow())
     {
-      Serial.println("FIFO OVERFLOW!!!!");
-      bluetooth.print("FIFO OVERFLOW!!!!");
+      Serial.println(F("FIFO OVERFLOW!!!!"));
+      bluetooth.print(F("FIFO OVERFLOW!!!!"));
     }
 
     cur_angles = mpu.getAngles() - offset_angles;
@@ -227,8 +227,7 @@ bool readBluetooth()
   {
     // Bluetooth is flooded. This should not happen unless our code is really
     // slow, or the pc is sending way too much data.
-    Serial.println("Bluetooth overflow!! Too much data or too slow code.");
-    Serial.println("Clearing bluetooth.");
+    Serial.println(F("Bluetooth overflow!! Too much data or too slow code."));
     while (bluetooth.available()) bluetooth.read(); // Clear buffer
   }
   else
@@ -242,18 +241,18 @@ bool readBluetooth()
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb->reset();
-        Serial.println("STX received");
+        //Serial.println("STX received");
       }
       bool cb_overflow = bluetooth_read_cb->write(c);
       if (cb_overflow)
       {
         // Buffer overflown before ETX was received.
-        bluetooth.println("Command buffer overflow!! - no ETX received.");
+        //bluetooth.println("Command buffer overflow!! - no ETX received.");
       }
       if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
-        Serial.println("ETX received");
+        //Serial.println("ETX received");
         return true;
       }
   	}
@@ -263,9 +262,9 @@ bool readBluetooth()
 
 void sendPing()
 {
-  bluetooth.print(STX);
+  //bluetooth.print(STX);
   bluetooth.print(ENQ);
-  bluetooth.print(ETX);
+  //bluetooth.print(ETX);
 }
 
 bool parseCommand(CircularBuffer *buffer)

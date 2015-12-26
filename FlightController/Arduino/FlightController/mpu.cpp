@@ -133,6 +133,11 @@ Angles MPU::getAngles()
 		orientation = Angles(ypr[0] * 180/M_PI, ypr[1] * 180/M_PI, ypr[2] * 180/M_PI);
 
 	}
+	else{
+		Serial.println("FAIL");
+		//mpu.getFIFOBytes(fifoBuffer, packetSize);
+		mpu.resetFIFO();
+	}
 
 	return orientation;
 
