@@ -254,8 +254,8 @@ void parseCommand(CircularBuffer *buffer)
         bluetooth.println("Starting engines");
         break;
       case DC4:
-        bluetooth.println("Killing engines");
         stopMotors();
+        bluetooth.println("Killing engines");
         break;
       case 'y':
         bluetooth.println("Angles received");
