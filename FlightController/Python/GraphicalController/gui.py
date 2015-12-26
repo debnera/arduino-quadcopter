@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'D:\Git-projut\quadcopter\FlightController\Python\GraphicalController/gui.ui'
+# Form implementation generated from reading ui file 'gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.5.1
+# Created: Sat Dec 26 13:10:29 2015
+#      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -114,9 +115,9 @@ class Ui_Form(object):
         self.angles_reset_btn = QtWidgets.QPushButton(Form)
         self.angles_reset_btn.setObjectName("angles_reset_btn")
         self.verticalLayout_2.addWidget(self.angles_reset_btn)
-        self.angles_send_btn_2 = QtWidgets.QPushButton(Form)
-        self.angles_send_btn_2.setObjectName("angles_send_btn_2")
-        self.verticalLayout_2.addWidget(self.angles_send_btn_2)
+        self.angles_send_btn = QtWidgets.QPushButton(Form)
+        self.angles_send_btn.setObjectName("angles_send_btn")
+        self.verticalLayout_2.addWidget(self.angles_send_btn)
         self.gridLayout_3.addLayout(self.verticalLayout_2, 0, 1, 1, 1)
 
         self.retranslateUi(Form)
@@ -145,4 +146,5 @@ class Ui_Form(object):
         self.data_label.setText(_translate("Form", "Bytes sent:"))
         self.packet_label.setText(_translate("Form", "Packets sent:"))
         self.angles_reset_btn.setText(_translate("Form", "Reset angles"))
-        self.angles_send_btn_2.setText(_translate("Form", "Send angles"))
+        self.angles_send_btn.setText(_translate("Form", "Send angles"))
+
