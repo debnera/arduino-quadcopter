@@ -61,6 +61,9 @@ CircularBuffer *bluetooth_read_cb;
 //const String kPingResponse = "pingok";
 //int ping_timer;
 //int connection_timeout_timer;
+bool bluetooth_ok;
+unsigned long ping_offset = 0;
+unsigned long previous_msg_received = 0;
 int print_counter = 0;
 int gyro_scale = 2000; // +-2000 degrees/s is default (250, 500, 1000 or 2000)
 
@@ -115,13 +118,42 @@ void loop() {
 	}
   */
 	// Get values from MPU
-  wdt_reset(); // Reset watchdog timer
+
+
   while (readBluetooth() == true)
   {
-    parseCommand(bluetooth_read_cb);
+    if(parseCommand(bluetooth_read_cb))
+    {
+      bluetooth_ok = true;
+      previous_msg_received = millis();
+      ping_offset = 0;
+    }
   }
+
+  if (bluetooth_ok)
+  {
+    if (millis() - previous_msg_received > (1000 + ping_offset))
+    {
+      ping_offset += 200;
+      Serial.println(ping_offset);
+      sendPing();
+    }
+    if (millis() - previous_msg_received > 3000)
+    {
+      bluetooth_ok = false;
+      Serial.println(F("Bluetooth lost"));
+      stopMotors(); // also sets throttle to 0
+      target_angles.setValues(0,0,0);
+      target_rates.setValues(0,0,0);
+    }
+  }
+
+
   if (mpu.dataAvailable())
   {
+    // TODO: Better logic for wdt_reset. If mpu returns crap, wdt is still
+    // resetted.
+    wdt_reset();
     if (mpu.fifoOverflow())
     {
       Serial.println("FIFO OVERFLOW!!!!");
@@ -210,7 +242,7 @@ bool readBluetooth()
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb->reset();
-        //Serial.println("STX received");
+        Serial.println("STX received");
       }
       bool cb_overflow = bluetooth_read_cb->write(c);
       if (cb_overflow)
@@ -221,7 +253,7 @@ bool readBluetooth()
       if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
-        //Serial.println("ETX received");
+        Serial.println("ETX received");
         return true;
       }
   	}
@@ -229,10 +261,18 @@ bool readBluetooth()
   return false; // No full command received
 }
 
-void parseCommand(CircularBuffer *buffer)
+void sendPing()
 {
+  bluetooth.print(STX);
+  bluetooth.print(ENQ);
+  bluetooth.print(ETX);
+}
+
+bool parseCommand(CircularBuffer *buffer)
+{
+  bool success = false;
   int len = buffer->length();
-  if (len == 0) return;
+  if (len < 2) return false;
   Serial.print("Received: ");
   char *command = (char*)malloc(len);
   for (int i = 0; i < len; i++)
@@ -244,23 +284,29 @@ void parseCommand(CircularBuffer *buffer)
   {
     switch(command[1])
     {
+      case ACK:
+        success = true; // We successfully received a command
+        break;
       case DC1:
         //bluetooth.println("Starting engines");
+        success = true; // We successfully received a command
         break;
       case DC4:
         stopMotors();
         //bluetooth.println("Killing engines");
+        success = true; // We successfully received a command
         break;
       case 'y':
         //bluetooth.println("Angles received");
         if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
         {
+          success = true; // We successfully received a command
           //bluetooth.println(target_angles.toString());
         }
         break;
       case 't':
         //bluetooth.println("Throttle received");
-        if (len < 4) return; // No value given (STX + 't' + ETX)
+        if (len < 4) return false; // No value given (STX + 't' + ETX)
         int x = 0;
         for (int i = 2; i < len - 1; i++)
         {
@@ -274,16 +320,18 @@ void parseCommand(CircularBuffer *buffer)
             x = -1;
             break;
           }
-          else return; // Invalid character encountered
+          else return false; // Invalid character encountered
         }
         if (x > kMaxThrottle) x = kMaxThrottle;
         throttle = x;
+        success = true; // We successfully received a command
         //bluetooth.println(throttle);
         break;
     }
   }
   Serial.println();
   free(command);
+  return success;
 }
 
 
