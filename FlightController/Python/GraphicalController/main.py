@@ -30,11 +30,22 @@ class ListeningThread(Thread):
         while(self.stopRequested == False):
             if (self.ser.inWaiting() > 0):
                 try:
-                    print("{:}".format(self.ser.read(1).decode()), end='')
+                    c = self.ser.read(1).decode()
+                    print("{:}".format(c), end='')
+                    if (c == chr(5)):
+                        self.send(chr(6))
                 except UnicodeDecodeError:
                     print("UnicodeDecodeError: Received bad data")
         print("Stopped listening")
 
+    def send(self, message):
+        message = chr(2) + message  #STX
+        message += chr(3) #ETX
+        try:
+            self.ser.write(message.encode())
+            print("Send:", message)
+        except serial.serialutil.SerialTimeoutException:
+            print("WARNING: Write timeout exceeded!")
 
     def echoPing(self):
         self.ser.write(self.ConnectionAnswer.encode())
@@ -87,12 +98,13 @@ class FunctionalGUI(Ui_Form):
 
     def openConnection(self):
         self.ser = serial.Serial(
-        port='/dev/rfcomm0',
+        port='/dev/rfcomm1',
         baudrate=38400,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
         writeTimeout=2) # Wait maximum 2 seconds on write
+        return self.ser
 
 
 app = QApplication(sys.argv)
@@ -100,13 +112,14 @@ window = QDialog()
 ui = FunctionalGUI()
 ui.setupUi(window)
 ui.setButtons()
-ui.openConnection()
+ser = ui.openConnection()
+listener = ListeningThread(ser)
+listener.start()
 window.show()
 sys.exit(app.exec_())
 '''
 else:
-    listener = ListeningThread(ser)
-    listener.start()
+
     message = ''
     print("You can now send commands")
     while(message.strip().lower() != "exit"):
