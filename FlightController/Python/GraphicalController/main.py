@@ -90,11 +90,32 @@ class FunctionalGUI(Ui_Form):
         self.resetThrottle()
         self.send(chr(20)) #DC4
 
+    def start(self):
+        self.send(chr(11))
+
+    def maybeSendAngles(self):
+        if(self.angles_sendOnChange_bool == True):
+            self.sendAngles()
+
+    def maybeSendThrottle(self):
+        if(self.throttle_sendOnChange_bool == True):
+            self.sendThrottle()
+
     def setButtons(self):
         self.throttle_send_btn.released.connect(self.sendThrottle)
         self.angles_send_btn.released.connect(self.sendAngles)
         self.angles_reset_btn.released.connect(self.resetAngles)
         self.stop_btn.released.connect(self.stop)
+        self.start_btn.released.connect(self.start)
+
+        self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
+        self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
+        self.angles_roll_spinBox.valueChanged.connect(self.maybeSendAngles)
+        self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
+        self.angles_pitch_spinBox.valueChanged.connect(self.maybeSendAngles)
+        self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
+        self.angles_yaw_spinBox.valueChanged.connect(self.maybeSendAngles)
+        self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
 
     def openConnection(self):
         self.ser = serial.Serial(
