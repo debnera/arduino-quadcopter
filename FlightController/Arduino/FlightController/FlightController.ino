@@ -156,8 +156,8 @@ void loop() {
     wdt_reset();
     if (mpu.fifoOverflow())
     {
-      Serial.println("FIFO OVERFLOW!!!!");
-      bluetooth.print("FIFO OVERFLOW!!!!");
+      Serial.println(F("FIFO OVERFLOW!!!!"));
+      bluetooth.print(F("FIFO OVERFLOW!!!!"));
     }
 
     cur_angles = mpu.getAngles() - offset_angles;
@@ -227,8 +227,7 @@ bool readBluetooth()
   {
     // Bluetooth is flooded. This should not happen unless our code is really
     // slow, or the pc is sending way too much data.
-    Serial.println("Bluetooth overflow!! Too much data or too slow code.");
-    Serial.println("Clearing bluetooth.");
+    Serial.println(F("Bluetooth overflow!! Too much data or too slow code."));
     while (bluetooth.available()) bluetooth.read(); // Clear buffer
   }
   else
