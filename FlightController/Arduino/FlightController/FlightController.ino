@@ -242,18 +242,18 @@ bool readBluetooth()
       {
         // Start of new command - ignore all possible gibberish before it.
         bluetooth_read_cb->reset();
-        Serial.println("STX received");
+        //Serial.println("STX received");
       }
       bool cb_overflow = bluetooth_read_cb->write(c);
       if (cb_overflow)
       {
         // Buffer overflown before ETX was received.
-        bluetooth.println("Command buffer overflow!! - no ETX received.");
+        //bluetooth.println("Command buffer overflow!! - no ETX received.");
       }
       if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
-        Serial.println("ETX received");
+        //Serial.println("ETX received");
         return true;
       }
   	}
@@ -263,9 +263,9 @@ bool readBluetooth()
 
 void sendPing()
 {
-  bluetooth.print(STX);
+  //bluetooth.print(STX);
   bluetooth.print(ENQ);
-  bluetooth.print(ETX);
+  //bluetooth.print(ETX);
 }
 
 bool parseCommand(CircularBuffer *buffer)
