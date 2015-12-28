@@ -131,9 +131,9 @@ class FunctionalGUI(Ui_Form):
         self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
         self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
         freq = self.gamepad_frequency_spinBox.value()
-        self.controller = ControllerThread(0, self.changeYPR)
+        if freq < 1:
+            freq = 1
         self.controller.delay = 1/float(freq)
-        self.controller.start()
 
     def setButtons(self):
         self.throttle_send_btn.released.connect(self.sendThrottle)
@@ -152,6 +152,13 @@ class FunctionalGUI(Ui_Form):
         self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
 
+    def createGamepad(self):
+        freq = self.gamepad_frequency_spinBox.value()
+        if freq < 1:
+            freq = 1
+        self.controller = ControllerThread(0, self.changeYPR)
+        self.controller.delay = 1/float(freq)
+        self.controller.start()
 
     def openConnection(self):
         self.ser = serial.Serial(
