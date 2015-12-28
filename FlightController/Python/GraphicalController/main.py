@@ -12,6 +12,7 @@ from threading import Thread
 from serial.serialutil import writeTimeoutError
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5 import QtWidgets
+from controller_thread import ControllerThread
 
 
 class ListeningThread(Thread):
@@ -58,6 +59,13 @@ class ListeningThread(Thread):
 
 class FunctionalGUI(Ui_Form):
 
+    def changeYPR(self, yaw, pitch, roll):
+        print('changeYPR', yaw, pitch, roll)
+
+        self.angles_yaw_spinBox.setValue(yaw)
+        self.angles_pitch_spinBox.setValue(pitch)
+        self.angles_roll_spinBox.setValue(roll)
+
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_spinBox.value())
         string += 'p' + str(self.angles_pitch_spinBox.value())
@@ -92,6 +100,8 @@ class FunctionalGUI(Ui_Form):
 
     def start(self):
         self.send(chr(17))
+        self.controller = ControllerThread(0, self.changeYPR)
+        self.controller.start()
 
     def maybeSendAngles(self):
         if(self.angles_sendOnChange_bool.isChecked() == True):
