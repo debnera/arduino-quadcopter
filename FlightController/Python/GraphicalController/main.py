@@ -61,14 +61,18 @@ class FunctionalGUI(Ui_Form):
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
-        temp = self.angles_sendOnChange_bool.isChecked()
-        self.angles_sendOnChange_bool.value = False
-        self.angles_yaw_spinBox.setValue(yaw)
-        self.angles_pitch_spinBox.setValue(pitch)
-        self.angles_roll_spinBox.setValue(roll)
-        self.angles_sendOnChange_bool.value = temp
-        if (self.angles_sendOnChange_bool.isChecked()):
-            self.sendAngles()
+        if (self.use_gamepad_bool.isChecked())
+        {
+            temp = self.angles_sendOnChange_bool.isChecked()
+            self.angles_sendOnChange_bool.value = False
+            self.angles_yaw_spinBox.setValue(yaw * self.yaw_max_spinbox.value())
+            self.angles_pitch_spinBox.setValue(pitch * self.pitch_max_spinbox.value())
+            self.angles_roll_spinBox.setValue(roll * self.roll_max_spinbox.value())
+            self.angles_sendOnChange_bool.value = temp
+            if self.angles_sendOnChange_bool.isChecked():
+                self.sendAngles()
+        }
+
 
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_spinBox.value())
@@ -114,6 +118,20 @@ class FunctionalGUI(Ui_Form):
     def maybeSendThrottle(self):
         if(self.throttle_sendOnChange_bool.isChecked() == True):
             self.sendThrottle()
+
+    def setMinMax(self, obj, value):
+        obj.setMinimum(-value)
+        obj.setMaximum(value)
+
+    def setSliderRanges(self):
+        self.setMinMax(self.angles_yaw_slider, self.yaw_max_slider.value())
+        self.setMinMax(self.angles_yaw_spinBox, self.yaw_max_slider.value())
+        self.setMinMax(self.angles_pitch_slider, self.pitch_max_slider.value())
+        self.setMinMax(self.angles_pitch_spinBox, self.pitch_max_slider.value())
+        self.setMinMax(self.angles_roll_slider, self.roll_max_slider.value())
+        self.setMinMax(self.angles_roll_spinBox, self.roll_max_slider.value())
+        self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
+        self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
 
     def setButtons(self):
         self.throttle_send_btn.released.connect(self.sendThrottle)
