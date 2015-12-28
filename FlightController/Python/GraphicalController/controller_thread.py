@@ -8,6 +8,7 @@ class ControllerThread(Thread):
 
     def __init__(self, id, call_function):
         Thread.__init__(self)
+        self.delay = 1; # Updates every 1 second
         self.buttonFunctions = dict() # Dict which connects buttons to functions
         self.controller = None
         self.call_function = call_function
@@ -25,14 +26,23 @@ class ControllerThread(Thread):
 
     def run(self):
         print("Controllering")
-        delay = 0.1
         while(True):
             self.checkPressedButtons()
-            yaw = self.getAxis(0) * 100.0
-            pitch = self.getAxis(1) * 100.0
-            roll = self.getAxis(2) * 100.0
-            #self.call_function(yaw, pitch, roll)
-            time.sleep(delay)
+            yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
+            pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
+            roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
+            self.call_function(yaw, pitch, roll)
+            time.sleep(self.delay)
+
+    def apply_deadzone(self, value):
+        d = 0.2
+        if (abs(value) < d):
+            return 0
+        elif (value > 0): #positive
+            value = (value - d) / (1.0 - d) # scales it back to [0,1]
+        else: #negative
+            value = (value + d) / (1.0 - d) # scales it back to [0,1]
+        return value
 
     def printAllAxis(self):
         # 0 = Left stick (left -1, right 1)
