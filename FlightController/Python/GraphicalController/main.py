@@ -94,11 +94,11 @@ class FunctionalGUI(Ui_Form):
         self.send(chr(11))
 
     def maybeSendAngles(self):
-        if(self.angles_sendOnChange_bool == True):
+        if(self.angles_sendOnChange_bool.isChecked() == True):
             self.sendAngles()
 
     def maybeSendThrottle(self):
-        if(self.throttle_sendOnChange_bool == True):
+        if(self.throttle_sendOnChange_bool.isChecked() == True):
             self.sendThrottle()
 
     def setButtons(self):
@@ -119,7 +119,7 @@ class FunctionalGUI(Ui_Form):
 
     def openConnection(self):
         self.ser = serial.Serial(
-        port='/dev/rfcomm1',
+        port='/dev/rfcomm0',
         baudrate=38400,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
