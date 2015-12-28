@@ -211,6 +211,9 @@
        <property name="maximum">
         <number>100</number>
        </property>
+       <property name="value">
+        <number>30</number>
+       </property>
       </widget>
      </item>
      <item row="4" column="0">
@@ -227,6 +230,9 @@
        </property>
        <property name="maximum">
         <number>100</number>
+       </property>
+       <property name="value">
+        <number>30</number>
        </property>
       </widget>
      </item>
@@ -259,6 +265,9 @@
        </property>
        <property name="maximum">
         <number>100</number>
+       </property>
+       <property name="value">
+        <number>30</number>
        </property>
       </widget>
      </item>
@@ -333,10 +342,20 @@
        <property name="maximum">
         <number>2000</number>
        </property>
+       <property name="value">
+        <number>500</number>
+       </property>
       </widget>
      </item>
      <item row="7" column="1">
-      <widget class="QSpinBox" name="gamepad_frequency_spinBox"/>
+      <widget class="QSpinBox" name="gamepad_frequency_spinBox">
+       <property name="minimum">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+      </widget>
      </item>
      <item row="7" column="0">
       <widget class="QLabel" name="label_2">
@@ -470,7 +489,7 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
+     <x>512</x>
      <y>146</y>
     </hint>
     <hint type="destinationlabel">
@@ -490,7 +509,7 @@
      <y>159</y>
     </hint>
     <hint type="destinationlabel">
-     <x>884</x>
+     <x>512</x>
      <y>146</y>
     </hint>
    </hints>
@@ -502,7 +521,7 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
+     <x>512</x>
      <y>103</y>
     </hint>
     <hint type="destinationlabel">
@@ -522,7 +541,7 @@
      <y>107</y>
     </hint>
     <hint type="destinationlabel">
-     <x>884</x>
+     <x>512</x>
      <y>103</y>
     </hint>
    </hints>
@@ -534,7 +553,7 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>884</x>
+     <x>512</x>
      <y>51</y>
     </hint>
     <hint type="destinationlabel">
@@ -554,7 +573,7 @@
      <y>55</y>
     </hint>
     <hint type="destinationlabel">
-     <x>884</x>
+     <x>512</x>
      <y>51</y>
     </hint>
    </hints>
@@ -566,12 +585,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>137</x>
-     <y>199</y>
+     <x>658</x>
+     <y>55</y>
     </hint>
     <hint type="destinationlabel">
-     <x>863</x>
-     <y>206</y>
+     <x>1023</x>
+     <y>51</y>
     </hint>
    </hints>
   </connection>
@@ -582,12 +601,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>791</x>
-     <y>249</y>
+     <x>968</x>
+     <y>107</y>
     </hint>
     <hint type="destinationlabel">
-     <x>864</x>
-     <y>253</y>
+     <x>1023</x>
+     <y>103</y>
     </hint>
    </hints>
   </connection>
@@ -598,12 +617,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>807</x>
-     <y>293</y>
+     <x>968</x>
+     <y>159</y>
     </hint>
     <hint type="destinationlabel">
-     <x>859</x>
-     <y>294</y>
+     <x>1023</x>
+     <y>146</y>
     </hint>
    </hints>
   </connection>
@@ -614,12 +633,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>849</x>
-     <y>194</y>
+     <x>1023</x>
+     <y>51</y>
     </hint>
     <hint type="destinationlabel">
-     <x>779</x>
-     <y>199</y>
+     <x>968</x>
+     <y>55</y>
     </hint>
    </hints>
   </connection>
@@ -630,12 +649,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>846</x>
-     <y>247</y>
+     <x>1023</x>
+     <y>103</y>
     </hint>
     <hint type="destinationlabel">
-     <x>771</x>
-     <y>249</y>
+     <x>968</x>
+     <y>107</y>
     </hint>
    </hints>
   </connection>
@@ -646,12 +665,12 @@
    <slot>setValue(int)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>865</x>
-     <y>298</y>
+     <x>1023</x>
+     <y>146</y>
     </hint>
     <hint type="destinationlabel">
-     <x>777</x>
-     <y>313</y>
+     <x>968</x>
+     <y>159</y>
     </hint>
    </hints>
   </connection>
