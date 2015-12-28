@@ -180,6 +180,7 @@ ser = ui.openConnection()
 listener = ListeningThread(ser)
 listener.start()
 window.show()
+ui.createGamepad()
 sys.exit(app.exec_())
 '''
 else:
