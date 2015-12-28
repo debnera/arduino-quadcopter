@@ -61,17 +61,16 @@ class FunctionalGUI(Ui_Form):
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
-        if (self.use_gamepad_bool.isChecked())
-        {
+        if (self.use_gamepad_bool.isChecked()):
             temp = self.angles_sendOnChange_bool.isChecked()
-            self.angles_sendOnChange_bool.value = False
+            self.angles_sendOnChange_bool.setChecked(False)
             self.angles_yaw_spinBox.setValue(yaw * self.yaw_max_spinbox.value())
             self.angles_pitch_spinBox.setValue(pitch * self.pitch_max_spinbox.value())
             self.angles_roll_spinBox.setValue(roll * self.roll_max_spinbox.value())
-            self.angles_sendOnChange_bool.value = temp
+            self.angles_sendOnChange_bool.setChecked(temp)
             if self.angles_sendOnChange_bool.isChecked():
                 self.sendAngles()
-        }
+
 
 
     def sendAngles(self):
@@ -151,6 +150,8 @@ class FunctionalGUI(Ui_Form):
         self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
         self.angles_yaw_spinBox.valueChanged.connect(self.maybeSendAngles)
         self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
+        self.max_apply.clicked.connect(self.setSliderRanges)
+
 
     def openConnection(self):
         self.ser = serial.Serial(
