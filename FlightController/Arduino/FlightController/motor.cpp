@@ -23,8 +23,11 @@ bool Motor::attach()
 	if (!servo.attached())
 	{
 		// Servo.attach() returns 0 if it fails to attach.
-		if (servo.attach(pin) != 0) return true;
-		setPower(cur_power);
+		if (servo.attach(pin) != 0)
+		{
+      setPower(cur_power);
+		  return true;
+		}
 	}
 	return false;
 }
