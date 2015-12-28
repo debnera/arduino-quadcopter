@@ -160,10 +160,11 @@ void loop() {
     motor_powers.setValues(0, 0, 0, 0);
     if (throttle > kMinThrottleToStabilize)
     {
-      target_rates = stabilizer.calculateRates(target_angles, cur_angles);
-      motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+      //target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+      //motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
     }
     motor_powers = motor_powers + throttle;
+    setMotorPowers(motor_powers);
 
     print_counter++;
     if ( print_counter % 20 == 0)
@@ -283,6 +284,10 @@ bool parseCommand(CircularBuffer *buffer)
         break;
       case DC1:
         //bluetooth.println("Starting engines");
+        motors[0].attach();
+        motors[1].attach();
+        motors[2].attach();
+        if(motors[3].attach()) Serial.println("Motors attached");
         success = true; // We successfully received a command
         break;
       case DC4:
@@ -316,7 +321,7 @@ bool parseCommand(CircularBuffer *buffer)
           }
           else return false; // Invalid character encountered
         }
-        if (x > kMaxThrottle) x = kMaxThrottle;
+        //if (x > kMaxThrottle) x = kMaxThrottle;
         throttle = x;
         success = true; // We successfully received a command
         //bluetooth.println(throttle);
@@ -332,10 +337,14 @@ bool parseCommand(CircularBuffer *buffer)
 void stopMotors()
 {
   throttle = 0;
-  motors[0].setPower(-1);
-  motors[1].setPower(-1);
-  motors[2].setPower(-1);
-  motors[3].setPower(-1);
+  motors[0].setPower(kMinPwm);
+  motors[1].setPower(kMinPwm);
+  motors[2].setPower(kMinPwm);
+  motors[3].setPower(kMinPwm);
+  motors[0].detach();
+  motors[1].detach();
+  motors[2].detach();
+  if(motors[3].detach()) Serial.println("Motors detached");
 }
 
 void setMotorPowers(Vector4 powers)
