@@ -27,9 +27,7 @@ Author:	Anton
 #define motor_pin4 11
 
 // Bluetooth
-#define bluetooth_rx_pin 7
-#define bluetooth_tx_pin 8
-#define bluetooth_baudrate 38400
+#define bluetooth_baudrate 115200
 
 // Special characters
 const char STX = (char) 2; // Start of text (Starts command)
@@ -42,7 +40,6 @@ const char DC4 = (char) 20; // Stop device
 
 
 Motor *motors;
-SoftwareSerial bluetooth = SoftwareSerial(bluetooth_rx_pin, bluetooth_tx_pin, false); // false for non-inverted logic
 Angles target_angles;
 Angles cur_angles;
 Angles offset_angles;
@@ -54,13 +51,10 @@ Stabilizer stabilizer;
 MPU mpu;
 
 // Buffers
+// TODO: CircularBuffer is overkill for this purpose, a simple array would suffice.
 CircularBuffer *bluetooth_read_cb;
 
 // Bluetooth management variables and constants
-//const String kPingRequest = "ping";
-//const String kPingResponse = "pingok";
-//int ping_timer;
-//int connection_timeout_timer;
 bool bluetooth_ok;
 unsigned long ping_offset = 0;
 unsigned long previous_msg_received = 0;
@@ -75,7 +69,6 @@ void setup() {
   wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
   bluetooth_read_cb = new CircularBuffer();
-  bluetooth.begin(bluetooth_baudrate);
 	mpu = MPU();
   Serial.println(F("Starting dmp..."));
   bool success = mpu.init();
@@ -157,7 +150,6 @@ void loop() {
     if (mpu.fifoOverflow())
     {
       Serial.println(F("FIFO OVERFLOW!!!!"));
-      bluetooth.print(F("FIFO OVERFLOW!!!!"));
     }
 
     cur_angles = mpu.getAngles() - offset_angles;
@@ -177,7 +169,6 @@ void loop() {
     if ( print_counter % 20 == 0)
     {
       //Serial.println(motor_powers.x1);
-
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -223,19 +214,19 @@ bool readBluetooth()
    returned without reading the rest of the data. Otherwise all data will
    be read in to the buffer and false is returned.
   */
-  if (bluetooth.overflow())
+  if (Serial.available() > 63) // Buffer size is 64 bytes.
   {
     // Bluetooth is flooded. This should not happen unless our code is really
     // slow, or the pc is sending way too much data.
     Serial.println(F("Bluetooth overflow!! Too much data or too slow code."));
-    while (bluetooth.available()) bluetooth.read(); // Clear buffer
+    while (Serial.available()) Serial.read(); // Clear buffer
   }
   else
   {
-    while (bluetooth.available())
+    while (Serial.available())
   	{
 
-      char c = bluetooth.read();
+      char c = (char)Serial.read();
       //Serial.print(c);
       if (c == STX)
       {
@@ -262,9 +253,13 @@ bool readBluetooth()
 
 void sendPing()
 {
-  //bluetooth.print(STX);
-  bluetooth.print(ENQ);
-  //bluetooth.print(ETX);
+  /*
+  Sends enquiry to the controller, so it knows to immediately respond back.
+  This is used to check the status of the connection.
+  */
+  //Serial.print(STX);
+  Serial.print(ENQ);
+  //Serialprint(ETX);
 }
 
 bool parseCommand(CircularBuffer *buffer)

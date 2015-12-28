@@ -16,6 +16,7 @@
 #########
 Debug
 *.~*
+~*
 __pycache__
 *.opensdf
 Visual Micro
