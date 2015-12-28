@@ -60,11 +60,15 @@ class ListeningThread(Thread):
 class FunctionalGUI(Ui_Form):
 
     def changeYPR(self, yaw, pitch, roll):
-        print('changeYPR', yaw, pitch, roll)
-
+        # Only send angles after all three values have been changed.
+        temp = self.angles_sendOnChange_bool.isChecked()
+        self.angles_sendOnChange_bool.value = False
         self.angles_yaw_spinBox.setValue(yaw)
         self.angles_pitch_spinBox.setValue(pitch)
         self.angles_roll_spinBox.setValue(roll)
+        self.angles_sendOnChange_bool.value = temp
+        if (self.angles_sendOnChange_bool.isChecked()):
+            self.sendAngles()
 
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_spinBox.value())
