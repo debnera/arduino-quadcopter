@@ -108,8 +108,7 @@ class FunctionalGUI(Ui_Form):
 
     def start(self):
         self.send(chr(17))
-        self.controller = ControllerThread(0, self.changeYPR)
-        self.controller.start()
+
 
     def maybeSendAngles(self):
         if(self.angles_sendOnChange_bool.isChecked() == True):
@@ -132,6 +131,10 @@ class FunctionalGUI(Ui_Form):
         self.setMinMax(self.angles_roll_spinBox, self.roll_max_slider.value())
         self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
         self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
+        freq = self.gamepad_frequency_spinBox.value()
+        self.controller = ControllerThread(0, self.changeYPR)
+        self.controller.delay = 1/float(freq)
+        self.controller.start()
 
     def setButtons(self):
         self.throttle_send_btn.released.connect(self.sendThrottle)
