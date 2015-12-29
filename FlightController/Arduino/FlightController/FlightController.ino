@@ -12,7 +12,6 @@ Author:	Anton
 #include "circular_buffer.h"
 #include <Wire.h>
 #include <Servo.h>
-#include <SoftwareSerial.h>
 #include <avr/wdt.h> // Watchdog timer
 
 //#define MPU_DEBUG
@@ -22,9 +21,9 @@ Author:	Anton
 #define kMinPwm 750 // Minimum pwm signal width - depends on ESC
 #define kMaxPwm 1750 // Maximum pwm signal width - depends on ESC
 #define motor_pin1 3
-#define motor_pin2 9
-#define motor_pin3 10
-#define motor_pin4 11
+#define motor_pin2 4
+#define motor_pin3 7
+#define motor_pin4 8
 
 // Bluetooth
 #define bluetooth_baudrate 115200
@@ -39,7 +38,10 @@ const char DC1 = (char) 17; // Start device
 const char DC4 = (char) 20; // Stop device
 
 
-Motor *motors;
+Motor motor1 = Motor(motor_pin1);
+Motor motor2 = Motor(motor_pin2);
+Motor motor3 = Motor(motor_pin3);
+Motor motor4 = Motor(motor_pin4);
 Angles target_angles;
 Angles cur_angles;
 Angles offset_angles;
@@ -81,11 +83,6 @@ void setup() {
   {
     Serial.println(F("DMP failed to start!"));
   }
-	Motor new_motors[4] = { Motor(motor_pin1, "M1"), // Top-right
-            							Motor(motor_pin2, "M2"), //M2: Bottom-left
-            							Motor(motor_pin3, "M3"), // M3: Top-left
-            							Motor(motor_pin4, "M4") }; // M4: Bottom-right
-	motors = new_motors;
 	throttle = 0;
   target_angles.setValues(0, 0, 0);
   mpu.setGyroScale(gyro_scale);
@@ -291,10 +288,10 @@ bool parseCommand(CircularBuffer *buffer)
         break;
       case DC1:
         //bluetooth.println("Starting engines");
-        motors[0].attach();
-        motors[1].attach();
-        motors[2].attach();
-        if(motors[3].attach()) Serial.println("Motors attached");
+        motor1.attach();
+        motor2.attach();
+        motor3.attach();
+        motor4.attach();
         success = true; // We successfully received a command
         break;
       case DC4:
@@ -376,20 +373,20 @@ bool parseCommand(CircularBuffer *buffer)
 void stopMotors()
 {
   throttle = 0;
-  motors[0].setPower(kMinPwm);
-  motors[1].setPower(kMinPwm);
-  motors[2].setPower(kMinPwm);
-  motors[3].setPower(kMinPwm);
-  motors[0].detach();
-  motors[1].detach();
-  motors[2].detach();
-  if(motors[3].detach()) Serial.println("Motors detached");
+  motor1.setPower(kMinPwm);
+  motor2.setPower(kMinPwm);
+  motor3.setPower(kMinPwm);
+  motor4.setPower(kMinPwm);
+  motor1.detach();
+  motor2.detach();
+  motor3.detach();
+  motor4.detach();
 }
 
 void setMotorPowers(Vector4 powers)
 {
-	motors[0].setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[1].setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[2].setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[3].setPower(constrain((powers.x4 + kMinPwm), kMinPwm, kMaxPwm));
+	motor1.setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
+	motor2.setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
+	motor3.setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
+	motor4.setPower(constrain((powers.x4 + kMinPwm), kMinPwm, kMaxPwm));
 }
