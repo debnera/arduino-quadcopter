@@ -387,7 +387,7 @@
      <item row="11" column="0">
       <widget class="QPushButton" name="send_PID">
        <property name="text">
-        <string>PushButton</string>
+        <string>Send PID</string>
        </property>
       </widget>
      </item>
