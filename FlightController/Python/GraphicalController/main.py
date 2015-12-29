@@ -90,7 +90,7 @@ class FunctionalGUI(Ui_Form):
         message += chr(3) #ETX
         try:
             self.ser.write(message.encode())
-            print("Send:", message)
+            #print("Send:", message)
         except serial.serialutil.SerialTimeoutException:
             print("WARNING: Write timeout exceeded!")
 
