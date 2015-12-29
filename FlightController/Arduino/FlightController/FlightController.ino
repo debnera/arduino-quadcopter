@@ -167,7 +167,7 @@ void loop() {
     setMotorPowers(motor_powers);
 
     print_counter++;
-    if ( print_counter % 20 == 0)
+    if ( print_counter % 100 == 0)
     {
       //Serial.println(motor_powers.x1);
       Serial.print("Powers\t");
@@ -273,7 +273,7 @@ bool parseCommand(CircularBuffer *buffer)
   for (int i = 0; i < len; i++)
   {
     command[i] = buffer->read();
-    Serial.print(command[i]);
+    //Serial.print(command[i]);
   }
   if (command[0] == STX && len > 1)
   {
@@ -355,7 +355,7 @@ bool parseCommand(CircularBuffer *buffer)
         break;
     }
   }
-  Serial.println();
+  //Serial.println();
   free(command);
   return success;
 }
