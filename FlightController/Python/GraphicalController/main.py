@@ -66,14 +66,23 @@ class FunctionalGUI(Ui_Form):
             self.angles_sendOnChange_bool.setChecked(False)
             self.angles_yaw_spinBox.setValue(yaw * self.yaw_max_spinbox.value())
             self.angles_pitch_spinBox.setValue(pitch * self.pitch_max_spinbox.value())
-            self.angles_roll_spinBox.setValue(roll * self.roll_max_spinbox.value())
             self.angles_sendOnChange_bool.setChecked(temp)
-            if self.angles_sendOnChange_bool.isChecked():
-                self.sendAngles()
+            self.angles_roll_spinBox.setValue(roll * self.roll_max_spinbox.value())
+
+    def changeThrottle(self, throttle_input):
+        # Input goes from 0 to 1
+        if (self.use_gamepad_bool.isChecked()):
+            if (self.throttle_sendOnChange_bool.isChecked()):
+                self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
 
     def sendPID(self):
         self.send('p' + str(self.PID_p.value()))
 
+    def addMinThrottle(self):
+        self.minThrottle = 71
+
+    def removeMinThrottle(self):
+        self.minThrottle = 0
 
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_spinBox.value())
@@ -100,6 +109,7 @@ class FunctionalGUI(Ui_Form):
         self.angles_roll_spinBox.setValue(0)
 
     def resetThrottle(self):
+        self.removeMinThrottle()
         self.throttle_spinBox.setValue(0)
 
     def stop(self):
@@ -151,6 +161,7 @@ class FunctionalGUI(Ui_Form):
         self.controller.delay = 1/float(freq)
 
     def setButtons(self):
+        self.removeMinThrottle()
         self.throttle_send_btn.released.connect(self.sendThrottle)
         self.angles_send_btn.released.connect(self.sendAngles)
         self.angles_reset_btn.released.connect(self.resetAngles)
@@ -169,12 +180,24 @@ class FunctionalGUI(Ui_Form):
 
         self.send_PID.clicked.connect(self.sendPID)
 
+    def disableGamepad(self):
+        self.resetThrottle()
+        self.resetAngles()
+        self.use_gamepad_bool.setChecked(False)
+
+
     def createGamepad(self):
         freq = self.gamepad_frequency_spinBox.value()
         if freq < 1:
             freq = 1
-        self.controller = ControllerThread(0, self.changeYPR)
+        self.controller = ControllerThread(0, self.changeYPR, self.changeThrottle)
         self.controller.delay = 1/float(freq)
+        self.controller.connectButton(0, self.addMinThrottle)
+        self.controller.connectButton(1, self.removeMinThrottle)
+        self.controller.connectButton(6, self.stop)
+        self.controller.connectButton(7, self.start)
+        self.controller.connectButton(3, self.disableGamepad)
+
         self.controller.start()
 
     def openConnection(self):
