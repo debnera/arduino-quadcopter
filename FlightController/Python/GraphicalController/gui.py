@@ -2,7 +2,8 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created by: PyQt5 UI code generator 5.5.1
+# Created: Tue Dec 29 11:36:45 2015
+#      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
 
@@ -101,6 +102,7 @@ class Ui_Form(object):
         self.roll_max_spinbox = QtWidgets.QSpinBox(Form)
         self.roll_max_spinbox.setMinimum(-100)
         self.roll_max_spinbox.setMaximum(100)
+        self.roll_max_spinbox.setProperty("value", 30)
         self.roll_max_spinbox.setObjectName("roll_max_spinbox")
         self.gridLayout_3.addWidget(self.roll_max_spinbox, 4, 1, 2, 1)
         self.roll_label_2 = QtWidgets.QLabel(Form)
@@ -109,6 +111,7 @@ class Ui_Form(object):
         self.yaw_max_spinbox = QtWidgets.QSpinBox(Form)
         self.yaw_max_spinbox.setMinimum(0)
         self.yaw_max_spinbox.setMaximum(100)
+        self.yaw_max_spinbox.setProperty("value", 30)
         self.yaw_max_spinbox.setObjectName("yaw_max_spinbox")
         self.gridLayout_3.addWidget(self.yaw_max_spinbox, 1, 1, 1, 1)
         self.roll_max_slider = QtWidgets.QSlider(Form)
@@ -123,6 +126,7 @@ class Ui_Form(object):
         self.pitch_max_spinbox = QtWidgets.QSpinBox(Form)
         self.pitch_max_spinbox.setMinimum(-100)
         self.pitch_max_spinbox.setMaximum(100)
+        self.pitch_max_spinbox.setProperty("value", 30)
         self.pitch_max_spinbox.setObjectName("pitch_max_spinbox")
         self.gridLayout_3.addWidget(self.pitch_max_spinbox, 3, 1, 1, 1)
         self.yaw_max_slider = QtWidgets.QSlider(Form)
@@ -155,9 +159,12 @@ class Ui_Form(object):
         self.gridLayout_3.addWidget(self.max_apply, 8, 0, 1, 1)
         self.throttle_max_spinBox = QtWidgets.QSpinBox(Form)
         self.throttle_max_spinBox.setMaximum(2000)
+        self.throttle_max_spinBox.setProperty("value", 500)
         self.throttle_max_spinBox.setObjectName("throttle_max_spinBox")
         self.gridLayout_3.addWidget(self.throttle_max_spinBox, 6, 1, 1, 1)
         self.gamepad_frequency_spinBox = QtWidgets.QSpinBox(Form)
+        self.gamepad_frequency_spinBox.setMinimum(1)
+        self.gamepad_frequency_spinBox.setMaximum(100)
         self.gamepad_frequency_spinBox.setObjectName("gamepad_frequency_spinBox")
         self.gridLayout_3.addWidget(self.gamepad_frequency_spinBox, 7, 1, 1, 1)
         self.label_2 = QtWidgets.QLabel(Form)
