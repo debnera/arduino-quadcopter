@@ -304,6 +304,7 @@ bool parseCommand(CircularBuffer *buffer)
         }
         break;
       case 'p': // p-value for roll/pitch PID
+      {
         if (len < 4) return false; // No value given (STX + 't' + ETX)
         float value = 0;
       	bool decimal = false;
@@ -330,7 +331,10 @@ bool parseCommand(CircularBuffer *buffer)
         stabilizer.changeP(value);
         Serial.print("New p value: ");
         Serial.println(value);
+        break;
+      }
       case 't':
+      {
         //bluetooth.println("Throttle received");
         if (len < 4) return false; // No value given (STX + 't' + ETX)
         int x = 0;
@@ -353,6 +357,7 @@ bool parseCommand(CircularBuffer *buffer)
         success = true; // We successfully received a command
         //bluetooth.println(throttle);
         break;
+      }
     }
   }
   //Serial.println();
