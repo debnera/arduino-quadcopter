@@ -71,6 +71,8 @@ class FunctionalGUI(Ui_Form):
             if self.angles_sendOnChange_bool.isChecked():
                 self.sendAngles()
 
+    def sendPID(self):
+        self.send('p' + str(self.PID_p.value()))
 
 
     def sendAngles(self):
@@ -151,6 +153,8 @@ class FunctionalGUI(Ui_Form):
         self.angles_yaw_spinBox.valueChanged.connect(self.maybeSendAngles)
         self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
+
+        self.send_PID.clicked.connect(self.sendPID)
 
     def createGamepad(self):
         freq = self.gamepad_frequency_spinBox.value()
