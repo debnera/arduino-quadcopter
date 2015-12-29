@@ -6,12 +6,13 @@ import pygame
 
 class ControllerThread(Thread):
 
-    def __init__(self, id, call_function):
+    def __init__(self, id, ypr_function, throttle_function):
         Thread.__init__(self)
         self.delay = 1; # Updates every 1 second
         self.buttonFunctions = dict() # Dict which connects buttons to functions
         self.controller = None
-        self.call_function = call_function
+        self.ypr_function = ypr_function
+        self.throttle_function = throttle_function
         pygame.init() # Scans system for joysticks, listens to events
         print("Number of joysticks found: " + str(pygame.joystick.get_count()))
         if (pygame.joystick.get_count() > id):
@@ -31,7 +32,13 @@ class ControllerThread(Thread):
             yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
             pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
             roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
-            self.call_function(yaw, pitch, roll)
+            self.ypr_function(yaw, pitch, roll)
+            throttle = self.getAxis(2) + self.getAxis(5)
+            throttle += 2 # Range 0 to 4
+            throttle += -0.2 # Deadzone
+            throttle = max(0, throttle)
+            throttle /= 4 # Range 0 to 1
+            self.throttle_function(throttle)
             time.sleep(self.delay)
 
     def apply_deadzone(self, value):
@@ -97,7 +104,7 @@ class ControllerThread(Thread):
         """
         for event in pygame.event.get():
             if event.type == pygame.JOYBUTTONDOWN:
-                print("Pressed:" + str(event.button))
+                #print("Pressed:" + str(event.button))
                 if (event.button in self.buttonFunctions.keys()):
                     self.buttonFunctions[event.button]()
 

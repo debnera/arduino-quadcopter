@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'gui.ui'
 #
-# Created: Tue Dec 29 12:15:22 2015
+# Created: Tue Dec 29 12:32:58 2015
 #      by: PyQt5 UI code generator 5.2.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -111,6 +111,7 @@ class Ui_Form(object):
         self.pitch_max_slider = QtWidgets.QSlider(Form)
         self.pitch_max_slider.setMinimum(0)
         self.pitch_max_slider.setMaximum(100)
+        self.pitch_max_slider.setProperty("value", 30)
         self.pitch_max_slider.setOrientation(QtCore.Qt.Horizontal)
         self.pitch_max_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.pitch_max_slider.setTickInterval(10)
@@ -123,6 +124,7 @@ class Ui_Form(object):
         self.roll_max_slider.setMouseTracking(False)
         self.roll_max_slider.setMinimum(0)
         self.roll_max_slider.setMaximum(100)
+        self.roll_max_slider.setProperty("value", 30)
         self.roll_max_slider.setOrientation(QtCore.Qt.Horizontal)
         self.roll_max_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.roll_max_slider.setTickInterval(10)
@@ -143,6 +145,7 @@ class Ui_Form(object):
         self.yaw_max_slider = QtWidgets.QSlider(Form)
         self.yaw_max_slider.setMinimum(0)
         self.yaw_max_slider.setMaximum(100)
+        self.yaw_max_slider.setProperty("value", 30)
         self.yaw_max_slider.setOrientation(QtCore.Qt.Horizontal)
         self.yaw_max_slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
         self.yaw_max_slider.setTickInterval(10)
@@ -254,7 +257,7 @@ class Ui_Form(object):
         self.label.setText(_translate("Form", "Max throttle"))
         self.label_2.setText(_translate("Form", "Gamepad update frequency (gyro is 100 Hz)"))
         self.label_3.setText(_translate("Form", "Pitch/Rol PIDl p-value"))
-        self.send_PID.setText(_translate("Form", "Send PID"))
+        self.send_PID.setText(_translate("Form", "PushButton"))
         self.angles_reset_btn.setText(_translate("Form", "Reset angles"))
         self.angles_send_btn.setText(_translate("Form", "Send angles"))
         self.throttle_send_btn.setText(_translate("Form", "Send throttle"))
