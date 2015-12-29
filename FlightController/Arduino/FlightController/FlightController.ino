@@ -128,7 +128,7 @@ void loop() {
     if (millis() - previous_msg_received > (1000 + ping_offset))
     {
       ping_offset += 200;
-      Serial.println(ping_offset);
+      //Serial.println(ping_offset);
       sendPing();
     }
     if (millis() - previous_msg_received > 3000)
@@ -273,7 +273,7 @@ bool parseCommand(CircularBuffer *buffer)
   for (int i = 0; i < len; i++)
   {
     command[i] = buffer->read();
-    //Serial.print(command[i]);
+    Serial.print(command[i]);
   }
   if (command[0] == STX && len > 1)
   {
@@ -360,7 +360,7 @@ bool parseCommand(CircularBuffer *buffer)
       }
     }
   }
-  //Serial.println();
+  Serial.println();
   free(command);
   return success;
 }
