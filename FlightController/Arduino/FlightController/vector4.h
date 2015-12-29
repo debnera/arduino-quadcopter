@@ -32,6 +32,14 @@ public:
 		x4 = value4;
 	};
 
+	void setMinValues(int min)
+	{
+		if (x1 < min) x1 = min;
+		if (x2 < min) x2 = min;
+		if (x3 < min) x3 = min;
+		if (x4 < min) x4 = min;
+	}
+
 	Vector4 operator+(Vector4 another_vector)
 	{
 		Vector4 new_vec = Vector4();
