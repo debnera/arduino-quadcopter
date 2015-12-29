@@ -33,6 +33,12 @@ Stabilizer::Stabilizer()
 	pid_roll_stab.d = 0;
 }
 
+void Stabilizer::changeP(float p)
+{
+		pid_pitch_rate.p = p;
+		pid_roll_rate.p = p;
+}
+
 Vector4 Stabilizer::calculatePowers(Angles target_rates, Angles cur_rates)
 {
 	Angles differences = Angles();

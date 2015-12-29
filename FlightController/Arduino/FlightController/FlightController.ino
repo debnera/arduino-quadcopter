@@ -303,6 +303,33 @@ bool parseCommand(CircularBuffer *buffer)
           //bluetooth.println(target_angles.toString());
         }
         break;
+      case 'p': // p-value for roll/pitch PID
+        if (len < 4) return false; // No value given (STX + 't' + ETX)
+        float value = 0;
+      	bool decimal = false;
+      	int decimal_index = 1;
+      	for (int i = 2; i < len - 1; i++)
+      	{
+      		char c = command[i];
+      		if ('0' <= c && c <= '9')
+      		{
+      			if (decimal == false)
+      				value = value * 10 + c - '0';
+      			else
+      			{
+      				value += (c - '0') / pow(10, decimal_index);
+      				decimal_index++;
+      			}
+      		}
+      		else if ((c == '.' || c == ',') && decimal == false)
+      			decimal = true;
+      		else
+      			return false;
+      	}
+        success = true;
+        stabilizer.changeP(value);
+        Serial.print("New p value: ");
+        Serial.println(value);
       case 't':
         //bluetooth.println("Throttle received");
         if (len < 4) return false; // No value given (STX + 't' + ETX)
