@@ -86,6 +86,7 @@ void setup() {
 	throttle = 0;
   target_angles.setValues(0, 0, 0);
   mpu.setGyroScale(gyro_scale);
+  offset_angles.setValues(0, 0.71, -2.7);
 }
 
 // the loop function runs over and over again until power down or reset
@@ -171,7 +172,7 @@ void loop() {
     setMotorPowers(motor_powers);
 
     print_counter++;
-    if ( print_counter % 10 == 0)
+    if ( print_counter % 40 == 0)
     {
       //Serial.println(motor_powers.x1);
       Serial.print("Powers\t");
