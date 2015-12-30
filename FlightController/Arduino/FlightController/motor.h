@@ -19,15 +19,14 @@ private:
 	Servo servo;
 	int cur_power;
 	String name;
-	int pin;
+	int pin = 0;
 
 public:
-	Motor(int pin, String name);
+	Motor(int pin);
 	~Motor();
 	bool attach(); // Attaches the motor - it's ready to be used.
 	bool detach(); // Detaches the motor making it stop.
 	void setPower(int value); // Sets motor power in microseconds.
-	String getName();
 };
 
 
