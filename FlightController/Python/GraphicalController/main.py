@@ -91,7 +91,7 @@ class FunctionalGUI(Ui_Form):
         self.send(chr(20)) #DC4
 
     def start(self):
-        self.send(chr(11))
+        self.send(chr(17))
 
     def maybeSendAngles(self):
         if(self.angles_sendOnChange_bool.isChecked() == True):
@@ -120,7 +120,7 @@ class FunctionalGUI(Ui_Form):
     def openConnection(self):
         self.ser = serial.Serial(
         port='/dev/rfcomm0',
-        baudrate=38400,
+        baudrate=115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,

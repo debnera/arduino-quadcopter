@@ -10,6 +10,7 @@ class ControllerInput(object):
         if (pygame.joystick.get_count() > id):
             self.controller = pygame.joystick.Joystick(id)
             print("Connected to " + self.controller.get_name())
+            self.controller.init()
             print("Number of axes: " + str(self.controller.get_numaxes())
                   + ". Number of buttons: " + str(self.controller.get_numbuttons()))
         else:
@@ -34,7 +35,7 @@ class ControllerInput(object):
             return
         if (self.controller.get_numbuttons() < number):
             print("Warning: ControllerInput: Attempted to connect to invalid button.")
-        if (number in self.buttonFunctions.keys):
+        if (number in self.buttonFunctions.keys()):
             print("Warning: ControllerInput: Overriding previously connected function.")
         self.buttonFunctions[number] = function
 
@@ -45,17 +46,19 @@ class ControllerInput(object):
         for event in pygame.event.get():
             if event.type == pygame.JOYBUTTONDOWN:
                 print("Pressed:" + str(event.button))
-                if (event.button in self.buttonFunctions.keys):
+                if (event.button in self.buttonFunctions.keys()):
                     self.buttonFunctions[event.button]()
 
     def close(self):
         pygame.quit()
-            
+
 
 if __name__ == "__main__":
     """For quick debugging"""
     controller = ControllerInput(0)
-    def test(): print(controller.getAxis(0))
+
+    def test():
+        print(controller.getAxis(0))
     controller.connectButton(0, test)
     try:
         while(1):
