@@ -64,10 +64,10 @@ class FunctionalGUI(Ui_Form):
         if (self.use_gamepad_bool.isChecked()):
             temp = self.angles_sendOnChange_bool.isChecked()
             self.angles_sendOnChange_bool.setChecked(False)
-            self.angles_yaw_spinBox.setValue(yaw * self.yaw_max_spinbox.value())
-            self.angles_pitch_spinBox.setValue(pitch * self.pitch_max_spinbox.value())
+            self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
+            self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
             self.angles_sendOnChange_bool.setChecked(temp)
-            self.angles_roll_spinBox.setValue(roll * self.roll_max_spinbox.value())
+            self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
 
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
@@ -85,9 +85,9 @@ class FunctionalGUI(Ui_Form):
         self.minThrottle = 0
 
     def sendAngles(self):
-        string = 'y' + str(self.angles_yaw_spinBox.value())
-        string += 'p' + str(self.angles_pitch_spinBox.value())
-        string += 'r' + str(self.angles_roll_spinBox.value())
+        string = 'y' + str(self.angles_yaw_doubleSpinBox.value())
+        string += 'p' + str(self.angles_pitch_doubleSpinBox.value())
+        string += 'r' + str(self.angles_roll_doubleSpinBox.value())
         self.send(string)
 
     def sendThrottle(self):
@@ -104,9 +104,9 @@ class FunctionalGUI(Ui_Form):
             print("WARNING: Write timeout exceeded!")
 
     def resetAngles(self):
-        self.angles_yaw_spinBox.setValue(0)
-        self.angles_pitch_spinBox.setValue(0)
-        self.angles_roll_spinBox.setValue(0)
+        self.angles_yaw_doubleSpinBox.setValue(0)
+        self.angles_pitch_doubleSpinBox.setValue(0)
+        self.angles_roll_doubleSpinBox.setValue(0)
 
     def resetThrottle(self):
         self.removeMinThrottle()
@@ -122,15 +122,15 @@ class FunctionalGUI(Ui_Form):
 
     def syncAngleSliders(self):
         mult = 100
-        self.angles_yaw_slider.setValue(int(self.angles_yaw_spinBox.value() * mult))
-        self.angles_pitch_slider.setValue(int(self.angles_pitch_spinBox.value() * mult))
-        self.angles_roll_slider.setValue(int(self.angles_roll_spinBox.value() * mult))
+        self.angles_yaw_slider.setValue(int(self.angles_yaw_doubleSpinBox.value() * mult))
+        self.angles_pitch_slider.setValue(int(self.angles_pitch_doubleSpinBox.value() * mult))
+        self.angles_roll_slider.setValue(int(self.angles_roll_doubleSpinBox.value() * mult))
 
     def syncAngleBoxes(self):
         div = 100
-        self.angles_yaw_spinBox.setValue(self.angles_yaw_slider.value() / div))
-        self.angles_pitch_spinBox.setValue(self.angles_pitch_slider.value() / div))
-        self.angles_roll_spinBox.setValue(self.angles_roll_slider.value() / div))
+        self.angles_yaw_doubleSpinBox.setValue(self.angles_yaw_slider.value() / div)
+        self.angles_pitch_doubleSpinBox.setValue(self.angles_pitch_slider.value() / div)
+        self.angles_roll_doubleSpinBox.setValue(self.angles_roll_slider.value() / div)
 
     def maybeSendAngles(self):
         self.syncAngleBoxes()
@@ -148,11 +148,11 @@ class FunctionalGUI(Ui_Form):
     def setSliderRanges(self):
         mult = 100
         self.setMinMax(self.angles_yaw_slider, self.yaw_max_slider.value() * mult)
-        self.setMinMax(self.angles_yaw_spinBox, self.yaw_max_slider.value())
+        self.setMinMax(self.angles_yaw_doubleSpinBox, self.yaw_max_slider.value())
         self.setMinMax(self.angles_pitch_slider, self.pitch_max_slider.value()* mult)
-        self.setMinMax(self.angles_pitch_spinBox, self.pitch_max_slider.value())
+        self.setMinMax(self.angles_pitch_doubleSpinBox, self.pitch_max_slider.value())
         self.setMinMax(self.angles_roll_slider, self.roll_max_slider.value()* mult)
-        self.setMinMax(self.angles_roll_spinBox, self.roll_max_slider.value())
+        self.setMinMax(self.angles_roll_doubleSpinBox, self.roll_max_slider.value())
         self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
         self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
         freq = self.gamepad_frequency_spinBox.value()
@@ -170,11 +170,11 @@ class FunctionalGUI(Ui_Form):
 
         self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
         #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
-        self.angles_roll_spinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
         self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_pitch_spinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
         self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_yaw_spinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
         self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
 
