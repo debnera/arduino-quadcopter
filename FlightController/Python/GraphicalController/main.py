@@ -59,24 +59,29 @@ class ListeningThread(Thread):
 
 class FunctionalGUI(Ui_Form):
 
+    bytes = 0
+    packets = 0
+
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
         if (self.use_gamepad_bool.isChecked()):
-            temp = self.angles_sendOnChange_bool.isChecked()
-            self.angles_sendOnChange_bool.setChecked(False)
+            #temp = self.angles_sendOnChange_bool.isChecked()
+            #self.angles_sendOnChange_bool.setChecked(False)
             self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
             self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
             self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
-            self.angles_sendOnChange_bool.setChecked(temp)
-            if temp == True:
+            #self.angles_sendOnChange_bool.setChecked(temp)
+            if self.angles_sendOnChange_bool.isChecked():
                 self.sendAngles()
 
 
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
         if (self.use_gamepad_bool.isChecked()):
+
+            self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
             if (self.throttle_sendOnChange_bool.isChecked()):
-                self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
+                self.sendThrottle()
 
     def sendPID(self):
         self.send('p' + str(self.PID_p.value()))
@@ -93,6 +98,7 @@ class FunctionalGUI(Ui_Form):
         string += 'r' + str(self.angles_roll_doubleSpinBox.value())
         self.send(string)
 
+
     def sendThrottle(self):
         string = 't' + str(self.throttle_spinBox.value())
         self.send(string)
@@ -100,6 +106,10 @@ class FunctionalGUI(Ui_Form):
     def send(self, message):
         message = chr(2) + message  #STX
         message += chr(3) #ETX
+        self.packets += 1
+        self.bytes += len(message)
+        self.data_label.setText(str(self.bytes))
+        self.packet_label.setText(str(self.packets))
         try:
             self.ser.write(message.encode())
             #print("Send:", message)
@@ -171,14 +181,14 @@ class FunctionalGUI(Ui_Form):
         self.stop_btn.released.connect(self.stop)
         self.start_btn.released.connect(self.start)
 
-        self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
+        #self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
         #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
         self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
+        #self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
         self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
+        #self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
         self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
+        #self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
 
 
