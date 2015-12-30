@@ -66,8 +66,11 @@ class FunctionalGUI(Ui_Form):
             self.angles_sendOnChange_bool.setChecked(False)
             self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
             self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
-            self.angles_sendOnChange_bool.setChecked(temp)
             self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
+            self.angles_sendOnChange_bool.setChecked(temp)
+            if temp == True:
+                self.sendAngles()
+
 
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
@@ -178,6 +181,8 @@ class FunctionalGUI(Ui_Form):
         self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
 
+
+
         self.send_PID.clicked.connect(self.sendPID)
 
     def disableGamepad(self):
@@ -197,7 +202,7 @@ class FunctionalGUI(Ui_Form):
         self.controller.connectButton(6, self.stop)
         self.controller.connectButton(7, self.start)
         self.controller.connectButton(3, self.disableGamepad)
-
+        self.setSliderRanges()
         self.controller.start()
 
     def openConnection(self):
