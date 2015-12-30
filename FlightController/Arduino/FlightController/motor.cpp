@@ -5,10 +5,12 @@ Author:		Anton
 
 #include "motor.h"
 
-Motor::Motor(int pin, String name)
+Motor::Motor(int pin)
 {
+
 	this->pin = pin;
-	this->name = name;
+	Serial.print("Added motor: ");
+	Serial.println(this->pin);
 	cur_power = 0;
 	servo = Servo();
 }
@@ -23,8 +25,14 @@ bool Motor::attach()
 	if (!servo.attached())
 	{
 		// Servo.attach() returns 0 if it fails to attach.
-		if (servo.attach(pin) != 0) return true;
-		setPower(cur_power);
+		if (servo.attach(pin) != 0)
+		{
+			Serial.print("Attached: ");
+			Serial.println(pin);
+      setPower(cur_power);
+		  return true;
+		}
+		else Serial.println("Failed to attach motor");
 	}
 	return false;
 }
@@ -33,6 +41,8 @@ bool Motor::detach()
 {
 	if (servo.attached())
 	{
+		Serial.print("Detached: ");
+		Serial.println(pin);
 		servo.detach();
 		return true;
 	}
@@ -49,9 +59,4 @@ void Motor::setPower(int value)
 	}
 	servo.writeMicroseconds(value);
 	cur_power = value; // Store the value for detach/reattach.
-}
-
-String Motor::getName()
-{
-	return name;
 }

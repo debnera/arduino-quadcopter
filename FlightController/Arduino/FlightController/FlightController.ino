@@ -12,7 +12,6 @@ Author:	Anton
 #include "circular_buffer.h"
 #include <Wire.h>
 #include <Servo.h>
-#include <SoftwareSerial.h>
 #include <avr/wdt.h> // Watchdog timer
 
 //#define MPU_DEBUG
@@ -22,9 +21,9 @@ Author:	Anton
 #define kMinPwm 750 // Minimum pwm signal width - depends on ESC
 #define kMaxPwm 1750 // Maximum pwm signal width - depends on ESC
 #define motor_pin1 3
-#define motor_pin2 9
-#define motor_pin3 10
-#define motor_pin4 11
+#define motor_pin2 4
+#define motor_pin3 7
+#define motor_pin4 8
 
 // Bluetooth
 #define bluetooth_baudrate 115200
@@ -39,7 +38,10 @@ const char DC1 = (char) 17; // Start device
 const char DC4 = (char) 20; // Stop device
 
 
-Motor *motors;
+Motor motor1 = Motor(motor_pin1);
+Motor motor2 = Motor(motor_pin2);
+Motor motor3 = Motor(motor_pin3);
+Motor motor4 = Motor(motor_pin4);
 Angles target_angles;
 Angles cur_angles;
 Angles offset_angles;
@@ -81,11 +83,6 @@ void setup() {
   {
     Serial.println(F("DMP failed to start!"));
   }
-	Motor new_motors[4] = { Motor(motor_pin1, "M1"), // Top-right
-            							Motor(motor_pin2, "M2"), //M2: Bottom-left
-            							Motor(motor_pin3, "M3"), // M3: Top-left
-            							Motor(motor_pin4, "M4") }; // M4: Bottom-right
-	motors = new_motors;
 	throttle = 0;
   target_angles.setValues(0, 0, 0);
   mpu.setGyroScale(gyro_scale);
@@ -128,7 +125,7 @@ void loop() {
     if (millis() - previous_msg_received > (1000 + ping_offset))
     {
       ping_offset += 200;
-      Serial.println(ping_offset);
+      //Serial.println(ping_offset);
       sendPing();
     }
     if (millis() - previous_msg_received > 3000)
@@ -160,13 +157,21 @@ void loop() {
     motor_powers.setValues(0, 0, 0, 0);
     if (throttle > kMinThrottleToStabilize)
     {
-      target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+      //target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+      target_rates = target_angles;
       motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+      motor_powers = motor_powers + throttle;
+      motor_powers.setMinValues(kMinThrottleToStabilize - 20);
     }
-    motor_powers = motor_powers + throttle;
+    else
+    {
+      motor_powers = motor_powers + throttle;
+    }
+
+    setMotorPowers(motor_powers);
 
     print_counter++;
-    if ( print_counter % 20 == 0)
+    if ( print_counter % 10 == 0)
     {
       //Serial.println(motor_powers.x1);
       Serial.print("Powers\t");
@@ -267,12 +272,12 @@ bool parseCommand(CircularBuffer *buffer)
   bool success = false;
   int len = buffer->length();
   if (len < 2) return false;
-  Serial.print("Received: ");
+  //Serial.print("Received: ");
   char *command = (char*)malloc(len);
   for (int i = 0; i < len; i++)
   {
     command[i] = buffer->read();
-    Serial.print(command[i]);
+    //Serial.print(command[i]);
   }
   if (command[0] == STX && len > 1)
   {
@@ -283,6 +288,10 @@ bool parseCommand(CircularBuffer *buffer)
         break;
       case DC1:
         //bluetooth.println("Starting engines");
+        motor1.attach();
+        motor2.attach();
+        motor3.attach();
+        motor4.attach();
         success = true; // We successfully received a command
         break;
       case DC4:
@@ -298,7 +307,38 @@ bool parseCommand(CircularBuffer *buffer)
           //bluetooth.println(target_angles.toString());
         }
         break;
+      case 'p': // p-value for roll/pitch PID
+      {
+        if (len < 4) return false; // No value given (STX + 't' + ETX)
+        float value = 0;
+      	bool decimal = false;
+      	int decimal_index = 1;
+      	for (int i = 2; i < len - 1; i++)
+      	{
+      		char c = command[i];
+      		if ('0' <= c && c <= '9')
+      		{
+      			if (decimal == false)
+      				value = value * 10 + c - '0';
+      			else
+      			{
+      				value += (c - '0') / pow(10, decimal_index);
+      				decimal_index++;
+      			}
+      		}
+      		else if ((c == '.' || c == ',') && decimal == false)
+      			decimal = true;
+      		else
+      			return false;
+      	}
+        success = true;
+        stabilizer.changeP(value);
+        Serial.print("New p value: ");
+        Serial.println(value);
+        break;
+      }
       case 't':
+      {
         //bluetooth.println("Throttle received");
         if (len < 4) return false; // No value given (STX + 't' + ETX)
         int x = 0;
@@ -316,14 +356,15 @@ bool parseCommand(CircularBuffer *buffer)
           }
           else return false; // Invalid character encountered
         }
-        if (x > kMaxThrottle) x = kMaxThrottle;
+        //if (x > kMaxThrottle) x = kMaxThrottle;
         throttle = x;
         success = true; // We successfully received a command
         //bluetooth.println(throttle);
         break;
+      }
     }
   }
-  Serial.println();
+  //Serial.println();
   free(command);
   return success;
 }
@@ -332,16 +373,20 @@ bool parseCommand(CircularBuffer *buffer)
 void stopMotors()
 {
   throttle = 0;
-  motors[0].setPower(-1);
-  motors[1].setPower(-1);
-  motors[2].setPower(-1);
-  motors[3].setPower(-1);
+  motor1.setPower(kMinPwm);
+  motor2.setPower(kMinPwm);
+  motor3.setPower(kMinPwm);
+  motor4.setPower(kMinPwm);
+  motor1.detach();
+  motor2.detach();
+  motor3.detach();
+  motor4.detach();
 }
 
 void setMotorPowers(Vector4 powers)
 {
-	motors[0].setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[1].setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[2].setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
-	motors[3].setPower(constrain((powers.x4 + kMinPwm), kMinPwm, kMaxPwm));
+	motor1.setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
+	motor2.setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
+	motor3.setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
+	motor4.setPower(constrain((powers.x4 + kMinPwm), kMinPwm, kMaxPwm));
 }
