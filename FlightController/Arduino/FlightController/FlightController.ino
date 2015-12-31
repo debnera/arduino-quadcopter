@@ -158,8 +158,8 @@ void loop() {
     motor_powers.setValues(0, 0, 0, 0);
     if (throttle > kMinThrottleToStabilize)
     {
-      //target_rates = stabilizer.calculateRates(target_angles, cur_angles);
-      target_rates = target_angles;
+      target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+      //target_rates = target_angles;
       motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
       motor_powers = motor_powers + throttle;
       motor_powers.setMinValues(kMinThrottleToStabilize - 20);
