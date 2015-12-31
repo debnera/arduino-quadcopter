@@ -87,10 +87,14 @@ class FunctionalGUI(Ui_Form):
         self.send('p' + str(self.PID_p.value()))
 
     def addMinThrottle(self):
-        self.minThrottle = 71
+        self.minThrottle += 71 # 71 is the limit for activating stabilizer
+        print("Setting default throttle to:", minThrottle)
 
     def removeMinThrottle(self):
-        self.minThrottle = 0
+        self.minThrottle -= 71
+        if self.minThrottle < 0:
+            self.minThrottle = 0
+        print("Setting default throttle to:", minThrottle)
 
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_doubleSpinBox.value())
