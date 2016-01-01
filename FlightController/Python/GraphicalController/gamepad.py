@@ -3,7 +3,7 @@ import sys
 import pygame
 
 
-class ControllerThread():
+class Gamepad():
 
     def __init__(self, id):
         self.buttonFunctions = dict() # Dict which connects buttons to functions
