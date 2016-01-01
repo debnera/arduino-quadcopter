@@ -216,22 +216,15 @@ class FunctionalGUI(Ui_Form):
         self.read_timer = PyQt5.QtCore.QTimer()
         self.read_timer.timeout.connect(self.readSerial)
         self.read_timer.start(100)
-        try:
-            print("Trying port 0...")
-            self.ser.port = '/dev/rfcomm0'
-            self.ser.open()
-            print("Bluetooth open!")
-            return # Success!
-        except serial.serialutil.SerialException:
-            print("Cannot open bluetooth at port 0")
-        try:
-            print("Trying port 1...")
-            self.ser.port = '/dev/rfcomm1'
-            self.ser.open()
-            print("Bluetooth open!")
-            return # Success!
-        except serial.serialutil.SerialException:
-            print("Cannot open bluetooth at port 1")
+        for i in range(2):
+            try:
+                print("Trying port", i)
+                self.ser.port = '/dev/rfcomm' + str(i)
+                self.ser.open()
+                print("Bluetooth open!")
+                return # Success!
+            except serial.serialutil.SerialException:
+                print("Cannot open bluetooth at port", i)
         self.ser = None # Opening failed
 
 
