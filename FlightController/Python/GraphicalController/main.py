@@ -191,6 +191,8 @@ class FunctionalGUI(Ui_Form):
                 #print("Send:", message)
             except serial.serialutil.SerialTimeoutException:
                 print("WARNING: Write timeout exceeded!")
+                print("WARNING: Bluetooth disconnected")
+                self.ser = None
 
     def readSerial(self):
         if (self.ser != None):
