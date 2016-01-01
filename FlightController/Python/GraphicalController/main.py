@@ -15,49 +15,6 @@ from PyQt5 import QtWidgets
 import PyQt5
 from gamepad import Gamepad
 
-
-class ListeningThread(Thread):
-
-    def __init__(self, ser):
-        Thread.__init__(self)
-        self.stopRequested = False
-        self.ser = ser
-        self.ConnectionQuery = "ping" # This is the message Quad sends when it wants to check connection status.
-        self.ConnectionAnswer = "pingok\n" # This is the message we send back to Quad
-
-    def run(self):
-        print("Starting to listen")
-        minDelay = 1/1000
-        maxDelay = 1/5
-        while(self.stopRequested == False):
-            if (self.ser.inWaiting() > 0):
-                try:
-                    c = self.ser.read(1).decode()
-                    print("{:}".format(c), end='')
-                    if (c == chr(5)):
-                        self.send(chr(6))
-                except UnicodeDecodeError:
-                    print("UnicodeDecodeError: Received bad data")
-        print("Stopped listening")
-
-    def send(self, message):
-        message = chr(2) + message  #STX
-        message += chr(3) #ETX
-        try:
-            self.ser.write(message.encode())
-            #print("Send:", message)
-        except serial.serialutil.SerialTimeoutException:
-            print("WARNING: Write timeout exceeded!")
-
-    def echoPing(self):
-        self.ser.write(self.ConnectionAnswer.encode())
-
-    def requestStop(self):
-        self.stopRequested = True
-        print("Requested to stop listening")
-
-
-
 class FunctionalGUI(Ui_Form):
 
     bytes = 0
@@ -106,19 +63,7 @@ class FunctionalGUI(Ui_Form):
         string = 't' + str(self.throttle_spinBox.value())
         self.send(string)
 
-    def send(self, message):
-        if (self.ser != None):
-            message = chr(2) + message  #STX
-            message += chr(3) #ETX
-            self.packets += 1
-            self.bytes += len(message)
-            self.data_label.setText(str(self.bytes))
-            self.packet_label.setText(str(self.packets))
-            try:
-                self.ser.write(message.encode())
-                #print("Send:", message)
-            except serial.serialutil.SerialTimeoutException:
-                print("WARNING: Write timeout exceeded!")
+
 
     def resetAngles(self):
         self.angles_yaw_doubleSpinBox.setValue(0)
@@ -178,6 +123,8 @@ class FunctionalGUI(Ui_Form):
                 freq = 1
             self.gamepad_timer.stop()
             self.gamepad_timer.start(1/freq * 1000)
+        if self.ser == None:
+            self.openConnection()
 
     def setButtons(self):
         self.ser = None
@@ -231,15 +178,62 @@ class FunctionalGUI(Ui_Form):
         self.gamepad_timer.start(1/freq * 1000)
 
 
+    def send(self, message):
+        if (self.ser != None):
+            message = chr(2) + message  #STX
+            message += chr(3) #ETX
+            self.packets += 1
+            self.bytes += len(message)
+            self.data_label.setText(str(self.bytes))
+            self.packet_label.setText(str(self.packets))
+            try:
+                self.ser.write(message.encode())
+                #print("Send:", message)
+            except serial.serialutil.SerialTimeoutException:
+                print("WARNING: Write timeout exceeded!")
+
+    def readSerial(self):
+        if (self.ser != None):
+            while (self.ser.inWaiting() > 0):
+                try:
+                    c = self.ser.read(1).decode()
+                    print("{:}".format(c), end='')
+                    if (c == chr(5)):
+                        self.send(chr(6))
+                except UnicodeDecodeError:
+                    print("UnicodeDecodeError: Received bad data")
+
+
     def openConnection(self):
+        print("Opening bluetooth connection...")
         self.ser = serial.Serial(
-        port='/dev/rfcomm0',
+        port=None,
         baudrate=115200,
         parity=serial.PARITY_NONE,
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
         writeTimeout=2) # Wait maximum 2 seconds on write
-        return self.ser
+        self.read_timer = PyQt5.QtCore.QTimer()
+        self.read_timer.timeout.connect(self.readSerial)
+        self.read_timer.start(100)
+        try:
+            print("Trying port 0...")
+            self.ser.port = '/dev/rfcomm0'
+            self.ser.open()
+            print("Bluetooth open!")
+            return # Success!
+        except serial.serialutil.SerialException:
+            print("Cannot open bluetooth at port 0")
+        try:
+            print("Trying port 1...")
+            self.ser.port = '/dev/rfcomm1'
+            self.ser.open()
+            print("Bluetooth open!")
+            return # Success!
+        except serial.serialutil.SerialException:
+            print("Cannot open bluetooth at port 1")
+        self.ser = None # Opening failed
+
 
 
 app = QApplication(sys.argv)
@@ -248,29 +242,11 @@ ui = FunctionalGUI()
 ui.setupUi(window)
 ui.setButtons()
 ui.createGamepad()
-#ser = ui.openConnection()
-#listener = ListeningThread(ser)
-#listener.start()
+#ui.openConnection()
 window.show()
 
 sys.exit(app.exec_())
-'''
-else:
 
-    message = ''
-    print("You can now send commands")
-    while(message.strip().lower() != "exit"):
-        message = chr(2) #STX
-        message += input()
-        message += chr(3) #ETX
-        try:
-            ser.write(message.encode())
-        except serial.serialutil.SerialTimeoutException:
-            print("WARNING: Write timeout exceeded!")
-    print("Exiting now")
-    listener.requestStop()
-    time.sleep(1) # Wait for listener to stop before we close the serial.
-    ser.close()'''
 
 if __name__ == '__main__':
     pass
