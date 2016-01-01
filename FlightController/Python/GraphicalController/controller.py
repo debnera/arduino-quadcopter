@@ -1,18 +1,13 @@
 import time
 import sys
-from threading import Thread
 import pygame
 
 
-class ControllerThread(Thread):
+class ControllerThread():
 
-    def __init__(self, id, ypr_function, throttle_function):
-        Thread.__init__(self)
-        self.delay = 1; # Updates every 1 second
+    def __init__(self, id):
         self.buttonFunctions = dict() # Dict which connects buttons to functions
         self.controller = None
-        self.ypr_function = ypr_function
-        self.throttle_function = throttle_function
         pygame.init() # Scans system for joysticks, listens to events
         print("Number of joysticks found: " + str(pygame.joystick.get_count()))
         if (pygame.joystick.get_count() > id):
@@ -24,22 +19,24 @@ class ControllerThread(Thread):
         else:
             print("Given joystick id not found.")
 
+    def update():
+        self.checkPressedButtons()
 
-    def run(self):
-        print("Controllering")
-        while(True):
-            self.checkPressedButtons()
-            yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
-            pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
-            roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
-            self.ypr_function(yaw, pitch, roll)
-            throttle = self.getAxis(2) + self.getAxis(5)
-            throttle += 2 # Range 0 to 4
-            throttle += -0.2 # Deadzone
-            throttle = max(0, throttle)
-            throttle /= 4 # Range 0 to 1
-            self.throttle_function(throttle)
-            time.sleep(self.delay)
+
+    def getYPR():
+        yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
+        pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
+        roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
+        return yaw, pitch, roll
+
+
+    def getThrottle():
+        throttle = self.getAxis(2) + self.getAxis(5)
+        throttle += 2 # Range 0 to 4
+        throttle += -0.2 # Deadzone
+        throttle = max(0, throttle)
+        throttle /= 4 # Range 0 to 1
+        return throttle
 
     def apply_deadzone(self, value):
         d = 0.2
