@@ -12,7 +12,8 @@ from threading import Thread
 from serial.serialutil import writeTimeoutError
 from PyQt5.QtWidgets import QApplication, QDialog
 from PyQt5 import QtWidgets
-from controller_thread import ControllerThread
+import PyQt5
+from gamepad import Gamepad
 
 
 class ListeningThread(Thread):
@@ -65,24 +66,21 @@ class FunctionalGUI(Ui_Form):
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
-        if (self.use_gamepad_bool.isChecked()):
-            #temp = self.angles_sendOnChange_bool.isChecked()
-            #self.angles_sendOnChange_bool.setChecked(False)
-            self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
-            self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
-            self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
-            #self.angles_sendOnChange_bool.setChecked(temp)
-            if self.angles_sendOnChange_bool.isChecked():
-                self.sendAngles()
+        #temp = self.angles_sendOnChange_bool.isChecked()
+        #self.angles_sendOnChange_bool.setChecked(False)
+        self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
+        self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
+        self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
+        #self.angles_sendOnChange_bool.setChecked(temp)
+        if self.angles_sendOnChange_bool.isChecked():
+            self.sendAngles()
 
 
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
-        if (self.use_gamepad_bool.isChecked()):
-
-            self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
-            if (self.throttle_sendOnChange_bool.isChecked()):
-                self.sendThrottle()
+        self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
+        if (self.throttle_sendOnChange_bool.isChecked()):
+            self.sendThrottle()
 
     def sendPID(self):
         self.send('p' + str(self.PID_p.value()))
@@ -127,11 +125,11 @@ class FunctionalGUI(Ui_Form):
         self.angles_roll_doubleSpinBox.setValue(0)
 
     def resetThrottle(self):
-        self.removeMinThrottle()
+        self.minThrottle = 0
         self.throttle_spinBox.setValue(0)
 
     def stop(self):
-        self.resetAngles()
+        #self.resetAngles()
         self.resetThrottle()
         self.send(chr(20)) #DC4
 
@@ -176,7 +174,7 @@ class FunctionalGUI(Ui_Form):
         freq = self.gamepad_frequency_spinBox.value()
         if freq < 1:
             freq = 1
-        self.controller.delay = 1/float(freq)
+        self.gamepad.delay = 1/float(freq)
 
     def setButtons(self):
         self.removeMinThrottle()
@@ -202,23 +200,30 @@ class FunctionalGUI(Ui_Form):
 
     def disableGamepad(self):
         self.resetThrottle()
-        self.resetAngles()
         self.use_gamepad_bool.setChecked(False)
 
+    def checkGamepad(self):
+        self.gamepad.update()
+        y, p, r = self.gamepad.getYPR()
+        throttle = self.gamepad.getThrottle()
+        self.changeYPR(self, y, p, r)
+        self.changeThrottle(self, throttle)
 
     def createGamepad(self):
         freq = self.gamepad_frequency_spinBox.value()
         if freq < 1:
             freq = 1
-        self.controller = ControllerThread(0, self.changeYPR, self.changeThrottle)
-        self.controller.delay = 1/float(freq)
-        self.controller.connectButton(0, self.addMinThrottle)
-        self.controller.connectButton(1, self.removeMinThrottle)
-        self.controller.connectButton(6, self.stop)
-        self.controller.connectButton(7, self.start)
-        self.controller.connectButton(3, self.disableGamepad)
+        self.gamepad = Gamepad(0)
+        self.gamepad.connectButton(0, self.addMinThrottle)
+        self.gamepad.connectButton(1, self.removeMinThrottle)
+        self.gamepad.connectButton(6, self.stop)
+        self.gamepad.connectButton(7, self.start)
+        self.gamepad.connectButton(3, self.disableGamepad)
         self.setSliderRanges()
-        self.controller.start()
+        self.gamepad_timer = PyQt5.QtCore.QTimer()
+        self.gamepad_timer.connect(self.checkGamepad)
+        self.gamepad_timer.start(1/freq)
+
 
     def openConnection(self):
         self.ser = serial.Serial(
