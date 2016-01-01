@@ -166,19 +166,15 @@ class FunctionalGUI(Ui_Form):
             self.changeThrottle(throttle)
 
     def createGamepad(self):
-        freq = self.gamepad_frequency_spinBox.value()
-        if freq < 1:
-            freq = 1
         self.gamepad = Gamepad(0)
         self.gamepad.connectButton(0, self.addMinThrottle)
         self.gamepad.connectButton(1, self.removeMinThrottle)
         self.gamepad.connectButton(6, self.stop)
         self.gamepad.connectButton(7, self.start)
         self.gamepad.connectButton(3, self.disableGamepad)
-        self.setSliderRanges()
         self.gamepad_timer = PyQt5.QtCore.QTimer()
         self.gamepad_timer.timeout.connect(self.checkGamepad)
-        self.gamepad_timer.start(1/freq * 1000)
+        self.setSliderRanges() # This method also starts gamepad_timer
 
 
     def send(self, message):
