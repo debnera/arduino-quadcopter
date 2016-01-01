@@ -139,10 +139,13 @@ class FunctionalGUI(Ui_Form):
         #self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
         #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
         self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
         #self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
         self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
         #self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
         self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
         #self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
         self.max_apply.clicked.connect(self.setSliderRanges)
 
