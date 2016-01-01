@@ -19,18 +19,18 @@ class ControllerThread():
         else:
             print("Given joystick id not found.")
 
-    def update():
+    def update(self):
         self.checkPressedButtons()
 
 
-    def getYPR():
+    def getYPR(self):
         yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
         pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
         roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
         return yaw, pitch, roll
 
 
-    def getThrottle():
+    def getThrottle(self):
         throttle = self.getAxis(2) + self.getAxis(5)
         throttle += 2 # Range 0 to 4
         throttle += -0.2 # Deadzone
