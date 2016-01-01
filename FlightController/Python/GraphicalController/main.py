@@ -107,17 +107,18 @@ class FunctionalGUI(Ui_Form):
         self.send(string)
 
     def send(self, message):
-        message = chr(2) + message  #STX
-        message += chr(3) #ETX
-        self.packets += 1
-        self.bytes += len(message)
-        self.data_label.setText(str(self.bytes))
-        self.packet_label.setText(str(self.packets))
-        try:
-            self.ser.write(message.encode())
-            #print("Send:", message)
-        except serial.serialutil.SerialTimeoutException:
-            print("WARNING: Write timeout exceeded!")
+        if (self.ser != None):
+            message = chr(2) + message  #STX
+            message += chr(3) #ETX
+            self.packets += 1
+            self.bytes += len(message)
+            self.data_label.setText(str(self.bytes))
+            self.packet_label.setText(str(self.packets))
+            try:
+                self.ser.write(message.encode())
+                #print("Send:", message)
+            except serial.serialutil.SerialTimeoutException:
+                print("WARNING: Write timeout exceeded!")
 
     def resetAngles(self):
         self.angles_yaw_doubleSpinBox.setValue(0)
@@ -177,6 +178,7 @@ class FunctionalGUI(Ui_Form):
         self.gamepad.delay = 1/float(freq)
 
     def setButtons(self):
+        self.ser = None
         self.removeMinThrottle()
         self.throttle_send_btn.released.connect(self.sendThrottle)
         self.angles_send_btn.released.connect(self.sendAngles)
@@ -206,8 +208,8 @@ class FunctionalGUI(Ui_Form):
         self.gamepad.update()
         y, p, r = self.gamepad.getYPR()
         throttle = self.gamepad.getThrottle()
-        self.changeYPR(self, y, p, r)
-        self.changeThrottle(self, throttle)
+        self.changeYPR(y, p, r)
+        self.changeThrottle(throttle)
 
     def createGamepad(self):
         freq = self.gamepad_frequency_spinBox.value()
@@ -221,7 +223,7 @@ class FunctionalGUI(Ui_Form):
         self.gamepad.connectButton(3, self.disableGamepad)
         self.setSliderRanges()
         self.gamepad_timer = PyQt5.QtCore.QTimer()
-        self.gamepad_timer.connect(self.checkGamepad)
+        self.gamepad_timer.timeout.connect(self.checkGamepad)
         self.gamepad_timer.start(1/freq)
 
 
@@ -241,9 +243,9 @@ window = QDialog()
 ui = FunctionalGUI()
 ui.setupUi(window)
 ui.setButtons()
-ser = ui.openConnection()
-listener = ListeningThread(ser)
-listener.start()
+#ser = ui.openConnection()
+#listener = ListeningThread(ser)
+#listener.start()
 window.show()
 ui.createGamepad()
 sys.exit(app.exec_())
