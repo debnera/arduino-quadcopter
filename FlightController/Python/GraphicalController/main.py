@@ -61,6 +61,7 @@ class FunctionalGUI(Ui_Form):
 
     bytes = 0
     packets = 0
+    minThrottle = 0
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
@@ -88,13 +89,13 @@ class FunctionalGUI(Ui_Form):
 
     def addMinThrottle(self):
         self.minThrottle += 71 # 71 is the limit for activating stabilizer
-        print("Setting default throttle to:", minThrottle)
+        print("Setting default throttle to:", self.minThrottle)
 
     def removeMinThrottle(self):
         self.minThrottle -= 71
         if self.minThrottle < 0:
             self.minThrottle = 0
-        print("Setting default throttle to:", minThrottle)
+        print("Setting default throttle to:", self.minThrottle)
 
     def sendAngles(self):
         string = 'y' + str(self.angles_yaw_doubleSpinBox.value())
