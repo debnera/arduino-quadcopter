@@ -172,13 +172,16 @@ class FunctionalGUI(Ui_Form):
         self.setMinMax(self.angles_roll_doubleSpinBox, self.roll_max_slider.value())
         self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
         self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
-        freq = self.gamepad_frequency_spinBox.value()
-        if freq < 1:
-            freq = 1
-        self.gamepad.delay = 1/float(freq)
+        if (self.gamepad_timer != None):
+            freq = self.gamepad_frequency_spinBox.value()
+            if freq < 1:
+                freq = 1
+            self.gamepad_timer.stop()
+            self.gamepad_timer.start(1/freq * 1000)
 
     def setButtons(self):
         self.ser = None
+        self.gamepad_timer = None
         self.removeMinThrottle()
         self.throttle_send_btn.released.connect(self.sendThrottle)
         self.angles_send_btn.released.connect(self.sendAngles)
@@ -205,11 +208,12 @@ class FunctionalGUI(Ui_Form):
         self.use_gamepad_bool.setChecked(False)
 
     def checkGamepad(self):
-        self.gamepad.update()
-        y, p, r = self.gamepad.getYPR()
-        throttle = self.gamepad.getThrottle()
-        self.changeYPR(y, p, r)
-        self.changeThrottle(throttle)
+        if self.use_gamepad_bool.isChecked():
+            self.gamepad.update()
+            y, p, r = self.gamepad.getYPR()
+            throttle = self.gamepad.getThrottle()
+            self.changeYPR(y, p, r)
+            self.changeThrottle(throttle)
 
     def createGamepad(self):
         freq = self.gamepad_frequency_spinBox.value()
@@ -224,7 +228,7 @@ class FunctionalGUI(Ui_Form):
         self.setSliderRanges()
         self.gamepad_timer = PyQt5.QtCore.QTimer()
         self.gamepad_timer.timeout.connect(self.checkGamepad)
-        self.gamepad_timer.start(1/freq)
+        self.gamepad_timer.start(1/freq * 1000)
 
 
     def openConnection(self):
@@ -243,11 +247,12 @@ window = QDialog()
 ui = FunctionalGUI()
 ui.setupUi(window)
 ui.setButtons()
+ui.createGamepad()
 #ser = ui.openConnection()
 #listener = ListeningThread(ser)
 #listener.start()
 window.show()
-ui.createGamepad()
+
 sys.exit(app.exec_())
 '''
 else:
