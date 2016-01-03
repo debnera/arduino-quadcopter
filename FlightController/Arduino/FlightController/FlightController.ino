@@ -285,26 +285,33 @@ bool parseCommand(CircularBuffer *buffer)
     switch(command[1])
     {
       case ACK:
+      {
         success = true; // We successfully received a command
         break;
+      }
       case DC1:
-        //bluetooth.println("Starting engines");
+      {
         motor1.attach();
         motor2.attach();
         motor3.attach();
         motor4.attach();
         success = true; // We successfully received a command
         break;
+      }
       case DC4:
-        stopMotors();
-        success = true; // We successfully received a command
-        break;
+      {
+          stopMotors();
+          success = true; // We successfully received a command
+          break;
+      }
       case 'y':
+      {
         if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
         {
           success = true; // We successfully received a command
         }
         break;
+      }
       case 'p': // p-value for roll/pitch PID
       {
         float value = parseFloat(&command[2], len - 3, &success);
@@ -313,10 +320,6 @@ bool parseCommand(CircularBuffer *buffer)
           stabilizer.changeP(value);
           Serial.print("New p value: ");
           Serial.println(value);
-        }
-        else
-        {
-          Serial.println("Invalid p value");
         }
         break;
       }
@@ -329,10 +332,6 @@ bool parseCommand(CircularBuffer *buffer)
           Serial.print("New i value: ");
           Serial.println(value);
         }
-        else
-        {
-          Serial.println("Invalid i value");
-        }
         break;
       }
       case 't':
@@ -344,13 +343,13 @@ bool parseCommand(CircularBuffer *buffer)
         }
         break;
       }
-      default:
-      {
-        Serial.println("Invalid command.");
-      }
     }
   }
   free(command);
+  if (!success)
+  {
+    Serial.println("Invalid command.");
+  }
   return success;
 }
 
