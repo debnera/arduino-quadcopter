@@ -16,7 +16,7 @@ Author:	Anton
 
 //#define MPU_DEBUG
 // Motors
-#define kMinThrottleToStabilize 70 // To prevent the stabilizer from affecting propeller speeds at low throttle.
+#define kMinThrottleToStabilize 100 // To prevent the stabilizer from affecting propeller speeds at low throttle.
 #define kMaxThrottle 500 // Stabilizer is added on top of this.
 #define kMinPwm 750 // Minimum pwm signal width - depends on ESC
 #define kMaxPwm 1750 // Maximum pwm signal width - depends on ESC
