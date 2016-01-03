@@ -209,6 +209,8 @@ class FunctionalGUI(Ui_Form):
                         self.send(chr(6))
                 except UnicodeDecodeError:
                     print("UnicodeDecodeError: Received bad data")
+        else:
+            self.read_timer.stop()
 
 
     def openConnection(self):
