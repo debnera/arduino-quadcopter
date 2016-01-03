@@ -39,8 +39,13 @@ class FunctionalGUI(Ui_Form):
         if (self.throttle_sendOnChange_bool.isChecked()):
             self.sendThrottle()
 
-    def sendPID(self):
+    def sendP(self):
         self.send('p' + str(self.PID_p.value()))
+        print("Sent p-value")
+
+    def sendI(self):
+        self.send('i' + str(self.PID_i.value()))
+        print("Sent i-value")
 
     def addMinThrottle(self):
         self.minThrottle += 71 # 71 is the limit for activating stabilizer
@@ -151,7 +156,8 @@ class FunctionalGUI(Ui_Form):
 
 
 
-        self.send_PID.clicked.connect(self.sendPID)
+        self.send_PID_p.clicked.connect(self.sendP)
+        self.send_PID_i.clicked.connect(self.sendI)
 
     def disableGamepad(self):
         self.resetThrottle()
