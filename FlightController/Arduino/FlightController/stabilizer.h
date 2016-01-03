@@ -30,6 +30,7 @@ public:
 	Angles calculateRates(Angles target_angles, Angles cur_angles);
 	Vector4 calculatePowers(Angles target_rates, Angles cur_rates);
 	void changeP(float p);
+	void changeI(float p);
 };
 
 #endif
