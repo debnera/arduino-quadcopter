@@ -32,11 +32,11 @@ const char STX = (char) 2; // Start of text (Starts command)
 const char ETX = (char) 3; // End of text (Ends command)
 const char ENQ = (char) 5; // Enquiry (for pinging bluetooth)
 const char ACK = (char) 6; // Acknowledge
-
 const char DC1 = (char) 17; // Start device
 const char DC4 = (char) 20; // Stop device
 
 
+// Control variables
 Motor motor1 = Motor(motor_pin1);
 Motor motor2 = Motor(motor_pin2);
 Motor motor3 = Motor(motor_pin3);
@@ -62,11 +62,14 @@ unsigned long previous_msg_received = 0;
 int print_counter = 0;
 int gyro_scale = 2000; // +-2000 degrees/s is default (250, 500, 1000 or 2000)
 
-void dmpDataReady() {
-    mpu.mpuInterrupt = true;
+void dmpDataReady()
+{
+  // This is an interrupt routine for the mpu.
+  mpu.mpuInterrupt = true;
 }
 
-void setup() {
+void setup()
+{
   wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
 	mpu = MPU();
@@ -87,28 +90,8 @@ void setup() {
   offset_angles.setValues(0, 0.71, -2.7);
 }
 
-// the loop function runs over and over again until power down or reset
-void loop() {
-
-	/*// Get and parse commands from controller.
-	bluetooth->readFromSerial();
-	String command = bluetooth->getCompletedCommand();
-	if (command.length() > 0)
-	{
-		parseCommand(command);
-	}
-
-	// Check connection status
-	if (isBluetoothConnected == false)
-	{
-		// We lost connection - let's make sure the propellers don't spin.
-		target_angles.setValues(0, 0, 0);
-		throttle = 0;
-	}
-  */
-	// Get values from MPU
-
-
+void loop()
+{
   while (readBluetooth() == true)
   {
     if(parseCommand())
@@ -124,7 +107,6 @@ void loop() {
     if (millis() - previous_msg_received > (1000 + ping_offset))
     {
       ping_offset += 200;
-      //Serial.println(ping_offset);
       sendPing();
     }
     if (millis() - previous_msg_received > 3000)
@@ -137,7 +119,6 @@ void loop() {
     }
   }
 
-
   if (mpu.dataAvailable())
   {
     // TODO: Better logic for wdt_reset. If mpu returns crap, wdt is still
@@ -148,16 +129,15 @@ void loop() {
       Serial.println(F("FIFO OVERFLOW!!!!"));
     }
 
+    // Get stuff from MPU
     cur_angles = mpu.getAngles() - offset_angles;
     cur_rates = mpu.getAngularRates();
 
-
-
+    // Calculate new powers for motors
     motor_powers.setValues(0, 0, 0, 0);
     if (throttle > kMinThrottleToStabilize)
     {
       target_rates = stabilizer.calculateRates(target_angles, cur_angles);
-      //target_rates = target_angles;
       motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
       motor_powers = motor_powers + throttle;
       motor_powers.setMinValues(kMinThrottleToStabilize - 20);
@@ -166,13 +146,12 @@ void loop() {
     {
       motor_powers = motor_powers + throttle;
     }
-
     setMotorPowers(motor_powers);
 
+    // Print / debugging
     print_counter++;
     if ( print_counter % 40 == 0)
     {
-      //Serial.println(motor_powers.x1);
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
@@ -205,7 +184,6 @@ void loop() {
     }
     if ( print_counter == 2000)
     {
-      //throttle = 100;
       offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
     }
   }
@@ -269,12 +247,12 @@ bool parseCommand()
   {
     switch(command[0])
     {
-      case ACK:
+      case ACK: // Ping ok
       {
         success = true; // We successfully received a command
         break;
       }
-      case DC1:
+      case DC1: // Start
       {
         motor1.attach();
         motor2.attach();
@@ -283,13 +261,13 @@ bool parseCommand()
         success = true; // We successfully received a command
         break;
       }
-      case DC4:
+      case DC4: // Stop
       {
           stopMotors();
           success = true; // We successfully received a command
           break;
       }
-      case 'y':
+      case 'y': // Yaw/pitch/roll
       {
         if (target_angles.fromArray(&command[0], len))
         {
@@ -297,7 +275,7 @@ bool parseCommand()
         }
         break;
       }
-      case 'p': // p-value for roll/pitch PID
+      case 'p': // P-value for roll/pitch PID
       {
         float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
@@ -308,7 +286,7 @@ bool parseCommand()
         }
         break;
       }
-      case 'i': // p-value for roll/pitch PID
+      case 'i': // I-value for roll/pitch PID
       {
         float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
@@ -319,7 +297,7 @@ bool parseCommand()
         }
         break;
       }
-      case 't':
+      case 't': // Throttle
       {
         float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
@@ -339,6 +317,10 @@ bool parseCommand()
 
 float parseFloat(char *str, int len, bool *success)
 {
+  /*
+    Attempts to parse float from given string. Changes success to true if
+    successful.
+  */
   *success = true;
   if (len < 1)
   {
@@ -380,6 +362,7 @@ float parseFloat(char *str, int len, bool *success)
 
 void stopMotors()
 {
+  // Stops and detaches all motors.
   throttle = 0;
   motor1.setPower(kMinPwm);
   motor2.setPower(kMinPwm);
@@ -393,6 +376,7 @@ void stopMotors()
 
 void setMotorPowers(Vector4 powers)
 {
+  // Sets powers for all motors. Motors will not move if they are not attached.
 	motor1.setPower(constrain((powers.x1 + kMinPwm), kMinPwm, kMaxPwm));
 	motor2.setPower(constrain((powers.x2 + kMinPwm), kMinPwm, kMaxPwm));
 	motor3.setPower(constrain((powers.x3 + kMinPwm), kMinPwm, kMaxPwm));
