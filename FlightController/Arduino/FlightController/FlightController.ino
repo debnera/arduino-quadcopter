@@ -230,17 +230,19 @@ bool readBluetooth()
     while (Serial.available())
   	{
       char c = (char)Serial.read();
-      //Serial.print(c);
       if (c == STX || rf_read_buffer_len > 19)
       {
         // Start of new command / buffer overflow - reset the buffer
         rf_read_buffer_len = 0;
       }
-      rf_read_buffer[rf_read_buffer_len++] = c;
-      if (c == ETX)
+      else if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
         return true;
+      }
+      else
+      {
+        rf_read_buffer[rf_read_buffer_len++] = c;
       }
   	}
   }
@@ -263,11 +265,9 @@ bool parseCommand()
   bool success = false;
   int len = rf_read_buffer_len;
   char *command = rf_read_buffer;
-  if (len < 2) return false;
-  //Serial.print("Received: ");
-  if (command[0] == STX && len > 1)
+  if (len > 0)
   {
-    switch(command[1])
+    switch(command[0])
     {
       case ACK:
       {
@@ -291,7 +291,7 @@ bool parseCommand()
       }
       case 'y':
       {
-        if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
+        if (target_angles.fromArray(&command[0], len))
         {
           success = true; // We successfully received a command
         }
@@ -299,7 +299,7 @@ bool parseCommand()
       }
       case 'p': // p-value for roll/pitch PID
       {
-        float value = parseFloat(&command[2], len - 3, &success);
+        float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
         {
           stabilizer.changeP(value);
@@ -310,7 +310,7 @@ bool parseCommand()
       }
       case 'i': // p-value for roll/pitch PID
       {
-        float value = parseFloat(&command[2], len - 3, &success);
+        float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
         {
           stabilizer.changeI(value);
@@ -321,7 +321,7 @@ bool parseCommand()
       }
       case 't':
       {
-        int value = (int) parseFloat(&command[2], len - 3, &success);
+        float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
         {
           throttle = value;
