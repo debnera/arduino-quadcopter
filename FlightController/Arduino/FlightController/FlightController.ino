@@ -297,109 +297,103 @@ bool parseCommand(CircularBuffer *buffer)
         break;
       case DC4:
         stopMotors();
-        //bluetooth.println("Killing engines");
         success = true; // We successfully received a command
         break;
       case 'y':
-        //bluetooth.println("Angles received");
         if (target_angles.fromArray(&command[1], len - 2)) // len - (STX + ETX)
         {
           success = true; // We successfully received a command
-          //bluetooth.println(target_angles.toString());
         }
         break;
       case 'p': // p-value for roll/pitch PID
       {
-        if (len < 4) return false; // No value given (STX + 't' + ETX)
-        float value = 0;
-      	bool decimal = false;
-      	int decimal_index = 1;
-      	for (int i = 2; i < len - 1; i++)
-      	{
-      		char c = command[i];
-      		if ('0' <= c && c <= '9')
-      		{
-      			if (decimal == false)
-      				value = value * 10 + c - '0';
-      			else
-      			{
-      				value += (c - '0') / pow(10, decimal_index);
-      				decimal_index++;
-      			}
-      		}
-      		else if ((c == '.' || c == ',') && decimal == false)
-      			decimal = true;
-      		else
-      			return false;
-      	}
-        success = true;
-        stabilizer.changeP(value);
-        Serial.print("New p value: ");
-        Serial.println(value);
+        float value = parseFloat(&command[2], len - 3, &success);
+        if (success == true)
+        {
+          stabilizer.changeP(value);
+          Serial.print("New p value: ");
+          Serial.println(value);
+        }
+        else
+        {
+          Serial.println("Invalid p value");
+        }
         break;
       }
       case 'i': // p-value for roll/pitch PID
       {
-        if (len < 4) return false; // No value given (STX + 't' + ETX)
-        float value = 0;
-      	bool decimal = false;
-      	int decimal_index = 1;
-      	for (int i = 2; i < len - 1; i++)
-      	{
-      		char c = command[i];
-      		if ('0' <= c && c <= '9')
-      		{
-      			if (decimal == false)
-      				value = value * 10 + c - '0';
-      			else
-      			{
-      				value += (c - '0') / pow(10, decimal_index);
-      				decimal_index++;
-      			}
-      		}
-      		else if ((c == '.' || c == ',') && decimal == false)
-      			decimal = true;
-      		else
-      			return false;
-      	}
-        success = true;
-        stabilizer.changeI(value);
-        Serial.print("New i value: ");
-        Serial.println(value);
+        float value = parseFloat(&command[2], len - 3, &success);
+        if (success == true)
+        {
+          stabilizer.changeI(value);
+          Serial.print("New i value: ");
+          Serial.println(value);
+        }
+        else
+        {
+          Serial.println("Invalid i value");
+        }
         break;
       }
       case 't':
       {
-        //bluetooth.println("Throttle received");
-        if (len < 4) return false; // No value given (STX + 't' + ETX)
-        int x = 0;
-        for (int i = 2; i < len - 1; i++)
+        int value = (int) parseFloat(&command[2], len - 3, &success);
+        if (success == true)
         {
-          int cmd = (int)command[i] - (int)'0';
-          if (cmd >= 0 && cmd <= 9)
-          {
-            x = 10*x + cmd;
-          }
-          else if (i == 2 && command[i] == '-') // Negative value
-          {
-            x = -1;
-            break;
-          }
-          else return false; // Invalid character encountered
+          throttle = value;
         }
-        //if (x > kMaxThrottle) x = kMaxThrottle;
-        throttle = x;
-        success = true; // We successfully received a command
-        //bluetooth.println(throttle);
         break;
+      }
+      default:
+      {
+        Serial.println("Invalid command.");
       }
     }
   }
-  //Serial.println();
   free(command);
   return success;
 }
 
+float parseFloat(char *str, int len, bool *success)
+{
+  *success = true;
+  if (len < 1)
+  {
+    *success = false;
+    return 0;
+  }
+  float value = 0;
+  bool decimal = false;
+  int decimal_index = 1;
+  bool is_negative = false;
+  for (int i = 0; i < len; i++)
+  {
+    char c = str[i];
+    if ('0' <= c && c <= '9')
+    {
+      if (decimal == false)
+        value = value * 10 + c - '0';
+      else
+      {
+        value += (c - '0') / pow(10, decimal_index);
+        decimal_index++;
+      }
+    }
+    else if ((c == '.' || c == ',') && decimal == false)
+      decimal = true;
+    else if (c == '-' && i == 0)
+    {
+      is_negative = true;
+    }
+    else
+    {
+      *success = false;
+      break;
+    }
+  }
+  if (is_negative) value = -value;
+  return value;
+}
 
 void stopMotors()
 {
