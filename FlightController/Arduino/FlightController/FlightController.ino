@@ -9,7 +9,6 @@ Author:	Anton
 #include "pid.h"
 #include "mpu.h"
 #include "motor.h"
-#include "circular_buffer.h"
 #include <Wire.h>
 #include <Servo.h>
 #include <avr/wdt.h> // Watchdog timer
@@ -53,8 +52,8 @@ Stabilizer stabilizer;
 MPU mpu;
 
 // Buffers
-// TODO: CircularBuffer is overkill for this purpose, a simple array would suffice.
-CircularBuffer *bluetooth_read_cb;
+char rf_read_buffer[20];
+int rf_read_buffer_len = 0;
 
 // Bluetooth management variables and constants
 bool bluetooth_ok;
@@ -70,7 +69,6 @@ void dmpDataReady() {
 void setup() {
   wdt_enable(WDTO_2S); // Enables watchdog with 2 second timer
   Serial.begin(115200);
-  bluetooth_read_cb = new CircularBuffer();
 	mpu = MPU();
   Serial.println(F("Starting dmp..."));
   bool success = mpu.init();
@@ -113,7 +111,7 @@ void loop() {
 
   while (readBluetooth() == true)
   {
-    if(parseCommand(bluetooth_read_cb))
+    if(parseCommand())
     {
       bluetooth_ok = true;
       previous_msg_received = millis();
@@ -231,25 +229,17 @@ bool readBluetooth()
   {
     while (Serial.available())
   	{
-
       char c = (char)Serial.read();
       //Serial.print(c);
-      if (c == STX)
+      if (c == STX || rf_read_buffer_len > 19)
       {
-        // Start of new command - ignore all possible gibberish before it.
-        bluetooth_read_cb->reset();
-        //Serial.println("STX received");
+        // Start of new command / buffer overflow - reset the buffer
+        rf_read_buffer_len = 0;
       }
-      bool cb_overflow = bluetooth_read_cb->write(c);
-      if (cb_overflow)
-      {
-        // Buffer overflown before ETX was received.
-        //bluetooth.println("Command buffer overflow!! - no ETX received.");
-      }
+      rf_read_buffer[rf_read_buffer_len++] = c;
       if (c == ETX)
       {
         // End of text received. Command is ready to be parsed.
-        //Serial.println("ETX received");
         return true;
       }
   	}
@@ -268,18 +258,13 @@ void sendPing()
   //Serialprint(ETX);
 }
 
-bool parseCommand(CircularBuffer *buffer)
+bool parseCommand()
 {
   bool success = false;
-  int len = buffer->length();
+  int len = rf_read_buffer_len;
+  char *command = rf_read_buffer;
   if (len < 2) return false;
   //Serial.print("Received: ");
-  char *command = (char*)malloc(len);
-  for (int i = 0; i < len; i++)
-  {
-    command[i] = buffer->read();
-    //Serial.print(command[i]);
-  }
   if (command[0] == STX && len > 1)
   {
     switch(command[1])
@@ -345,7 +330,6 @@ bool parseCommand(CircularBuffer *buffer)
       }
     }
   }
-  free(command);
   if (!success)
   {
     Serial.println("Invalid command.");
