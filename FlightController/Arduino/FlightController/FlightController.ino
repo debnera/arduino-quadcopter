@@ -310,7 +310,7 @@ bool parseCommand()
         if (success == true)
         {
           stabilizer.changeP(value);
-          Serial.print("New p value: ");
+          Serial.print(F("New p value: "));
           Serial.println(value);
         }
         break;
@@ -321,7 +321,7 @@ bool parseCommand()
         if (success == true)
         {
           stabilizer.changeI(value);
-          Serial.print("New i value: ");
+          Serial.print(F("New i value: "));
           Serial.println(value);
         }
         break;
@@ -332,7 +332,7 @@ bool parseCommand()
         if (success == true)
         {
           stabilizer.changeYP(value);
-          Serial.print("New p value: ");
+          Serial.print(F("New yaw p value: "));
           Serial.println(value);
         }
         break;
@@ -370,13 +370,13 @@ bool parseCommand()
             success = false;
           }
           break;
-        }  
+        }
       }
     }
   }
   if (!success)
   {
-    Serial.println("Invalid command.");
+    Serial.println(F("Invalid command."));
   }
   return success;
 }
