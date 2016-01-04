@@ -336,6 +336,37 @@ bool parseCommand()
         }
         break;
       }
+      case 'm': // Change the controller mode
+      {
+        if (len != 2)
+        {
+          success = false;
+          break;
+        }
+        int index = (int) command[1] - '0';
+        success = true;
+        if (index == ANGLE_CONTROL)
+        {
+          Serial.println(F("Changing to Angle Control mode"));
+          control_mode = ANGLE_CONTROL;
+        }
+        else if (index == RATE_CONTROL)
+        {
+          Serial.println(F("Changing to Rate Control mode"));
+          control_mode = RATE_CONTROL;
+        }
+        else if (index == RAW_CONTROL)
+        {
+          Serial.println(F("Changing to Raw Control mode"));
+          control_mode = RAW_CONTROL;
+        }
+        else
+        {
+          Serial.println(F("Unknown control mode"));
+          success = false;
+        }
+        break;
+      }
     }
   }
   if (!success)
