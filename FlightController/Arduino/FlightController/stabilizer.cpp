@@ -28,16 +28,21 @@ Stabilizer::Stabilizer()
 
 }
 
+void Stabilizer::changeYP(float p)
+{
+		pid_yaw_rate.p = p;
+}
+
 void Stabilizer::changeP(float p)
 {
 		pid_pitch_rate.p = p;
 		pid_roll_rate.p = p;
 }
 
-void Stabilizer::changeI(float p)
+void Stabilizer::changeI(float i)
 {
-		pid_pitch_rate.i = p;
-		pid_roll_rate.i = p;
+		pid_pitch_rate.i = i;
+		pid_roll_rate.i = i;
 }
 
 Angles Stabilizer::calculateRates(Angles target_angles, Angles cur_angles)

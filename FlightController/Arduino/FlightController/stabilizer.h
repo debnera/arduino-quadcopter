@@ -29,7 +29,8 @@ public:
 	Vector4 calculatePowers(Angles target_rates, Angles cur_rates);
 	Vector4 rawPowers(Angles target_powers);
 	void changeP(float p);
-	void changeI(float p);
+	void changeYP(float p);
+	void changeI(float i);
 };
 
 #endif

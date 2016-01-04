@@ -294,6 +294,15 @@ bool parseCommand()
         }
         break;
       }
+      case 't': // Throttle
+      {
+        float value = parseFloat(&command[1], len - 1, &success);
+        if (success == true)
+        {
+          throttle = value;
+        }
+        break;
+      }
       case 'p': // P-value for roll/pitch PID
       {
         float value = parseFloat(&command[1], len - 1, &success);
@@ -316,12 +325,14 @@ bool parseCommand()
         }
         break;
       }
-      case 't': // Throttle
+      case 'w': // P-value for yaw PID
       {
         float value = parseFloat(&command[1], len - 1, &success);
         if (success == true)
         {
-          throttle = value;
+          stabilizer.changeYP(value);
+          Serial.print("New p value: ");
+          Serial.println(value);
         }
         break;
       }
