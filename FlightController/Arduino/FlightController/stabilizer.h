@@ -22,13 +22,12 @@ private:
 	PID pid_yaw_stab;
 	PID pid_pitch_stab;
 	PID pid_roll_stab;
-	//float constrain(float val, float min, float max);
-	//int constrain(int val, int min, int max);
 
 public:
 	Stabilizer();
 	Angles calculateRates(Angles target_angles, Angles cur_angles);
 	Vector4 calculatePowers(Angles target_rates, Angles cur_rates);
+	Vector4 rawPowers(Angles target_powers);
 	void changeP(float p);
 	void changeI(float p);
 };
