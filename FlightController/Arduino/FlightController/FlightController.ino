@@ -51,6 +51,11 @@ int throttle;
 Stabilizer stabilizer;
 MPU mpu;
 
+#define ANGLE_CONTROL 0
+#define RATE_CONTROL 1
+#define RAW_CONTROL 2
+int control_mode = ANGLE_CONTROL;
+
 // Buffers
 char rf_read_buffer[20];
 int rf_read_buffer_len = 0;
@@ -135,10 +140,24 @@ void loop()
 
     // Calculate new powers for motors
     motor_powers.setValues(0, 0, 0, 0);
-    if (throttle > kMinThrottleToStabilize)
+    if (throttle > kMinThrottleToStabilize && control_mode != RAW_CONTROL)
     {
-      target_rates = stabilizer.calculateRates(target_angles, cur_angles);
-      motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+      if (control_mode == ANGLE_CONTROL)
+      {
+        Serial.print(F("ANGLE_CONTROL: "));
+        target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+        motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
+      }
+      else if (control_mode == RATE_CONTROL)
+      {
+        Serial.print(F("RATE_CONTROL: "));
+        motor_powers = stabilizer.calculatePowers(target_angles, cur_rates);
+      }
+      else if (control_mode == RAW_CONTROL)
+      {
+        Serial.print(F("RAW_CONTROL: "));
+        motor_powers = stabilizer.rawPowers(target_angles);
+      }
       motor_powers = motor_powers + throttle;
       motor_powers.setMinValues(kMinThrottleToStabilize - 20);
     }
