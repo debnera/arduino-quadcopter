@@ -201,10 +201,6 @@ void loop()
       Serial.println(cur_rates.roll);*/
       //Serial.println();
     }
-    if ( print_counter == 2000)
-    {
-      offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
-    }
   }
 }
 
@@ -303,6 +299,11 @@ bool parseCommand()
         }
         break;
       }
+      case 'r': // Reset orientation (i.e. zeroes yaw-axis)
+      {
+        offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
+        success = true;
+      }
       case 'p': // P-value for roll/pitch PID
       {
         float value = parseFloat(&command[1], len - 1, &success);
@@ -340,32 +341,36 @@ bool parseCommand()
       {
         if (len != 2)
         {
+          Serial.println(F("Missing control mode index or too many numbers"));
           success = false;
           break;
         }
-        int index = (int) command[1] - '0';
-        success = true;
-        if (index == ANGLE_CONTROL)
-        {
-          Serial.println(F("Changing to Angle Control mode"));
-          control_mode = ANGLE_CONTROL;
-        }
-        else if (index == RATE_CONTROL)
-        {
-          Serial.println(F("Changing to Rate Control mode"));
-          control_mode = RATE_CONTROL;
-        }
-        else if (index == RAW_CONTROL)
-        {
-          Serial.println(F("Changing to Raw Control mode"));
-          control_mode = RAW_CONTROL;
-        }
         else
         {
-          Serial.println(F("Unknown control mode"));
-          success = false;
-        }
-        break;
+          int index = (int) command[1] - '0';
+          success = true;
+          if (index == ANGLE_CONTROL)
+          {
+            Serial.println(F("Changing to Angle Control mode"));
+            control_mode = ANGLE_CONTROL;
+          }
+          else if (index == RATE_CONTROL)
+          {
+            Serial.println(F("Changing to Rate Control mode"));
+            control_mode = RATE_CONTROL;
+          }
+          else if (index == RAW_CONTROL)
+          {
+            Serial.println(F("Changing to Raw Control mode"));
+            control_mode = RAW_CONTROL;
+          }
+          else
+          {
+            Serial.println(F("Unknown control mode"));
+            success = false;
+          }
+          break;
+        }  
       }
     }
   }
