@@ -144,18 +144,15 @@ void loop()
     {
       if (control_mode == ANGLE_CONTROL)
       {
-        Serial.print(F("ANGLE_CONTROL: "));
         target_rates = stabilizer.calculateRates(target_angles, cur_angles);
         motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
       }
       else if (control_mode == RATE_CONTROL)
       {
-        Serial.print(F("RATE_CONTROL: "));
         motor_powers = stabilizer.calculatePowers(target_angles, cur_rates);
       }
       else if (control_mode == RAW_CONTROL)
       {
-        Serial.print(F("RAW_CONTROL: "));
         motor_powers = stabilizer.rawPowers(target_angles);
       }
       motor_powers = motor_powers + throttle;
@@ -171,6 +168,19 @@ void loop()
     print_counter++;
     if ( print_counter % 40 == 0)
     {
+      if (control_mode == ANGLE_CONTROL)
+      {
+        Serial.print(F("ANGLE_CONTROL: "));
+      }
+      else if (control_mode == RATE_CONTROL)
+      {
+        Serial.print(F("RATE_CONTROL: "));
+      }
+      else if (control_mode == RAW_CONTROL)
+      {
+        Serial.print(F("RAW_CONTROL: "));
+      }
+
       Serial.print("Powers\t");
       Serial.print(motor_powers.x1);
       Serial.print("\t");
