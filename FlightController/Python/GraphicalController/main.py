@@ -86,12 +86,9 @@ class FunctionalGUI(Ui_Form):
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
-        #temp = self.angles_sendOnChange_bool.isChecked()
-        #self.angles_sendOnChange_bool.setChecked(False)
         self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
         self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
         self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
-        #self.angles_sendOnChange_bool.setChecked(temp)
         if self.angles_sendOnChange_bool.isChecked():
             self.sendAngles()
 
@@ -102,7 +99,7 @@ class FunctionalGUI(Ui_Form):
             self.sendThrottle()
 
     def addMinThrottle(self):
-        self.minThrottle += 71 # 71 is the limit for activating stabilizer
+        self.minThrottle += 71
         print("Setting default throttle to:", self.minThrottle)
 
     def removeMinThrottle(self):
@@ -116,7 +113,6 @@ class FunctionalGUI(Ui_Form):
         string += 'p' + str(self.angles_pitch_doubleSpinBox.value())
         string += 'r' + str(self.angles_roll_doubleSpinBox.value())
         self.send(string)
-
 
     def sendThrottle(self):
         string = 't' + str(self.throttle_spinBox.value())
@@ -164,15 +160,6 @@ class FunctionalGUI(Ui_Form):
         self.angles_yaw_doubleSpinBox.setValue(self.angles_yaw_slider.value() / div)
         self.angles_pitch_doubleSpinBox.setValue(self.angles_pitch_slider.value() / div)
         self.angles_roll_doubleSpinBox.setValue(self.angles_roll_slider.value() / div)
-
-    def maybeSendAngles(self):
-        self.syncAngleBoxes()
-        if(self.angles_sendOnChange_bool.isChecked() == True):
-            self.sendAngles()
-
-    def maybeSendThrottle(self):
-        if(self.throttle_sendOnChange_bool.isChecked() == True):
-            self.sendThrottle()
 
     def setMinMax(self, obj, value):
         obj.setMinimum(-value)
@@ -239,7 +226,6 @@ class FunctionalGUI(Ui_Form):
             self.packet_label.setText(str(self.packets))
             try:
                 self.ser.write(message.encode())
-                #print("Send:", message)
             except serial.serialutil.SerialTimeoutException:
                 print("WARNING: Write timeout exceeded!")
                 print("WARNING: Bluetooth disconnected")
