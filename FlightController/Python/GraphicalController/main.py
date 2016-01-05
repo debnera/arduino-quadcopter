@@ -34,27 +34,22 @@ class FunctionalGUI(Ui_Form):
         self.createGamepad()
 
     def setButtons(self):
-        self.throttle_send_btn.released.connect(self.sendThrottle)
-        self.angles_send_btn.released.connect(self.sendAngles)
-        self.angles_reset_btn.released.connect(self.resetAngles)
-        self.stop_btn.released.connect(self.stop)
-        self.start_btn.released.connect(self.start)
-
-        #self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
-        #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
-        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
-        self.max_apply.clicked.connect(self.setSliderRanges)
-
+        self.throttle_send_btn.clicked.connect(self.sendThrottle)
+        self.angles_send_btn.clicked.connect(self.sendAngles)
+        self.angles_reset_btn.clicked.connect(self.resetAngles)
+        self.stop_btn.clicked.connect(self.stop)
+        self.start_btn.clicked.connect(self.start)
         self.send_PID_p.clicked.connect(self.sendP)
         self.send_PID_i.clicked.connect(self.sendI)
+        self.max_apply.clicked.connect(self.setSliderRanges)
+
+        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
+        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
+        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
+
 
     '''
     -----------------GAMEPAD---------------------------------------------------
