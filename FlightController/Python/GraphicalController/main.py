@@ -24,6 +24,7 @@ class FunctionalGUI(Ui_Form):
     def __init__(self, window):
         super().__init__()
         self.ser = None
+        self.read_timer = None
         self.gamepad_timer = None
         self.bytes = 0 # Used to track the amount of bytes sent
         self.packets = 0 # Used to track the amount of packets sent
@@ -217,7 +218,8 @@ class FunctionalGUI(Ui_Form):
         stopbits=serial.STOPBITS_ONE,
         bytesize=serial.EIGHTBITS,
         writeTimeout=2) # Wait maximum 2 seconds on write
-        self.read_timer = PyQt5.QtCore.QTimer()
+        if (self.read_timer == None):
+            self.read_timer = PyQt5.QtCore.QTimer()
         self.read_timer.timeout.connect(self.readSerial)
         self.read_timer.start(100)
         for i in range(2):
