@@ -17,7 +17,9 @@ from gamepad import Gamepad
 
 class FunctionalGUI(Ui_Form):
 
-
+'''
+-----------------INITIALIZATION------------------------------------------------
+'''
 
     def __init__(self, window):
         super().__init__()
@@ -29,6 +31,56 @@ class FunctionalGUI(Ui_Form):
         self.setupUi(window)
         self.setButtons()
         self.createGamepad()
+
+    def setButtons(self):
+        self.throttle_send_btn.released.connect(self.sendThrottle)
+        self.angles_send_btn.released.connect(self.sendAngles)
+        self.angles_reset_btn.released.connect(self.resetAngles)
+        self.stop_btn.released.connect(self.stop)
+        self.start_btn.released.connect(self.start)
+
+        #self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
+        #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
+        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
+        #self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
+        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
+        #self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
+        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
+        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
+        #self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
+        self.max_apply.clicked.connect(self.setSliderRanges)
+
+        self.send_PID_p.clicked.connect(self.sendP)
+        self.send_PID_i.clicked.connect(self.sendI)
+
+'''
+-----------------GAMEPAD-------------------------------------------------------
+'''
+
+    def createGamepad(self):
+        self.gamepad = Gamepad(0)
+        self.gamepad.connectButton(0, self.addMinThrottle)
+        self.gamepad.connectButton(1, self.removeMinThrottle)
+        self.gamepad.connectButton(6, self.stop)
+        self.gamepad.connectButton(7, self.start)
+        self.gamepad.connectButton(3, self.disableGamepad)
+        self.gamepad_timer = PyQt5.QtCore.QTimer()
+        self.gamepad_timer.timeout.connect(self.checkGamepad)
+        self.setSliderRanges() # This method also starts gamepad_timer
+
+    def checkGamepad(self):
+        if self.use_gamepad_bool.isChecked():
+            self.gamepad.update()
+            y, p, r = self.gamepad.getYPR()
+            throttle = self.gamepad.getThrottle()
+            self.changeYPR(y, p, r)
+            self.changeThrottle(throttle)
+
+'''
+-----------------BUTTONS-------------------------------------------------------
+'''
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
@@ -140,53 +192,37 @@ class FunctionalGUI(Ui_Form):
         if self.ser == None:
             self.openConnection()
 
-    def setButtons(self):
-        self.throttle_send_btn.released.connect(self.sendThrottle)
-        self.angles_send_btn.released.connect(self.sendAngles)
-        self.angles_reset_btn.released.connect(self.resetAngles)
-        self.stop_btn.released.connect(self.stop)
-        self.start_btn.released.connect(self.start)
-
-        #self.throttle_slider.valueChanged.connect(self.maybeSendThrottle)
-        #self.throttle_spinBox.valueChanged.connect(self.maybeSendThrottle)
-        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_roll_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_pitch_slider.valueChanged.connect(self.maybeSendAngles)
-        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
-        #self.angles_yaw_slider.valueChanged.connect(self.maybeSendAngles)
-        self.max_apply.clicked.connect(self.setSliderRanges)
-
-
-
-        self.send_PID_p.clicked.connect(self.sendP)
-        self.send_PID_i.clicked.connect(self.sendI)
-
     def disableGamepad(self):
         self.resetThrottle()
         self.use_gamepad_bool.setChecked(False)
 
-    def checkGamepad(self):
-        if self.use_gamepad_bool.isChecked():
-            self.gamepad.update()
-            y, p, r = self.gamepad.getYPR()
-            throttle = self.gamepad.getThrottle()
-            self.changeYPR(y, p, r)
-            self.changeThrottle(throttle)
+'''
+-----------------SERIAL STUFF--------------------------------------------------
+'''
 
-    def createGamepad(self):
-        self.gamepad = Gamepad(0)
-        self.gamepad.connectButton(0, self.addMinThrottle)
-        self.gamepad.connectButton(1, self.removeMinThrottle)
-        self.gamepad.connectButton(6, self.stop)
-        self.gamepad.connectButton(7, self.start)
-        self.gamepad.connectButton(3, self.disableGamepad)
-        self.gamepad_timer = PyQt5.QtCore.QTimer()
-        self.gamepad_timer.timeout.connect(self.checkGamepad)
-        self.setSliderRanges() # This method also starts gamepad_timer
+
+    def openConnection(self):
+        print("Opening bluetooth connection...")
+        self.ser = serial.Serial(
+        port=None,
+        baudrate=115200,
+        parity=serial.PARITY_NONE,
+        stopbits=serial.STOPBITS_ONE,
+        bytesize=serial.EIGHTBITS,
+        writeTimeout=2) # Wait maximum 2 seconds on write
+        self.read_timer = PyQt5.QtCore.QTimer()
+        self.read_timer.timeout.connect(self.readSerial)
+        self.read_timer.start(100)
+        for i in range(2):
+            try:
+                print("Trying port", i)
+                self.ser.port = '/dev/rfcomm' + str(i)
+                self.ser.open()
+                print("Bluetooth open!")
+                return # Success!
+            except serial.serialutil.SerialException:
+                print("Cannot open bluetooth at port", i)
+        self.ser = None # Opening failed
 
 
     def send(self, message):
@@ -218,29 +254,12 @@ class FunctionalGUI(Ui_Form):
         else:
             self.read_timer.stop()
 
+'''
+-----------------END OF CLASS--------------------------------------------------
+'''
 
-    def openConnection(self):
-        print("Opening bluetooth connection...")
-        self.ser = serial.Serial(
-        port=None,
-        baudrate=115200,
-        parity=serial.PARITY_NONE,
-        stopbits=serial.STOPBITS_ONE,
-        bytesize=serial.EIGHTBITS,
-        writeTimeout=2) # Wait maximum 2 seconds on write
-        self.read_timer = PyQt5.QtCore.QTimer()
-        self.read_timer.timeout.connect(self.readSerial)
-        self.read_timer.start(100)
-        for i in range(2):
-            try:
-                print("Trying port", i)
-                self.ser.port = '/dev/rfcomm' + str(i)
-                self.ser.open()
-                print("Bluetooth open!")
-                return # Success!
-            except serial.serialutil.SerialException:
-                print("Cannot open bluetooth at port", i)
-        self.ser = None # Opening failed
+
+
 
 
 
