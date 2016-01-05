@@ -17,9 +17,9 @@ from gamepad import Gamepad
 
 class FunctionalGUI(Ui_Form):
 
-'''
------------------INITIALIZATION------------------------------------------------
-'''
+    '''
+    -----------------INITIALIZATION--------------------------------------------
+    '''
 
     def __init__(self, window):
         super().__init__()
@@ -56,9 +56,9 @@ class FunctionalGUI(Ui_Form):
         self.send_PID_p.clicked.connect(self.sendP)
         self.send_PID_i.clicked.connect(self.sendI)
 
-'''
------------------GAMEPAD-------------------------------------------------------
-'''
+    '''
+    -----------------GAMEPAD---------------------------------------------------
+    '''
 
     def createGamepad(self):
         self.gamepad = Gamepad(0)
@@ -83,11 +83,11 @@ class FunctionalGUI(Ui_Form):
         self.resetThrottle()
         self.use_gamepad_bool.setChecked(False)
 
-'''
------------------BUTTONS-------------------------------------------------------
-'''
+    '''
+    -----------------BUTTONS---------------------------------------------------
+    '''
 
-# --------------Primary control------------------------------------------------
+    # --------------Primary control--------------------------------------------
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
@@ -127,7 +127,7 @@ class FunctionalGUI(Ui_Form):
         string = 't' + str(self.throttle_spinBox.value())
         self.send(string)
 
-# --------------Secondary control------------------------------------------------
+    # --------------Secondary control------------------------------------------
 
     def start(self):
         self.send(chr(17))
@@ -147,7 +147,7 @@ class FunctionalGUI(Ui_Form):
         self.throttle_spinBox.setValue(0)
 
 
-# --------------Other commands-------------------------------------------------
+    # --------------Other commands---------------------------------------------
 
     def sendP(self):
         self.send('p' + str(self.PID_p.value()))
@@ -157,7 +157,7 @@ class FunctionalGUI(Ui_Form):
         self.send('i' + str(self.PID_i.value()))
         print("Sent i-value")
 
-# ----------------GUI----------------------------------------------------------
+    # ----------------GUI------------------------------------------------------
     def syncAngleSliders(self):
         mult = 100
         self.angles_yaw_slider.setValue(int(self.angles_yaw_doubleSpinBox.value() * mult))
@@ -204,9 +204,9 @@ class FunctionalGUI(Ui_Form):
 
 
 
-'''
------------------SERIAL STUFF--------------------------------------------------
-'''
+    '''
+    -----------------SERIAL STUFF----------------------------------------------
+    '''
 
 
     def openConnection(self):
@@ -263,9 +263,9 @@ class FunctionalGUI(Ui_Form):
         else:
             self.read_timer.stop()
 
-'''
------------------END OF CLASS--------------------------------------------------
-'''
+    '''
+    -----------------END OF CLASS----------------------------------------------
+    '''
 
 
 
