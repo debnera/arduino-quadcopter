@@ -22,6 +22,9 @@ class Gamepad():
     def update(self):
         self.checkPressedButtons()
 
+    def enabled(self):
+        ''' Returns true if controller is found. False otherwise. '''
+        return self.controller != None
 
     def getYPR(self):
         yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)

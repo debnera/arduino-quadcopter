@@ -26,6 +26,7 @@ class FunctionalGUI(Ui_Form):
         self.ser = None
         self.read_timer = None
         self.gamepad_timer = None
+        self.gamepad = None
         self.bytes = 0 # Used to track the amount of bytes sent
         self.packets = 0 # Used to track the amount of packets sent
         self.minThrottle = 0
@@ -56,18 +57,23 @@ class FunctionalGUI(Ui_Form):
     '''
 
     def createGamepad(self):
-        self.gamepad = Gamepad(0)
-        self.gamepad.connectButton(0, self.addMinThrottle)
-        self.gamepad.connectButton(1, self.removeMinThrottle)
-        self.gamepad.connectButton(6, self.stop)
-        self.gamepad.connectButton(7, self.start)
-        self.gamepad.connectButton(3, self.disableGamepad)
-        self.gamepad_timer = PyQt5.QtCore.QTimer()
-        self.gamepad_timer.timeout.connect(self.checkGamepad)
-        self.setSliderRanges() # This method also starts gamepad_timer
+        if self.gamepad == None:
+            self.gamepad = Gamepad(0)
+            if self.gamepad.enabled():
+                self.gamepad.connectButton(0, self.addMinThrottle)
+                self.gamepad.connectButton(1, self.removeMinThrottle)
+                self.gamepad.connectButton(6, self.stop)
+                self.gamepad.connectButton(7, self.start)
+                self.gamepad.connectButton(3, self.disableGamepad)
+                self.gamepad_timer = PyQt5.QtCore.QTimer()
+                self.gamepad_timer.timeout.connect(self.checkGamepad)
+                self.setSliderRanges() # This method also starts gamepad_timer
+            else:
+                self.gamepad.close()
+                self.gamepad = None
 
     def checkGamepad(self):
-        if self.use_gamepad_bool.isChecked():
+        if self.use_gamepad_bool.isChecked() and self.gamepad.enabled():
             self.gamepad.update()
             y, p, r = self.gamepad.getYPR()
             throttle = self.gamepad.getThrottle()
