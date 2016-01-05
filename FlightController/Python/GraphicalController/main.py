@@ -17,9 +17,18 @@ from gamepad import Gamepad
 
 class FunctionalGUI(Ui_Form):
 
-    bytes = 0
-    packets = 0
-    minThrottle = 0
+
+
+    def __init__(self, window):
+        super().__init__()
+        self.ser = None
+        self.gamepad_timer = None
+        self.bytes = 0 # Used to track the amount of bytes sent
+        self.packets = 0 # Used to track the amount of packets sent
+        self.minThrottle = 0
+        self.setupUi(window)
+        self.setButtons()
+        self.createGamepad()
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
@@ -132,9 +141,6 @@ class FunctionalGUI(Ui_Form):
             self.openConnection()
 
     def setButtons(self):
-        self.ser = None
-        self.gamepad_timer = None
-        self.removeMinThrottle()
         self.throttle_send_btn.released.connect(self.sendThrottle)
         self.angles_send_btn.released.connect(self.sendAngles)
         self.angles_reset_btn.released.connect(self.resetAngles)
@@ -240,13 +246,8 @@ class FunctionalGUI(Ui_Form):
 
 app = QApplication(sys.argv)
 window = QDialog()
-ui = FunctionalGUI()
-ui.setupUi(window)
-ui.setButtons()
-ui.createGamepad()
-#ui.openConnection()
+ui = FunctionalGUI(window)
 window.show()
-
 sys.exit(app.exec_())
 
 
