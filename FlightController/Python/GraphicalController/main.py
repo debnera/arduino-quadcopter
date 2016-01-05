@@ -78,9 +78,15 @@ class FunctionalGUI(Ui_Form):
             self.changeYPR(y, p, r)
             self.changeThrottle(throttle)
 
+    def disableGamepad(self):
+        self.resetThrottle()
+        self.use_gamepad_bool.setChecked(False)
+
 '''
 -----------------BUTTONS-------------------------------------------------------
 '''
+
+# --------------Primary control------------------------------------------------
 
     def changeYPR(self, yaw, pitch, roll):
         # Only send angles after all three values have been changed.
@@ -93,20 +99,11 @@ class FunctionalGUI(Ui_Form):
         if self.angles_sendOnChange_bool.isChecked():
             self.sendAngles()
 
-
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
         self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
         if (self.throttle_sendOnChange_bool.isChecked()):
             self.sendThrottle()
-
-    def sendP(self):
-        self.send('p' + str(self.PID_p.value()))
-        print("Sent p-value")
-
-    def sendI(self):
-        self.send('i' + str(self.PID_i.value()))
-        print("Sent i-value")
 
     def addMinThrottle(self):
         self.minThrottle += 71 # 71 is the limit for activating stabilizer
@@ -129,7 +126,15 @@ class FunctionalGUI(Ui_Form):
         string = 't' + str(self.throttle_spinBox.value())
         self.send(string)
 
+# --------------Secondary control------------------------------------------------
 
+    def start(self):
+        self.send(chr(17))
+
+    def stop(self):
+        #self.resetAngles()
+        self.resetThrottle()
+        self.send(chr(20)) #DC4
 
     def resetAngles(self):
         self.angles_yaw_doubleSpinBox.setValue(0)
@@ -140,14 +145,18 @@ class FunctionalGUI(Ui_Form):
         self.minThrottle = 0
         self.throttle_spinBox.setValue(0)
 
-    def stop(self):
-        #self.resetAngles()
-        self.resetThrottle()
-        self.send(chr(20)) #DC4
 
-    def start(self):
-        self.send(chr(17))
+# --------------Other commands-------------------------------------------------
 
+    def sendP(self):
+        self.send('p' + str(self.PID_p.value()))
+        print("Sent p-value")
+
+    def sendI(self):
+        self.send('i' + str(self.PID_i.value()))
+        print("Sent i-value")
+
+# ----------------GUI----------------------------------------------------------
     def syncAngleSliders(self):
         mult = 100
         self.angles_yaw_slider.setValue(int(self.angles_yaw_doubleSpinBox.value() * mult))
@@ -192,9 +201,7 @@ class FunctionalGUI(Ui_Form):
         if self.ser == None:
             self.openConnection()
 
-    def disableGamepad(self):
-        self.resetThrottle()
-        self.use_gamepad_bool.setChecked(False)
+
 
 '''
 -----------------SERIAL STUFF--------------------------------------------------
