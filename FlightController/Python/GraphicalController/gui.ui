@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>680</width>
+    <width>671</width>
     <height>454</height>
    </rect>
   </property>
@@ -45,7 +45,7 @@
          <number>0</number>
         </property>
         <property name="maximum">
-         <number>100</number>
+         <number>1000</number>
         </property>
         <property name="value">
          <number>20</number>
@@ -62,10 +62,10 @@
       <item row="1" column="1">
        <widget class="QSpinBox" name="pitch_max_spinbox">
         <property name="minimum">
-         <number>-100</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>100</number>
+         <number>1000</number>
         </property>
         <property name="value">
          <number>20</number>
@@ -82,10 +82,10 @@
       <item row="2" column="1">
        <widget class="QSpinBox" name="roll_max_spinbox">
         <property name="minimum">
-         <number>-100</number>
+         <number>0</number>
         </property>
         <property name="maximum">
-         <number>100</number>
+         <number>1000</number>
         </property>
         <property name="value">
          <number>20</number>
@@ -161,7 +161,7 @@
     <item>
      <widget class="QPushButton" name="gamepad_apply_btn">
       <property name="text">
-       <string>Apply changes</string>
+       <string>Change frequency</string>
       </property>
      </widget>
     </item>
@@ -206,7 +206,7 @@
     <enum>Qt::Horizontal</enum>
    </property>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -240,13 +240,34 @@
        </widget>
       </item>
       <item row="4" column="2">
-       <widget class="QDoubleSpinBox" name="offset_pitch_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="pitch_offset_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="5" column="2">
-       <widget class="QDoubleSpinBox" name="offset_roll_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="roll_offset_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QDoubleSpinBox" name="yaw_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="yaw_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="7" column="0" colspan="2">
        <widget class="QPushButton" name="angles_send_btn">
@@ -263,7 +284,14 @@
        </widget>
       </item>
       <item row="4" column="1">
-       <widget class="QDoubleSpinBox" name="pitch_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="pitch_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="5" column="0">
        <widget class="QLabel" name="roll_label">
@@ -280,10 +308,24 @@
        </widget>
       </item>
       <item row="5" column="1">
-       <widget class="QDoubleSpinBox" name="roll_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="roll_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
       <item row="1" column="2">
-       <widget class="QDoubleSpinBox" name="offset_yaw_doubleSpinBox"/>
+       <widget class="QDoubleSpinBox" name="yaw_offset_doubleSpinBox">
+        <property name="minimum">
+         <double>-500.000000000000000</double>
+        </property>
+        <property name="maximum">
+         <double>500.000000000000000</double>
+        </property>
+       </widget>
       </item>
      </layout>
     </item>
@@ -366,7 +408,7 @@
       <item row="3" column="1">
        <widget class="QPushButton" name="throttle_reset_btn">
         <property name="text">
-         <string>Reset throttle</string>
+         <string>Reset thr</string>
         </property>
        </widget>
       </item>
@@ -374,7 +416,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>260</x>
@@ -471,7 +513,7 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
      <x>550</x>
@@ -551,12 +593,12 @@
     </item>
    </layout>
   </widget>
-  <widget class="QWidget" name="">
+  <widget class="QWidget" name="layoutWidget">
    <property name="geometry">
     <rect>
-     <x>560</x>
+     <x>531</x>
      <y>70</y>
-     <width>102</width>
+     <width>131</width>
      <height>83</height>
     </rect>
    </property>
@@ -584,20 +626,11 @@
     </item>
    </layout>
   </widget>
-  <zorder></zorder>
-  <zorder></zorder>
-  <zorder>throttle_offset_step_spinBox</zorder>
-  <zorder>throttle_label_2</zorder>
-  <zorder>throttle_offset_spinBox</zorder>
-  <zorder>throttle_label_3</zorder>
-  <zorder></zorder>
-  <zorder>verticalLayoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
+  <zorder>layoutWidget</zorder>
   <zorder>verticalLayoutWidget_2</zorder>
-  <zorder>label_8</zorder>
-  <zorder>verticalLayoutWidget_3</zorder>
-  <zorder>mode_angle_btn</zorder>
-  <zorder>mode_rate_btn</zorder>
-  <zorder>mode_raw_btn</zorder>
   <zorder>line</zorder>
   <zorder>line_2</zorder>
   <zorder>line_3</zorder>

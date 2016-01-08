@@ -80,7 +80,7 @@ class Gamepad():
             print('no controller')
             return
         if (self.controller.get_numaxes() <= number):
-            print("Warning: ControllerInput: Joystick axis " + number + " not found.")
+            print("Warning: ControllerInput: Joystick axis", number, "not found.")
             return 0
         return self.controller.get_axis(number)
 

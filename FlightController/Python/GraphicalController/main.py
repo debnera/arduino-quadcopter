@@ -35,11 +35,22 @@ class FunctionalGUI(Ui_Form):
 
     def setButtons(self):
         self.throttle_send_btn.clicked.connect(self.sendThrottle)
+        self.throttle_reset_btn.clicked.connect(self.resetThrottle)
         self.angles_send_btn.clicked.connect(self.sendAngles)
         self.angles_reset_btn.clicked.connect(self.resetAngles)
-        self.stop_btn.clicked.connect(self.stop)
+
+        self.mode_raw_btn.clicked.connect(self.mode_raw)
+        self.mode_rate_btn.clicked.connect(self.mode_rate)
+        self.mode_angle_btn.clicked.connect(self.mode_angle)
         self.start_btn.clicked.connect(self.start)
+        self.stop_btn.clicked.connect(self.stop)
+        self.serial_open_btn.clicked.connect(self.openConnection)
+
         self.pid_send_btn.clicked.connect(self.sendPID)
+        self.yaw_reset_btn.clicked.connect(self.resetYaw)
+
+        self.gamepad_connect_btn.clicked.connect(self.createGamepad)
+        self.gamepad_apply_btn.clicked.connect(self.setGamepadFrequency)
 
 
 
@@ -58,13 +69,23 @@ class FunctionalGUI(Ui_Form):
                 self.gamepad.connectButton(3, self.disableGamepad)
                 self.gamepad_timer = PyQt5.QtCore.QTimer()
                 self.gamepad_timer.timeout.connect(self.checkGamepad)
-                self.setSliderRanges() # This method also starts gamepad_timer
+                self.setGamepadFrequency() # This method starts gamepad_timer
             else:
                 self.gamepad.close()
                 self.gamepad = None
+        else:
+            print("Gamepad already exists!")
+
+    def setGamepadFrequency(self):
+        if self.gamepad != None:
+            self.gamepad_timer.stop()
+            freq = self.gamepad_frequency_spinBox.value()
+            interval = 1000 / freq # Milliseconds
+            self.gamepad_timer.start(interval)
+            print("Gamepad updating rate is now", freq, "({:f} ms)".format(interval))
 
     def checkGamepad(self):
-        if self.use_gamepad_bool.isChecked() and self.gamepad.enabled():
+        if self.gamepad != None:
             self.gamepad.update()
             y, p, r = self.gamepad.getYPR()
             throttle = self.gamepad.getThrottle()
@@ -77,7 +98,9 @@ class FunctionalGUI(Ui_Form):
 
     def disableGamepad(self):
         self.resetThrottle()
-        self.use_gamepad_bool.setChecked(False)
+        if self.gamepad != None:
+            self.gamepad.close()
+            self.gamepad = None
 
     '''
     -----------------BUTTONS---------------------------------------------------
@@ -131,6 +154,33 @@ class FunctionalGUI(Ui_Form):
         #self.resetAngles()
         self.resetThrottle()
         self.send(chr(20)) #DC4
+
+    def resetYaw(self):
+        '''
+        Resets the yaw axis of copter to zero.
+        '''
+        pass
+
+    def mode_raw(self):
+        '''
+        Starts the raw controlling mode.
+        Angles correspond to motor powers without PID.
+        '''
+        pass
+
+    def mode_rate(self):
+        '''
+        Starts the rate controlling mode.
+        Angles correspond to angular rates.
+        '''
+        pass
+
+    def mode_angle(self):
+        '''
+        Starts the angle controlling mode.
+        Angles correspond to actual orientation of the copter.
+        '''
+        pass
 
     def resetAngles(self):
         self.yaw_doubleSpinBox.setValue(0)
