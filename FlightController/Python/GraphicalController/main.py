@@ -29,7 +29,6 @@ class FunctionalGUI(Ui_Form):
         self.gamepad = None
         self.bytes = 0 # Used to track the amount of bytes sent
         self.packets = 0 # Used to track the amount of packets sent
-        self.minThrottle = 0
         self.setupUi(window)
         self.setButtons()
         self.createGamepad()
@@ -40,16 +39,8 @@ class FunctionalGUI(Ui_Form):
         self.angles_reset_btn.clicked.connect(self.resetAngles)
         self.stop_btn.clicked.connect(self.stop)
         self.start_btn.clicked.connect(self.start)
-        self.send_PID_p.clicked.connect(self.sendP)
-        self.send_PID_i.clicked.connect(self.sendI)
-        self.max_apply.clicked.connect(self.setSliderRanges)
+        self.pid_send_btn.clicked.connect(self.sendPID)
 
-        self.angles_roll_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_roll_slider.valueChanged.connect(self.syncAngleBoxes)
-        self.angles_pitch_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_pitch_slider.valueChanged.connect(self.syncAngleBoxes)
-        self.angles_yaw_doubleSpinBox.valueChanged.connect(self.syncAngleSliders)
-        self.angles_yaw_slider.valueChanged.connect(self.syncAngleBoxes)
 
 
     '''
@@ -79,6 +70,10 @@ class FunctionalGUI(Ui_Form):
             throttle = self.gamepad.getThrottle()
             self.changeYPR(y, p, r)
             self.changeThrottle(throttle)
+            if self.angles_sendOnChange_bool.isChecked():
+                self.sendAngles()
+            if self.throttle_sendOnChange_bool.isChecked():
+                self.sendThrottle()
 
     def disableGamepad(self):
         self.resetThrottle()
@@ -91,37 +86,40 @@ class FunctionalGUI(Ui_Form):
     # --------------Primary control--------------------------------------------
 
     def changeYPR(self, yaw, pitch, roll):
-        # Only send angles after all three values have been changed.
-        self.angles_yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
-        self.angles_pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
-        self.angles_roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
-        if self.angles_sendOnChange_bool.isChecked():
-            self.sendAngles()
+        self.yaw_doubleSpinBox.setValue(yaw * self.yaw_max_spinbox.value())
+        self.pitch_doubleSpinBox.setValue(pitch * self.pitch_max_spinbox.value())
+        self.roll_doubleSpinBox.setValue(roll * self.roll_max_spinbox.value())
 
     def changeThrottle(self, throttle_input):
         # Input goes from 0 to 1
-        self.throttle_spinBox.setValue(self.minThrottle + throttle_input * self.throttle_max_spinBox.value())
-        if (self.throttle_sendOnChange_bool.isChecked()):
-            self.sendThrottle()
+        self.throttle_spinBox.setValue(throttle_input * self.throttle_max_spinBox.value())
 
     def addMinThrottle(self):
-        self.minThrottle += 71
-        print("Setting default throttle to:", self.minThrottle)
+        prev = self.throttle_offset_spinBox.value()
+        increment = self.throttle_offset_step_spinBox.value()
+        self.throttle_offset_spinBox.setValue(prev + increment)
+        print("Setting default throttle to:", self.throttle_offset_spinBox.value())
 
     def removeMinThrottle(self):
-        self.minThrottle -= 71
-        if self.minThrottle < 0:
-            self.minThrottle = 0
-        print("Setting default throttle to:", self.minThrottle)
+        prev = self.throttle_offset_spinBox.value()
+        increment = self.throttle_offset_step_spinBox.value()
+        self.throttle_offset_spinBox.setValue(prev - increment)
+        if self.throttle_offset_spinBox.value() < 0:
+            self.throttle_offset_spinBox.setValue(0)
+        print("Setting default throttle to:", self.throttle_offset_spinBox.value())
 
     def sendAngles(self):
-        string = 'y' + str(self.angles_yaw_doubleSpinBox.value())
-        string += 'p' + str(self.angles_pitch_doubleSpinBox.value())
-        string += 'r' + str(self.angles_roll_doubleSpinBox.value())
+        y = self.yaw_doubleSpinBox.value() + self.yaw_offset_doubleSpinBox.value()
+        p = self.pitch_doubleSpinBox.value() + self.pitch_offset_doubleSpinBox.value()
+        r = self.roll_doubleSpinBox.value() + self.roll_offset_doubleSpinBox.value()
+        string = 'y' + str(y)
+        string += 'p' + str(p)
+        string += 'r' + str(r)
         self.send(string)
 
     def sendThrottle(self):
-        string = 't' + str(self.throttle_spinBox.value())
+        thr = self.throttle_spinBox.value() + self.throttle_offset_spinBox.value()
+        string = 't' + str(thr)
         self.send(string)
 
     # --------------Secondary control------------------------------------------
@@ -135,60 +133,29 @@ class FunctionalGUI(Ui_Form):
         self.send(chr(20)) #DC4
 
     def resetAngles(self):
-        self.angles_yaw_doubleSpinBox.setValue(0)
-        self.angles_pitch_doubleSpinBox.setValue(0)
-        self.angles_roll_doubleSpinBox.setValue(0)
+        self.yaw_doubleSpinBox.setValue(0)
+        self.pitch_doubleSpinBox.setValue(0)
+        self.roll_doubleSpinBox.setValue(0)
+        self.yaw_offset_doubleSpinBox.setValue(0)
+        self.pitch_offset_doubleSpinBox.setValue(0)
+        self.roll_offset_doubleSpinBox.setValue(0)
+        self.sendAngles()
 
     def resetThrottle(self):
-        self.minThrottle = 0
+        self.throttle_offset_spinBox.setValue(0)
         self.throttle_spinBox.setValue(0)
+        self.sendThrottle()
 
 
     # --------------Other commands---------------------------------------------
+    def sendPID(self):
+        self.send('p' + str(self.pid_rollpitch_p.value()))
+        self.send('i' + str(self.pid_rollpitch_i.value()))
+        self.send('w' + str(self.pid_yaw_p.value()))
+        print("All pid values sent!")
 
-    def sendP(self):
-        self.send('p' + str(self.PID_p.value()))
-        print("Sent p-value")
-
-    def sendI(self):
-        self.send('i' + str(self.PID_i.value()))
-        print("Sent i-value")
 
     # ----------------GUI------------------------------------------------------
-    def syncAngleSliders(self):
-        mult = 100
-        self.angles_yaw_slider.setValue(int(self.angles_yaw_doubleSpinBox.value() * mult))
-        self.angles_pitch_slider.setValue(int(self.angles_pitch_doubleSpinBox.value() * mult))
-        self.angles_roll_slider.setValue(int(self.angles_roll_doubleSpinBox.value() * mult))
-
-    def syncAngleBoxes(self):
-        div = 100
-        self.angles_yaw_doubleSpinBox.setValue(self.angles_yaw_slider.value() / div)
-        self.angles_pitch_doubleSpinBox.setValue(self.angles_pitch_slider.value() / div)
-        self.angles_roll_doubleSpinBox.setValue(self.angles_roll_slider.value() / div)
-
-    def setMinMax(self, obj, value):
-        obj.setMinimum(-value)
-        obj.setMaximum(value)
-
-    def setSliderRanges(self):
-        mult = 100
-        self.setMinMax(self.angles_yaw_slider, self.yaw_max_slider.value() * mult)
-        self.setMinMax(self.angles_yaw_doubleSpinBox, self.yaw_max_slider.value())
-        self.setMinMax(self.angles_pitch_slider, self.pitch_max_slider.value()* mult)
-        self.setMinMax(self.angles_pitch_doubleSpinBox, self.pitch_max_slider.value())
-        self.setMinMax(self.angles_roll_slider, self.roll_max_slider.value()* mult)
-        self.setMinMax(self.angles_roll_doubleSpinBox, self.roll_max_slider.value())
-        self.throttle_slider.setMaximum(self.throttle_max_spinBox.value())
-        self.throttle_spinBox.setMaximum(self.throttle_max_spinBox.value())
-        if (self.gamepad_timer != None):
-            freq = self.gamepad_frequency_spinBox.value()
-            if freq < 1:
-                freq = 1
-            self.gamepad_timer.stop()
-            self.gamepad_timer.start(1/freq * 1000)
-        if self.ser == None:
-            self.openConnection()
 
 
 
