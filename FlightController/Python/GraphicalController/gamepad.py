@@ -34,14 +34,22 @@ class Gamepad():
 
 
     def getThrottle(self):
+        '''
+        Scales throttle to a range of [0,1].
+        Also applies a deadzone
+        '''
+        d = 0.2 # Deadzone
         throttle = self.getAxis(2) + self.getAxis(5)
-        throttle += 2 # Range 0 to 4
-        throttle += -0.2 # Deadzone
+        throttle += 2 # Range [0,4]
+        throttle += -d
         throttle = max(0, throttle)
-        throttle /= 4 # Range 0 to 1
+        throttle /= (4-deadzone) # Range [0,1]
         return throttle
 
     def apply_deadzone(self, value):
+        '''
+        Applies deadzone and scales the value back to range of [0,1]
+        '''
         d = 0.2
         if (abs(value) < d):
             return 0
