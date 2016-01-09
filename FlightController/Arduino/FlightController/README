@@ -1,0 +1,39 @@
+Author: Anton Debner
+
+FlightController
+================
+1. General
+----------
+This is a quadcopter flightcontroller program for an Arduino-based
+quadcopter. This is still work in progress, so there might be bugs
+that can lead to a crash.
+
+2. Command interface
+--------------------
+This program is designed to be controlled by a set of commands, preferably
+by a pc or a smartphone instead of a regular RC-controller.
+
+NOTE:
+      Some of the commands are ASCII special characters, and some are plain text.
+      '%' Means a float value, with decimals separated by '.' or ','.
+      '#' Means an integer value.
+
+Commands from quadcopter:
+-ENQ = (PING) The copter sends this character to check if the connection is OK. The
+      controller should respond with ACK. If no commands (ACK or anything else)
+      is received for a certain time, the quadcopter will stop all motors.
+
+Commands to quadcopter:
+-ACK = (OK) Indicates that the connection between quadcopter and its controller is OK.
+-DC1 = (Start) Activates all motors.
+-DC4 = (Stop) Disables all motors.
+-'y%p%r%' = (Angles) Changes yaw, pitch and roll according to the float values.
+-'t#' = (Throttle) Changes throttle to the given integer.
+-'r' = (Reset yaw) Resets yaw axis to zero.
+-'p' = (Roll/Pitch p) Changes the p value of roll/pitch PID controller.
+-'i' = (Roll/Pitch i) Changes the i value of roll/pitch PID controller.
+-'w' = (Yaw p) Changes the p value of yaw PID controller.
+-'m#' = (Control mode) Changes the controlling mode.
+        0: Angle control: Copter attempts to mantain its orientation. (According to angles)  
+        1: Rate control: Copter attempts to mantain angular rates. (According to angles)  
+        2: Raw control: The values of angles are directly added to motor powers without any PID interference.
