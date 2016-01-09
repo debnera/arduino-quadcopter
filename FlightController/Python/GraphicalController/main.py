@@ -60,6 +60,7 @@ class FunctionalGUI(Ui_Form):
 
     def createGamepad(self):
         if self.gamepad == None:
+            print("Connecting gamepad...")
             self.gamepad = Gamepad(0)
             if self.gamepad.enabled():
                 self.gamepad.connectButton(0, self.addMinThrottle)
@@ -83,6 +84,8 @@ class FunctionalGUI(Ui_Form):
             interval = 1000 / freq # Milliseconds
             self.gamepad_timer.start(interval)
             print("Gamepad updating rate is now", freq, "({:f} ms)".format(interval))
+        else:
+            print("Gamepad doesn't exist!")
 
     def checkGamepad(self):
         if self.gamepad != None:
@@ -97,6 +100,7 @@ class FunctionalGUI(Ui_Form):
                 self.sendThrottle()
 
     def disableGamepad(self):
+        print("Disabling gamepad")
         self.resetThrottle()
         if self.gamepad != None:
             self.gamepad.close()
@@ -149,38 +153,44 @@ class FunctionalGUI(Ui_Form):
 
     def start(self):
         self.send(chr(17))
+        print("Activating engines")
 
     def stop(self):
         #self.resetAngles()
         self.resetThrottle()
         self.send(chr(20)) #DC4
+        print("Disabling engines")
 
     def resetYaw(self):
         '''
         Resets the yaw axis of copter to zero.
         '''
-        pass
+        self.send('r')
+        print("Resetting yaw axis")
 
     def mode_raw(self):
         '''
         Starts the raw controlling mode.
         Angles correspond to motor powers without PID.
         '''
-        pass
+        self.send('m2')
+        print("Switching to raw control")
 
     def mode_rate(self):
         '''
         Starts the rate controlling mode.
         Angles correspond to angular rates.
         '''
-        pass
+        self.send('m1')
+        print("Switching to rate control")
 
     def mode_angle(self):
         '''
         Starts the angle controlling mode.
         Angles correspond to actual orientation of the copter.
         '''
-        pass
+        self.send('m0')
+        print("Switching to angle control")
 
     def resetAngles(self):
         self.yaw_doubleSpinBox.setValue(0)
@@ -272,16 +282,9 @@ class FunctionalGUI(Ui_Form):
     '''
 
 
-
-
-
-
-app = QApplication(sys.argv)
-window = QDialog()
-ui = FunctionalGUI(window)
-window.show()
-sys.exit(app.exec_())
-
-
 if __name__ == '__main__':
-    pass
+    app = QApplication(sys.argv)
+    window = QDialog()
+    ui = FunctionalGUI(window)
+    window.show()
+    sys.exit(app.exec_())
