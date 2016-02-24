@@ -17,12 +17,15 @@ therefore I do not recommend that any one else attempts to fly with this code.
 
 Parts used
 ----------
--Quadcopter runs on Arduino Uno.
+Quadcopter runs on Arduino Uno.
 
--The Quadcopter uses Invensense MPU-6050 for detecting its orientation. This requires the I2Cdev-library.
+The Quadcopter uses Invensense MPU-6050 for detecting its orientation.
 
--Communication is done with a HC-05 Bluetooth chip.
+Communication is done with a HC-05 Bluetooth chip.
 
+Libraries used
+--------------
+For the MPU-6050 I use a slightly modified version of I2Cdev (http://www.i2cdevlib.com)
 
 
 
