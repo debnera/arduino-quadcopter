@@ -145,6 +145,9 @@ void loop()
       if (control_mode == ANGLE_CONTROL)
       {
         target_rates = stabilizer.calculateRates(target_angles, cur_angles);
+        // FIXME: Add an external variable for switching yaw-modes
+        target_rates.yaw = target_angles.yaw;
+        // FIXME ^^^^^^^^^^^^^^^^^^
         motor_powers = stabilizer.calculatePowers(target_rates, cur_rates);
       }
       else if (control_mode == RATE_CONTROL)
