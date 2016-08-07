@@ -316,6 +316,8 @@ bool parseCommand()
       {
         offset_angles.yaw = cur_angles.yaw + offset_angles.yaw;
         success = true;
+        Serial.println(F("Yaw axis resetted"));
+        break;
       }
       case 'p': // P-value for roll/pitch PID
       {
