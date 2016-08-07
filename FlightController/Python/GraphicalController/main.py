@@ -237,7 +237,7 @@ class FunctionalGUI(Ui_Form):
             self.read_timer = PyQt5.QtCore.QTimer()
         self.read_timer.timeout.connect(self.readSerial)
         self.read_timer.start(100)
-        for i in range(2):
+        for i in range(10):
             try:
                 print("Trying port", i)
                 self.ser.port = '/dev/rfcomm' + str(i)
