@@ -8,6 +8,7 @@ class Gamepad():
     def __init__(self, id):
         self.buttonFunctions = dict() # Dict which connects buttons to functions
         self.controller = None
+        self.deadzone = 0.2
         pygame.init() # Scans system for joysticks, listens to events
         print("Number of joysticks found: " + str(pygame.joystick.get_count()))
         if (pygame.joystick.get_count() > id):
@@ -38,19 +39,19 @@ class Gamepad():
         Scales throttle to a range of [0,1].
         Also applies a deadzone
         '''
-        d = 0.2 # Deadzone
+        d = self.deadzone
         throttle = self.getAxis(2) + self.getAxis(5)
         throttle += 2 # Range [0,4]
         throttle += -d
         throttle = max(0, throttle)
-        throttle /= (4-deadzone) # Range [0,1]
+        throttle /= (4 - d) # Range [0,1]
         return throttle
 
     def apply_deadzone(self, value):
         '''
         Applies deadzone and scales the value back to range of [0,1]
         '''
-        d = 0.2
+        d = self.deadzone
         if (abs(value) < d):
             return 0
         elif (value > 0): #positive
