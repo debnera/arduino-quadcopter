@@ -29,7 +29,7 @@ class Gamepad():
 
     def getYPR(self):
         yaw = self.apply_deadzone(self.getAxis(3)) # 3 = Right stick (left -1, right 1)
-        pitch = self.apply_deadzone(-self.getAxis(1)) # 1 = Left stick (up -1, down 1)
+        pitch = self.apply_deadzone(self.getAxis(1)) # 1 = Left stick (up -1, down 1)
         roll = self.apply_deadzone(self.getAxis(0)) # 0 = Left stick (left -1, right 1)
         return yaw, pitch, roll
 
