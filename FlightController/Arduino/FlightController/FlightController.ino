@@ -140,7 +140,7 @@ void loop()
 
     // Calculate new powers for motors
     motor_powers.setValues(0, 0, 0, 0);
-    if (throttle > kMinThrottleToStabilize && control_mode != RAW_CONTROL)
+    if (throttle > kMinThrottleToStabilize)
     {
       if (control_mode == ANGLE_CONTROL)
       {
