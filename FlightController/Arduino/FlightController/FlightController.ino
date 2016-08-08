@@ -92,7 +92,7 @@ void setup()
 	throttle = 0;
   target_angles.setValues(0, 0, 0);
   mpu.setGyroScale(gyro_scale);
-  offset_angles.setValues(0, 0.71, -2.7);
+  offset_angles.setValues(0, -0.03625, -2.839);
 }
 
 void loop()
