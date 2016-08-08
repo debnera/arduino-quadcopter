@@ -169,7 +169,7 @@ void loop()
 
     // Print / debugging
     print_counter++;
-    if ( print_counter % 40 == 0)
+    if ( print_counter % 200 == 0)
     {
       if (control_mode == ANGLE_CONTROL)
       {
